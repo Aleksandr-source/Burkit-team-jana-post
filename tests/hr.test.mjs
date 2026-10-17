@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rename, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { DatabaseSync } from 'node:sqlite';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createApplication } from '../server/app.mjs';
+import { createBusinessStateReader } from '../server/eval-business-state.mjs';
 
 const testPassword = 'Test-only-not-a-demo-password-72!';
 const date = (offset) => {
@@ -14,7 +15,7 @@ const date = (offset) => {
   return value.toISOString().slice(0, 10);
 };
 
-async function fixture(t) {
+async function fixture(t, options = {}) {
   let dataDir = await mkdtemp(join(tmpdir(), 'asar-hr-test-'));
   let app;
   t.after(async () => {
@@ -22,7 +23,7 @@ async function fixture(t) {
     app?.close();
     await rm(dataDir, { recursive: true, force: true });
   });
-  app = createApplication({ dataDir, seed: true, demoPassword: testPassword });
+  app = createApplication({ dataDir, seed: true, demoPassword: testPassword, ...options });
   await new Promise((resolve, reject) => {
     app.server.once('error', reject);
     app.server.listen(0, '127.0.0.1', resolve);
@@ -36,7 +37,7 @@ async function fixture(t) {
       await rename(dataDir, moved);
       dataDir = moved;
     }
-    app = createApplication({ dataDir, seed: true, demoPassword: testPassword });
+    app = createApplication({ dataDir, seed: true, demoPassword: testPassword, ...options });
     await new Promise((resolve, reject) => {
       app.server.once('error', reject);
       app.server.listen(0, '127.0.0.1', resolve);
@@ -79,6 +80,154 @@ test('authentication uses a protected session and logout invalidates it', async 
   assert.ok(!JSON.stringify(result.body).includes(testPassword), 'password does not appear in application data');
   assert.equal((await request('/auth/logout', { cookie, method: 'POST', body: {} })).status, 200);
   assert.equal((await request('/bootstrap', { cookie })).status, 401);
+});
+
+test('JanaMen demo addresses work and legacy logins keep the same account', async (t) => {
+  const { request, login } = await fixture(t);
+  const current = await login('employee@janamen.demo');
+  const previous = await login('employee@asar.demo');
+  const a = (await request('/bootstrap', { cookie: current })).body.user;
+  const b = (await request('/bootstrap', { cookie: previous })).body.user;
+  assert.equal(a.id, b.id);
+  assert.equal(a.email, 'employee@janamen.demo');
+});
+
+test('upgrading an existing demo preserves passwords, sessions and leave data while rebranding saved content', async (t) => {
+  const { app, request, login, createLeave, restart } = await fixture(t);
+  const employee = await login('employee@janamen.demo');
+  const created = await createLeave(employee);
+  assert.equal(created.status, 201);
+  const db = new DatabaseSync(join(app.dataDir, 'asar.sqlite'));
+  try {
+    db.prepare('UPDATE people SET email=? WHERE id=?').run('employee@asar.demo', 'employee');
+    const course = JSON.parse(db.prepare('SELECT data FROM courses WHERE id=?').get('onboarding').data);
+    course.title.ru = 'Первые шаги в Asar HR';
+    db.prepare('UPDATE courses SET data=? WHERE id=?').run(JSON.stringify(course), 'onboarding');
+    db.prepare('DELETE FROM schema_migrations WHERE id=?').run('janamen-brand-v1');
+  } finally { db.close(); }
+  const credentialsFile = join(app.dataDir, 'demo-accounts.txt');
+  await writeFile(credentialsFile, (await readFile(credentialsFile, 'utf8')).replace('JANAMEN', 'ASAR HR').replace('employee@janamen.demo', 'employee@asar.demo'));
+  await restart();
+  const state = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(state.user.email, 'employee@janamen.demo');
+  assert.equal(state.user.leaveReserved, 3);
+  assert.ok(state.requests.some(value => value.id === created.body.id));
+  assert.equal(state.courses.find(value => value.id === 'onboarding').title.ru, 'Первые шаги в JanaMen');
+  assert.ok((await readFile(credentialsFile, 'utf8')).includes('employee@janamen.demo'));
+  assert.ok(await login('employee@asar.demo'));
+  assert.ok(await login('employee@janamen.demo'));
+});
+
+test('profiles are scoped to own records, the direct team and HR; only HR can edit personnel fields', async (t) => {
+  const { request, login, restart } = await fixture(t);
+  const employee = await login('employee@janamen.demo');
+  const manager = await login('manager@janamen.demo');
+  const outsider = await login('outsider@janamen.demo');
+  const hr = await login('hr@janamen.demo');
+  assert.equal((await request('/people/employee/profile', { cookie: employee })).status, 200);
+  assert.equal((await request('/people/employee/profile', { cookie: manager })).status, 200);
+  assert.equal((await request('/people/employee/profile', { cookie: outsider })).status, 404);
+  assert.equal((await request('/people/employee/profile')).status, 401);
+  const body = { name: 'Демо Алиса', company: 'Учебная компания', department: 'Доставка', position: 'Координатор', managerId: 'manager', hiredAt: '2024-03-11', employeeNumber: 'JM-017', phone: '+7 000 000 00 00' };
+  assert.equal((await request('/people/employee/profile', { cookie: employee, method: 'POST', body })).status, 403);
+  assert.equal((await request('/people/employee/profile', { cookie: manager, method: 'POST', body })).status, 403);
+  const edited = await request('/people/employee/profile', { cookie: hr, method: 'POST', body });
+  assert.equal(edited.status, 200);
+  assert.equal(edited.body.name, body.name);
+  assert.equal(edited.body.employeeNumber, body.employeeNumber);
+  assert.equal(edited.body.email, 'employee@janamen.demo');
+  for (const forged of [{ role: 'hr' }, { leaveBalance: 300 }, { password: 'x' }, { email: 'other@example.test' }]) {
+    assert.equal((await request('/people/employee/profile', { cookie: hr, method: 'POST', body: forged })).status, 400);
+  }
+  assert.equal((await request('/people/manager/profile', { cookie: hr, method: 'POST', body: { managerId: 'manager' } })).status, 400);
+  assert.equal((await request('/people/manager2/profile', { cookie: hr, method: 'POST', body: { managerId: 'manager' } })).status, 400);
+  await restart();
+  const saved = await request('/people/employee/profile', { cookie: employee });
+  assert.equal(saved.body.phone, body.phone);
+  assert.equal(saved.body.position, body.position);
+});
+
+test('approved statements use the profile at final HR approval, escape content and enforce request access', async (t) => {
+  const { request, login, createLeave, restart } = await fixture(t);
+  const employee = await login('employee@janamen.demo');
+  const manager = await login('manager@janamen.demo');
+  const hr = await login('hr@janamen.demo');
+  const outsider = await login('outsider@janamen.demo');
+  const name = 'Демо <script>alert(1)</script>';
+  assert.equal((await request('/people/employee/profile', { cookie: hr, method: 'POST', body: { name, employeeNumber: 'JM-APPROVED' } })).status, 200);
+  const created = await createLeave(employee);
+  const endpoint = `/requests/${created.body.id}/document`;
+  assert.equal((await request(endpoint, { cookie: employee })).status, 409);
+  assert.equal((await request(`/requests/${created.body.id}/action`, { cookie: manager, method: 'POST', body: { action: 'approve' } })).status, 200);
+  assert.equal((await request(endpoint, { cookie: employee })).status, 409);
+  assert.equal((await request(`/requests/${created.body.id}/action`, { cookie: hr, method: 'POST', body: { action: 'approve' } })).status, 200);
+  assert.equal((await request('/people/employee/profile', { cookie: hr, method: 'POST', body: { name: 'Новое имя после согласования' } })).status, 200);
+  await restart();
+  const document = await request(endpoint, { cookie: employee });
+  assert.equal(document.status, 200);
+  assert.match(document.headers.get('content-type'), /text\/html/);
+  assert.match(document.headers.get('cache-control'), /no-store/);
+  assert.match(document.headers.get('content-security-policy'), /script-src 'sha256-/);
+  assert.ok(document.body.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+  assert.ok(!document.body.includes('<script>alert(1)</script>'));
+  assert.ok(!document.body.includes('Новое имя после согласования'));
+  assert.ok(document.body.includes('JM-APPROVED'));
+  assert.ok(document.body.includes('Данияр Омаров'));
+  assert.ok(document.body.includes('Мадина Ахметова'));
+  assert.equal((await request(endpoint, { cookie: manager })).status, 200);
+  assert.equal((await request(endpoint, { cookie: hr })).status, 200);
+  assert.equal((await request(endpoint, { cookie: outsider })).status, 404);
+  assert.equal((await request(endpoint)).status, 401);
+  assert.match((await request(`${endpoint}?lang=kk`, { cookie: employee })).body, /Демалысқа өтініш/);
+  assert.match((await request(`${endpoint}?lang=en`, { cookie: employee })).body, /Leave application/);
+});
+
+test('the evaluation business-state reader hashes real leave changes and does not fabricate advance support', async (t) => {
+  const { app, login, createLeave } = await fixture(t);
+  const read = createBusinessStateReader(app.dataDir);
+  const actor = { key: 'employee_a', role: 'employee' };
+  const first = await read({ actor, kind: 'leave' });
+  assert.match(first.state_sha256, /^[a-f0-9]{64}$/);
+  const employee = await login('employee@janamen.demo');
+  assert.deepEqual(await read({ actor, kind: 'leave' }), first, 'sessions are not business-state changes');
+  assert.equal((await createLeave(employee)).status, 201);
+  assert.notEqual((await read({ actor, kind: 'leave' })).state_sha256, first.state_sha256);
+  assert.equal(await read({ actor, kind: 'advance' }), null);
+});
+
+test('knowledge sources return versioned demo provenance and hide private documents', async (t) => {
+  const { request, login } = await fixture(t);
+  const employee = await login('employee@janamen.demo');
+  const hr = await login('hr@janamen.demo');
+  const state = (await request('/bootstrap', { cookie: hr })).body;
+  const restricted = state.knowledge.find(source => source.audience === 'hr');
+  assert.ok(restricted);
+  const visible = await request('/knowledge/leave-submit?lang=ru', { cookie: employee });
+  assert.equal(visible.status, 200);
+  assert.equal(visible.body.fictional, true);
+  assert.ok(visible.body.version);
+  assert.ok(visible.body.origin);
+  assert.match(visible.body.sha256, /^[a-f0-9]{64}$/);
+  assert.equal((await request(`/knowledge/${restricted.id}`, { cookie: employee })).status, 404);
+  assert.equal((await request('/knowledge/not-existing', { cookie: employee })).status, 404);
+  assert.equal((await request('/knowledge/leave-submit')).status, 401);
+  for (const lang of ['ru', 'kk', 'en']) {
+    const source = (await request(`/knowledge/leave-submit?lang=${lang}`, { cookie: employee })).body;
+    const linked = await request(source.url.replace(/^\/api/, ''), { cookie: employee, headers: { 'Accept-Language': 'en' } });
+    assert.equal(linked.body.excerpt, source.excerpt);
+    assert.equal(linked.body.sha256, source.sha256);
+    const page = await request(source.url.replace(/^\/api/, ''), { cookie: employee, headers: { Accept: 'text/html' } });
+    assert.equal(page.status, 200);
+    assert.match(page.headers.get('content-type'), /text\/html/);
+    assert.ok(page.body.includes(source.title));
+    assert.ok(page.body.includes(source.sha256));
+    assert.equal(page.headers.get('cache-control'), 'private, no-store');
+  }
+  for (const headers of [{}, { Accept: 'text/html' }]) {
+    assert.equal((await request(`/knowledge/${restricted.id}`, { cookie: employee, headers })).status, 404);
+    assert.equal((await request('/knowledge/leave-submit', { headers })).status, 401);
+    assert.equal((await request(`/knowledge/${restricted.id}`, { cookie: hr, headers })).status, 200);
+  }
 });
 
 test('cross-origin mutations are rejected without changing an authenticated session', async (t) => {
@@ -390,4 +539,88 @@ test('HR course editor publishes, assigns and invalidates stale progress after m
   assert.equal(enrollment.passed, false);
   assert.equal(enrollment.completedAt, null);
   assert.ok(refreshed.notifications.some((item) => item.type === 'course_updated'));
+});
+
+test('integration catalog and all mock operations require an HR session', async t => {
+  const { request, login } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo');
+  const paths = [
+    ['/integrations'], ['/integrations/1c-zup/employees'], ['/integrations/1c-zup/leave-balances'],
+    ['/integrations/1c-zup/sync-preview', {}], ['/integrations/documentolog/documents', { requestId: 'missing' }],
+    ['/integrations/documentolog/documents/missing'], ['/integrations/documentolog/documents/missing/mock-transition', { status: 'completed' }],
+  ];
+  for (const [path, body] of paths) for (const cookie of [undefined, employee, manager]) {
+    assert.equal((await request(path, { cookie, ...(body ? { method: 'POST', body } : {}) })).status, cookie ? 403 : 401);
+  }
+  const hr = await login('hr@janamen.demo');
+  const catalog = await request('/integrations', { cookie: hr });
+  assert.equal(catalog.status, 200);
+  assert.ok(catalog.body.integrations.every(item => item.mode === 'mock' && item.connected === false));
+});
+
+test('1C mock preview is synthetic, dry-run and cannot overwrite business data', async t => {
+  const { request, login } = await fixture(t);
+  const hr = await login('hr@janamen.demo');
+  const before = (await request('/bootstrap', { cookie: hr })).body;
+  for (const path of ['employees', 'leave-balances']) {
+    const response = await request(`/integrations/1c-zup/${path}`, { cookie: hr });
+    assert.equal(response.status, 200); assert.equal(response.body.items.length, 2);
+    assert.equal(response.body.mode, 'mock'); assert.equal(response.body.externalRequestSent, false);
+  }
+  const preview = await request('/integrations/1c-zup/sync-preview', { cookie: hr, method: 'POST', body: {} });
+  assert.equal(preview.status, 200); assert.equal(preview.body.applied, false); assert.equal(preview.body.mappingRequired, true);
+  const rejected = await request('/integrations/1c-zup/sync-preview', { cookie: hr, method: 'POST', body: { apply: true, url: 'http://example.invalid' } });
+  assert.equal(rejected.status, 400);
+  const after = (await request('/bootstrap', { cookie: hr })).body;
+  assert.deepEqual(after.people, before.people); assert.deepEqual(after.requests, before.requests);
+});
+
+test('Documentolog mock uses approved server snapshot, persists, deduplicates and never signs or changes leave', async t => {
+  const { request, login, createLeave, restart } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo'), hr = await login('hr@janamen.demo');
+  const leave = await createLeave(employee);
+  assert.equal(leave.status, 201);
+  const path = '/integrations/documentolog/documents';
+  const register = body => request(path, { cookie: hr, method: 'POST', body });
+  assert.equal((await register({ requestId: leave.body.id })).status, 409);
+  assert.equal((await request(`/requests/${leave.body.id}/action`, { cookie: manager, method: 'POST', body: { action: 'approve' } })).status, 200);
+  assert.equal((await register({ requestId: leave.body.id })).status, 409);
+  assert.equal((await request(`/requests/${leave.body.id}/action`, { cookie: hr, method: 'POST', body: { action: 'approve' } })).status, 200);
+  const before = (await request('/bootstrap', { cookie: hr })).body;
+  assert.equal((await register({ requestId: leave.body.id, signed: true })).status, 400);
+  const first = await register({ requestId: leave.body.id });
+  assert.equal(first.status, 201); assert.equal(first.body.externalRequestSent, false);
+  const doc = first.body.document;
+  assert.equal(doc.status, 'registered'); assert.equal(doc.signed, false); assert.equal(doc.legallySignificant, false);
+  assert.equal(doc.payload.request.id, leave.body.id); assert.equal(doc.payload.approvals.length, 2);
+  assert.equal(doc.payload.capturedOnApproval, true);
+  const repeats = await Promise.all([register({ requestId: leave.body.id }), register({ requestId: leave.body.id })]);
+  assert.ok(repeats.every(result => result.status === 200 && result.body.document.id === doc.id));
+  assert.equal((await request(`${path}/missing`, { cookie: hr })).status, 404);
+  const transition = status => request(`${path}/${doc.id}/mock-transition`, { cookie: hr, method: 'POST', body: { status } });
+  assert.equal((await transition('completed')).status, 409);
+  assert.equal((await transition('signed')).status, 400);
+  assert.equal((await transition('in_review')).status, 200);
+  assert.equal((await transition('completed')).status, 200);
+  assert.equal((await transition('rejected')).status, 409);
+  assert.equal((await transition('completed')).body.document.history.length, 3);
+  await restart();
+  const restored = (await request(`${path}/${doc.id}`, { cookie: hr })).body.document;
+  assert.equal(restored.status, 'completed'); assert.equal(restored.signed, false);
+  assert.equal(restored.payloadSha256, doc.payloadSha256); assert.deepEqual(restored.payload, doc.payload);
+  const after = (await request('/bootstrap', { cookie: hr })).body;
+  assert.deepEqual(after.people, before.people); assert.deepEqual(after.requests, before.requests);
+});
+
+test('mock integration off mode fails closed, and foreign-origin writes remain forbidden', async t => {
+  const { request, login } = await fixture(t, { integrationsMode: 'off' });
+  const hr = await login('hr@janamen.demo');
+  assert.ok((await request('/integrations', { cookie: hr })).body.integrations.every(item => item.mode === 'off'));
+  assert.equal((await request('/integrations/1c-zup/employees', { cookie: hr })).status, 503);
+  assert.equal((await request('/integrations/documentolog/documents', { cookie: hr, method: 'POST', body: { requestId: 'missing' } })).status, 503);
+  assert.equal((await request('/integrations/1c-zup/sync-preview', { cookie: hr, method: 'POST', body: {}, headers: { Origin: 'https://untrusted.invalid' } })).status, 403);
+});
+
+test('a requested live integration cannot silently fall back to mock mode', () => {
+  assert.throws(() => createApplication({ integrationsMode: 'live' }), /Live adapters are not installed/);
 });

@@ -1,0 +1,26 @@
+{
+  "employee_a": {
+    "role": "employee",
+    "team": "A",
+    "organization": "DEMO",
+    "token_env": "JANAMEN_EMPLOYEE_A_TOKEN"
+  },
+  "manager_a": {
+    "role": "manager",
+    "team": "A",
+    "organization": "DEMO",
+    "token_env": "JANAMEN_MANAGER_A_TOKEN"
+  },
+  "manager_b": {
+    "role": "manager",
+    "team": "B",
+    "organization": "DEMO",
+    "token_env": "JANAMEN_MANAGER_B_TOKEN"
+  },
+  "hr": {
+    "role": "hr",
+    "team": null,
+    "organization": "DEMO",
+    "token_env": "JANAMEN_HR_TOKEN"
+  }
+}

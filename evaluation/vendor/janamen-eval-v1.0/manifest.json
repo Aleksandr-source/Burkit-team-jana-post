@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "prepared_date": "2026-10-17",
+  "model_quality": "NOT_EVALUATED",
+  "sha256": {
+    ".gitignore": "07d1cd92f23ad532c6b79eae982c3f68a90d5d450f162df5e056ad6634dc069c",
+    "README.md": "61078c78ef457d93f378f1f294e7b0178c78ca31466b1c0dcde0ebe85a6754e3",
+    "compare.py": "47dfce59849629e7e56f42d44a82a7fde34a2ec21bec4fc166136dc03a2aba7c",
+    "configs/acceptance.json": "aa536e216987bd0bd7cec066758ea10df5bed751c2f554f6c15c5fa870bbc59a",
+    "configs/actors.json": "551dc99a2d3d11e29250dfa3cd19d9da9b71d9f116e92d562b5707b64219368b",
+    "configs/experiment-plan.json": "e1702043b8c1d59412b7625f3e5df1554390312dbedae37e3f8109e8ba9befe5",
+    "configs/model-metadata.template.json": "b2fe2c95966c005348d52385f11220052212c28d82a3557f4dae40c503b0853a",
+    "configs/rubric.json": "370c4de865c3714f6883d049eba1cdbe11e5239cd7bec61274917e5a38afe8c2",
+    "configs/run.json": "6f33ca15d01d2c9de89ec0dc6b1d82b782637e4acc775b19bd95d402bf7c74d5",
+    "configs/service-probes.json": "b7a7eab33f2dc9f590c045437c0d74597d32132ba8d1d41502b5685b8a0b20ac",
+    "data/cases.jsonl": "05af3a58c04fb9345a15aa5600a0b669261f319e4241988130d759c9ed03d510",
+    "data/dataset-card.json": "54f8b6c58c125f7969042ff0304e9f5df621355c46b1d6b16e216a8faee5e9ec",
+    "data/knowledge.jsonl": "cd49f0664a548f6a415d3064589211a5038cefb5c5eba343e623014fbc418619",
+    "data/service-snapshots.jsonl": "cdfbc719208b3469ce154fea140d20dba1712f1f5a17f9894950174e6d2b2fef",
+    "docs/CASEBOOK.md": "216bb0c7666fc0de7966fdc3b62987dd1b0ca47fe214bc32c7289c41ebbc32dd",
+    "docs/INTEGRATION.md": "64518cb96f295a3bd7e8b554fbe125db165ec09a484772df7082cb0b06eb4d1f",
+    "docs/PROTOCOL.md": "8a16266bee0de29d0b3c6fdd41b843e329ee84f3aae91a0affd4847c8fca4e27",
+    "docs/SCORING.md": "15c9a7c591df0e35043df71f9c214ed3b94fe549a537c69bc760371716e37a2f",
+    "evaluate.py": "75f833aa1ac5a1938db77c4842cf7225ba5e3f7d88ff60cc3fd3372f811fb478",
+    "examples/oracle-request.json": "130077e427f5372f06205ab73d571b1254275d8de0ae05eaa3fe43afb712331b",
+    "examples/oracle-response.json": "3a7cf55f13560ac06f24727f069c0d47bd7a023e0d0249591722e254b3fa8633",
+    "pyproject.toml": "958ed3b1333c0819c0fb177573cf6aababe83cc641e1f5b08a86cbcd426055a2",
+    "service_probes.py": "840e10e8d1ebbf4f816e0b1d39070945000a841b8130685504aea2110b69fddf",
+    "tests/test_benchmark.py": "6e5edae8f576d8214e22485395565c44a0625a65143ae8e315d918718595f7ca",
+    "tools/build_fixtures.py": "45a431bb340c23bd61d0a4085dbbebb05978b9590899a04d5349b1cc3529270e",
+    "tools/prepare_release.py": "0059f1ae50ca8ac673c15f5dda535f92d0e7415d247fd5f26d1879b3ebd28574"
+  }
+}

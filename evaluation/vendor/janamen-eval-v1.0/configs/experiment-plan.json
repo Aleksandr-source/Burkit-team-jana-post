@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "status": "plan_not_executed",
+  "objective": "smallest tested configuration passing quality, access, latency and resource gates separately in leave.ru, leave.kk, advance.ru, advance.kk",
+  "hard_cap_configurations": 12,
+  "screen_bands_total_parameters": [[450000000, 700000000], [800000000, 1300000000]],
+  "model_discovery_leads_from_supplied_spec": [
+    {"id": "Qwen/Qwen2.5-0.5B-Instruct", "revision": null, "compatibility": "verify_before_run"},
+    {"id": "Qwen/Qwen3-0.6B", "revision": null, "compatibility": "verify_before_run"},
+    {"id": "google/gemma-3-1b-it", "revision": null, "compatibility": "verify_access_terms_and_loader_before_run"}
+  ],
+  "stages": [
+    {"id": "A", "max_configurations": 3, "change": "model only", "context_tokens": 2048, "max_output_tokens": 256, "concurrency": 1, "precision": "one verified common dtype if possible", "selection_split": "dev"},
+    {"id": "B", "max_configurations": 2, "change": "winner weight quantization: int8 and int4 if supported; compare to stage A", "selection_split": "dev"},
+    {"id": "C", "max_configurations": 2, "change": "winner context budget: 1024 and 3072; compare to 2048", "selection_split": "dev", "restriction": "reject or explicitly abstain when complete supporting rule cannot fit; never cut exceptions"},
+    {"id": "D", "max_configurations": 1, "change": "winner max_output_tokens: 128; compare to 256", "selection_split": "dev"},
+    {"id": "E", "max_configurations": 2, "change": "optional original versus SFT under identical evidence and budgets; same final serving format", "selection_split": "dev"},
+    {"id": "F", "max_configurations": 2, "change": "provisional winner and baseline on frozen verification set, concurrency 1; optional concurrency 4 stress run separate", "selection_split": "verification", "restriction": "do not tune on verification failures while calling that set untouched"}
+  ],
+  "default_quality_repetitions": 1,
+  "default_latency_repetitions": 5,
+  "stochastic_followup": "only if sampling is required: 3 recorded seeds, keep all repeats clustered by case/family",
+  "selection_order": ["all per-slice gates pass", "minimum measured total loaded parameters", "minimum measured peak memory", "minimum validated p95 latency", "highest score of weaker language"],
+  "no_pass_result": "no_acceptable_candidate",
+  "claims_allowed": "minimum among actually tested configurations, not a universal minimum",
+  "paid_execution_authorized": false
+}

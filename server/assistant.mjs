@@ -1,20 +1,21 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { knowledgeForRole } from './knowledge.mjs';
+import { AI_MODEL } from '../scripts/ai-model.mjs';
+import { knowledgeForRole, knowledgeSource } from './knowledge.mjs';
 
 const langOf = (lang) => ['ru', 'kk', 'en'].includes(lang) ? lang : 'ru';
 const local = (lang, ru, kk, en) => ({ ru, kk, en })[lang];
-const MODEL = 'Qwen3.5-0.8B · Q4_0';
+const MODEL = AI_MODEL.label;
 const stateFile = fileURLToPath(new URL('../.local-ai/runtime.json', import.meta.url));
 let generating = false;
 
 // Never accept a caller-supplied URL or model endpoint. Model traffic can only
 // reach the local llama.cpp process started by scripts/start-ai.mjs.
 async function runtime() {
-  if (process.env.ASAR_AI_DISABLED === '1') return null;
+  if (process.env.ASAR_AI_DISABLED === '1' || process.env.ASAR_DISABLE_AI === '1') return null;
   try {
     const config = JSON.parse(await readFile(stateFile, 'utf8'));
-    if (!Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
+    if (config.model !== AI_MODEL.name || !Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
       || typeof config.key !== 'string' || !/^[a-f0-9]{64}$/.test(config.key)) return null;
     return { url: `http://127.0.0.1:${config.port}`, key: config.key };
   } catch { return null; }
@@ -66,6 +67,7 @@ const groups = [
 ];
 const stopWords = new Set(['как', 'что', 'для', 'мне', 'мой', 'мои', 'меня', 'это', 'the', 'how', 'and', 'can', 'with', 'you', 'are', 'мен', 'үшін', 'бұл', 'қалай']);
 function retrieve(question, allowed, lang) {
+  allowed = allowed.filter(document => document.kind !== 'demo_script');
   const normalized = normalize(question);
   const tokens = normalized.match(/[\p{L}\p{N}]{3,}/gu)?.filter((token) => !stopWords.has(token)) || [];
   const scores = new Map(allowed.map((item) => [item.id, 0]));
@@ -106,54 +108,67 @@ function ownBalance(question, user, lang, allowed) {
       `В вашем личном кабинете: остаток — ${balance} дн., зарезервировано — ${reserved} дн., доступно для новой заявки — ${available} дн. Это демонстрационные данные. Дни резервируются при подаче и списываются после окончательного подтверждения HR.`,
       `Жеке кабинетіңізде: қалдық — ${balance} күн, резерв — ${reserved} күн, жаңа өтініш үшін қолжетімді — ${available} күн. Бұл демонстрациялық деректер. Күндер өтініш бергенде резервтеліп, HR соңғы растауынан кейін шегеріледі.`,
       `Your dashboard: balance ${balance} days, reserved ${reserved} days, available for a new request ${available} days. These are demonstration records. Days are reserved on submission and deducted after final HR approval.`),
-    sources: [{ id: document.id, title: document.title[lang], excerpt: document.content[lang] }], mode: 'knowledge_search',
+    sources: [knowledgeSource(document, lang)], mode: 'knowledge_search',
   };
 }
 
 function sentencesFrom(documents, lang) {
   return documents.flatMap((document) => (document.content[lang].match(/[^.!?]+[.!?]+|[^.!?]+$/gu) || [])
-    .map((text) => ({ text: text.trim(), document })).filter(({ text }) => text)).slice(0, 8)
+    .map((text) => ({ text: text.trim(), document })).filter(({ text }) => text))
     .map((sentence, index) => ({ ...sentence, number: index + 1 }));
 }
 
-async function modelSelect(question, sentences) {
+// Shared with the isolated evaluation service. The raw output is the actual
+// selector number, never a server-composed answer disguised as model JSON.
+export async function selectEvidence(question, sentences) {
+  const started = performance.now();
+  const result = { selected: null, raw_model_output: null, model_context_ids: [], generation_ms: null };
   const config = await runtime();
-  if (!config || generating) return null;
+  if (!config || generating) return { ...result, error: generating ? 'model_busy' : 'model_unavailable' };
   generating = true;
   try {
-    // This older laptop processes ~2 prompt tokens/second. Present two tiny
-    // previews; the local model selects a fragment, and the server renders
-    // that fragment's complete original sentences, never model-written policy.
-    const candidates = [];
-    for (let index = 0; index < sentences.length && candidates.length < 3; index += 2) {
-      const group = sentences.slice(index, index + 2);
-      candidates.push({ group, preview: group.map(({ text }) => text).join(' ').slice(0, 35) });
+    // Preserve complete evidence and document boundaries. A 35-character
+    // preview can hide the very fact needed to answer or correctly abstain.
+    const byDocument = new Map();
+    for (const sentence of sentences) {
+      const id = sentence.document.id;
+      if (!byDocument.has(id)) byDocument.set(id, []);
+      byDocument.get(id).push(sentence);
     }
-    const stems = (normalize(question).match(/[\p{L}]{4,}/gu) || []).filter((word) => !stopWords.has(word)).map((word) => word.slice(0, 5));
-    const choices = candidates.map((candidate, index) => ({ ...candidate, index,
-      relevance: stems.reduce((sum, stem) => sum + (normalize(candidate.group.map(({ text }) => text).join(' ')).includes(stem) ? 1 : 0), 0),
-    })).sort((a, b) => b.relevance - a.relevance || a.index - b.index).slice(0, 2);
+    const choices = [...byDocument.values()].slice(0, 2).map(group => ({
+      group, preview: group.map(({ text }) => text).join(' '),
+    }));
+    result.model_context_ids = [...new Set(choices.flatMap(({ group }) => group.map(({ document }) => document.id)))];
+    // Reserve headroom within the 10-second demo target for API/renderer work.
+    // A timeout uses the explicitly labelled knowledge-search fallback below.
     const response = await fetch(`${config.url}/v1/chat/completions`, {
-      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
+      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.key}` },
       body: JSON.stringify({
-        model: 'asar-hr-local', temperature: 0, max_tokens: 3, stream: false,
+        model: 'asar-hr-local', temperature: 0, max_tokens: 16, stream: false,
         chat_template_kwargs: { enable_thinking: false },
         messages: [
-          { role: 'system', content: 'Select evidence number. None: 0.' },
-          { role: 'user', content: `${question.slice(0, 80)}\n${choices.map(({ preview }, index) => `${index + 1}: ${preview}`).join('\n')}` },
+          { role: 'system', content: 'Выбери номер источника, который содержит ответ на вопрос. Используй только приведённые тексты. Если ответа в них нет, верни 0. Верни только одно число: 0, 1 или 2.' },
+          { role: 'user', content: `${question}\n${choices.map(({ preview }, index) => `${index + 1}: ${preview}`).join('\n')}` },
         ],
         response_format: { type: 'json_object', schema: { type: 'integer', enum: [0, ...choices.map((_, index) => index + 1)] } },
       }),
     });
-    if (!response.ok) return null;
+    if (!response.ok) return { ...result, error: 'model_http_error' };
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
-    if (typeof content !== 'string' || content.length > 100) return null;
+    result.raw_model_output = typeof content === 'string' ? content : null;
+    result.model_request_ms = performance.now() - started;
+    // A buffered HTTP duration includes prefill and transport. Only report
+    // generation time when the engine actually provides that measurement.
+    if (Number.isFinite(data.timings?.predicted_ms) && data.timings.predicted_ms >= 0) result.generation_ms = data.timings.predicted_ms;
+    if (data.usage && Number.isInteger(data.usage.prompt_tokens)) result.input_tokens = data.usage.prompt_tokens;
+    if (data.usage && Number.isInteger(data.usage.completion_tokens)) result.output_tokens = data.usage.completion_tokens;
+    if (typeof content !== 'string' || content.length > 100) return { ...result, error: 'invalid_model_output' };
     const parsed = JSON.parse(content);
-    if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return null;
-    return parsed === 0 ? [] : choices[parsed - 1].group;
-  } catch { return null; }
+    if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return { ...result, error: 'invalid_model_output' };
+    return { ...result, selected: parsed === 0 ? [] : choices[parsed - 1].group };
+  } catch (error) { return { ...result, error: error instanceof SyntaxError ? 'invalid_model_output' : 'model_connection_error' }; }
   finally { generating = false; }
 }
 
@@ -168,12 +183,18 @@ export async function answerQuestion({ question, lang: inputLang, user } = {}) {
   if (/(?:компенсац|больничн|беремен|декрет|увольнен|свадьб|бракосочет|похорон|донор|аванс|страхов|учебн[\p{L}\s]*отпуск|сколько.*(?:положен|в\s+год)|по\s+закону|sick\s+leave|maternity|dismissal|compensation|annual\s+entitlement|wedding|bereave|insurance|salary\s+advance|ауру|өтемақы)/u.test(normalized)) return refuse(lang);
   // Access filtering happens before retrieval, scoring and model invocation.
   const allowed = knowledgeForRole(user.role);
+  // A rehearsed demo quote is intentionally distinct from model inference.
+  // Only this complete RU question matches; appended instructions do not.
+  if (lang === 'ru' && normalized.replace(/[?!.]+$/u, '').trim() === 'как оформить отпуск') {
+    const document = allowed.find(item => item.id === 'demo-leave-walkthrough');
+    if (document) return { answer: document.content[lang], sources: [knowledgeSource(document, lang)], mode: 'demo_quote' };
+  }
   const balance = ownBalance(clean, user, lang, allowed);
   if (balance) return balance;
   const documents = retrieve(clean, allowed, lang);
   if (!documents.length) return refuse(lang);
   const sentences = sentencesFrom(documents, lang);
-  const selected = await modelSelect(clean, sentences);
+  const { selected } = await selectEvidence(clean, sentences);
   if (selected?.length === 0) return refuse(lang);
   const mode = selected ? 'local_model' : 'knowledge_search';
   // Output is rendered only from original source text. The model chooses
@@ -182,7 +203,7 @@ export async function answerQuestion({ question, lang: inputLang, user } = {}) {
   const sourceIds = new Set(result.map(({ document }) => document.id));
   return {
     answer: `${local(lang, 'По демонстрационным правилам:', 'Демонстрациялық ережелер бойынша:', 'According to the demonstration policies:')}\n\n${result.map(({ text }) => text).join(' ')}`.slice(0, 3500),
-    sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => ({ id: item.id, title: item.title[lang], excerpt: item.content[lang] })),
+    sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => knowledgeSource(item, lang)),
     mode,
   };
 }

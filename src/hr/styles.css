@@ -788,3 +788,21 @@ button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
   .hr-view-enter, .hr-chat-message, .hr-modal, .hr-toast, .hr-search-results { animation: none !important; }
   .hr-app .hr-button, .hr-nav-item, .hr-icon-button, .hr-profile-button, .hr-brand-home, .hr-prompt-list button { transform: none !important; }
 }
+
+/* Prototype integration overview uses the same theme tokens as the HR shell. */
+.hr-integration-notice { display: flex; gap: 12px; align-items: center; padding: 16px; margin-bottom: 20px !important; background: var(--hr-accent-soft); border-radius: 12px; color: var(--hr-text-secondary); }
+.hr-integration-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.hr-integration-card { background: var(--hr-surface); border: 1px solid var(--hr-border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+.hr-integration-card header { display: flex; gap: 12px; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+.hr-integration-card h2 { font-size: 21px; }
+.hr-integration-card p { color: var(--hr-text-secondary); line-height: 1.7; }
+.hr-integration-card .hr-button { white-space: normal; }
+.hr-integration-select { display: grid; gap: 8px; width: 100%; }
+.hr-integration-select select { padding: 12px; border-radius: 8px; background: var(--hr-surface-soft); color: var(--hr-text); border: 1px solid var(--hr-border); width: 100%; min-width: 0; }
+.hr-integration-people { list-style: none; padding: 0; margin: 14px 0 0; }
+.hr-integration-people li { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--hr-border); }
+.hr-integration-people span { display: block; color: var(--hr-muted); font-size: 12px; }
+.hr-integration-document { display: grid; gap: 10px; width: 100%; }
+.hr-integration-document code { font-size: 11px; overflow-wrap: anywhere; color: var(--hr-muted); }
+.hr-integration-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 1050px) { .hr-integration-grid { grid-template-columns: 1fr; } }

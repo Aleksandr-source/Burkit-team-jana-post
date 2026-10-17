@@ -1,8 +1,6 @@
 {
-  "name": "Asar",
-  "description": "Minimalist Kanban task manager for agile teams with project-based isolation and invitation-only access.",
-  "requestFramePermissions": [
-    "microphone"
-  ],
+  "name": "JanaMen",
+  "description": "HR workspace with employee profiles, leave approvals, Jana Academy and a local HR assistant.",
+  "requestFramePermissions": [],
   "majorCapabilities": []
 }

@@ -1,0 +1,48 @@
+{
+  "candidate_id": "qwen3.5-0.8b-q4_0-cpu-low-selector",
+  "base_model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+  "immutable_revision": "9447f74101aeb4e93621884dfa36ee8effb8831b",
+  "total_loaded_parameters": null,
+  "language_model_parameters": null,
+  "adapter_parameters": null,
+  "artifact_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "training_state": "original",
+  "serving_format": "GGUF",
+  "weight_precision": "Q4_0",
+  "compute_dtype": null,
+  "quantization_method": "GGUF Q4_0",
+  "tokenizer_revision": null,
+  "chat_template_sha256": null,
+  "prompt_sha256": null,
+  "context_tokens": 1024,
+  "max_output_tokens": 3,
+  "do_sample": false,
+  "temperature": 0,
+  "top_p": null,
+  "seed": null,
+  "thinking_mode": "disabled",
+  "retriever_id": "fixture-lexical-top3+product-evidence-selector",
+  "top_k": 3,
+  "response_cache_enabled": false,
+  "prefix_cache_enabled": null,
+  "hardware": {
+    "gpu": null,
+    "vram_gib": null,
+    "cpu": "AMD A6-4400M APU with Radeon(tm) HD Graphics",
+    "ram_gib": 7.23
+  },
+  "software": {
+    "os": "linux 7.0.12-zen1-1-zen x64",
+    "driver": null,
+    "cuda": null,
+    "engine": "llama.cpp CPU",
+    "engine_version": "b8936 / 2dd84169d1225c2a56ddd1902d718f4514d7536a"
+  },
+  "measured": {
+    "gpu_process_peak_gib": null,
+    "gpu_allocated_peak_gib": null,
+    "rss_peak_gib": null,
+    "load_s": null
+  },
+  "measurement_notes": "Configuration recorded on 2026-10-17. Native launch: one CPU thread, context1024, batch64/32, one slot, GPU layers0. Local systemd unit: MemoryMax900MiB, CPUQuota80%. Selector max_output_tokens3 overrides runtime n_predict32. One product smoke request returned local_model with leave-submit citation in15s; not a benchmark or quality result. No full128-case run, no model training. Parameter counts, per-process RSS/GPU peaks, TTFT, chat-template hash and prefix-cache behavior remain unmeasured. The adapter selects evidence; its raw output does not match the pack generative JSON contract."
+}

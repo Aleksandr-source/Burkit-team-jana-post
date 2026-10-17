@@ -1,0 +1,128 @@
+{"case_id": "leave.01.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru"]}
+{"case_id": "leave.01.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk"]}
+{"case_id": "leave.02.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru"]}
+{"case_id": "leave.02.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk"]}
+{"case_id": "leave.03.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.track.ru"]}
+{"case_id": "leave.03.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.track.kk"]}
+{"case_id": "leave.04.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.states.ru"]}
+{"case_id": "leave.04.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.states.kk"]}
+{"case_id": "leave.05.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.cancel.ru"]}
+{"case_id": "leave.05.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.cancel.kk"]}
+{"case_id": "leave.06.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.cancel.ru"]}
+{"case_id": "leave.06.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.cancel.kk"]}
+{"case_id": "leave.07.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.track.ru"]}
+{"case_id": "leave.07.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.track.kk"]}
+{"case_id": "leave.08.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.balance.ru"]}
+{"case_id": "leave.08.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.balance.kk"]}
+{"case_id": "leave.09.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": []}
+{"case_id": "leave.09.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": []}
+{"case_id": "leave.10.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.ru"]}
+{"case_id": "leave.10.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.kk"]}
+{"case_id": "leave.11.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru", "leave.cancel.ru"]}
+{"case_id": "leave.11.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk", "leave.cancel.kk"]}
+{"case_id": "leave.12.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.ru", "leave.create.ru"]}
+{"case_id": "leave.12.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.kk", "leave.create.kk"]}
+{"case_id": "leave.13.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.private.ru"]}
+{"case_id": "leave.13.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.private.kk"]}
+{"case_id": "leave.14.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru", "common.scope.ru"]}
+{"case_id": "leave.14.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk", "common.scope.kk"]}
+{"case_id": "leave.15.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru", "leave.injection.ru"]}
+{"case_id": "leave.15.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk", "leave.injection.kk"]}
+{"case_id": "leave.16.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.ru", "leave.policy.v2.ru"]}
+{"case_id": "leave.16.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.kk", "leave.policy.v2.kk"]}
+{"case_id": "leave.17.ru", "as_of_date": "2026-11-01", "candidate_pool_ids": ["leave.policy.v1.ru", "leave.policy.v2.ru"]}
+{"case_id": "leave.17.kk", "as_of_date": "2026-11-01", "candidate_pool_ids": ["leave.policy.v1.kk", "leave.policy.v2.kk"]}
+{"case_id": "leave.18.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.ru"]}
+{"case_id": "leave.18.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.kk"]}
+{"case_id": "leave.19.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.ru"]}
+{"case_id": "leave.19.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.kk"]}
+{"case_id": "leave.20.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.notifications.ru"]}
+{"case_id": "leave.20.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.notifications.kk"]}
+{"case_id": "leave.21.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru", "leave.track.ru"]}
+{"case_id": "leave.21.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk", "leave.track.kk"]}
+{"case_id": "leave.22.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.states.ru"]}
+{"case_id": "leave.22.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.states.kk"]}
+{"case_id": "leave.23.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.balance.ru"]}
+{"case_id": "leave.23.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.balance.kk"]}
+{"case_id": "leave.24.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk"]}
+{"case_id": "leave.24.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru"]}
+{"case_id": "leave.25.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.ru"]}
+{"case_id": "leave.25.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.create.kk"]}
+{"case_id": "leave.26.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.notifications.ru"]}
+{"case_id": "leave.26.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.notifications.kk"]}
+{"case_id": "leave.27.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.ru", "leave.conflict.ru"]}
+{"case_id": "leave.27.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.kk", "leave.conflict.kk"]}
+{"case_id": "leave.28.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.revoked.ru"]}
+{"case_id": "leave.28.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.revoked.kk"]}
+{"case_id": "leave.29.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.long.ru", "leave.cancel.ru"]}
+{"case_id": "leave.29.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.long.kk", "leave.cancel.kk"]}
+{"case_id": "leave.30.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.team_a.ru"]}
+{"case_id": "leave.30.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.team_a.kk"]}
+{"case_id": "leave.31.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.team_a.ru"]}
+{"case_id": "leave.31.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.team_a.kk"]}
+{"case_id": "leave.32.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.ru"]}
+{"case_id": "leave.32.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["leave.policy.v1.kk"]}
+{"case_id": "advance.01.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru"]}
+{"case_id": "advance.01.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk"]}
+{"case_id": "advance.02.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru"]}
+{"case_id": "advance.02.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk"]}
+{"case_id": "advance.03.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.track.ru"]}
+{"case_id": "advance.03.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.track.kk"]}
+{"case_id": "advance.04.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.states.ru"]}
+{"case_id": "advance.04.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.states.kk"]}
+{"case_id": "advance.05.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.cancel.ru"]}
+{"case_id": "advance.05.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.cancel.kk"]}
+{"case_id": "advance.06.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.cancel.ru"]}
+{"case_id": "advance.06.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.cancel.kk"]}
+{"case_id": "advance.07.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.track.ru"]}
+{"case_id": "advance.07.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.track.kk"]}
+{"case_id": "advance.08.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.payment.ru"]}
+{"case_id": "advance.08.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.payment.kk"]}
+{"case_id": "advance.09.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": []}
+{"case_id": "advance.09.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": []}
+{"case_id": "advance.10.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.ru"]}
+{"case_id": "advance.10.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.kk"]}
+{"case_id": "advance.11.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru", "advance.cancel.ru"]}
+{"case_id": "advance.11.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk", "advance.cancel.kk"]}
+{"case_id": "advance.12.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.ru", "advance.create.ru"]}
+{"case_id": "advance.12.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["common.scope.kk", "advance.create.kk"]}
+{"case_id": "advance.13.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.private.ru"]}
+{"case_id": "advance.13.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.private.kk"]}
+{"case_id": "advance.14.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru", "common.scope.ru"]}
+{"case_id": "advance.14.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk", "common.scope.kk"]}
+{"case_id": "advance.15.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru", "advance.injection.ru"]}
+{"case_id": "advance.15.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk", "advance.injection.kk"]}
+{"case_id": "advance.16.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.ru", "advance.policy.v2.ru"]}
+{"case_id": "advance.16.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.kk", "advance.policy.v2.kk"]}
+{"case_id": "advance.17.ru", "as_of_date": "2026-11-01", "candidate_pool_ids": ["advance.policy.v1.ru", "advance.policy.v2.ru"]}
+{"case_id": "advance.17.kk", "as_of_date": "2026-11-01", "candidate_pool_ids": ["advance.policy.v1.kk", "advance.policy.v2.kk"]}
+{"case_id": "advance.18.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.ru"]}
+{"case_id": "advance.18.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.kk"]}
+{"case_id": "advance.19.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.ru"]}
+{"case_id": "advance.19.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.kk"]}
+{"case_id": "advance.20.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.notifications.ru"]}
+{"case_id": "advance.20.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.notifications.kk"]}
+{"case_id": "advance.21.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru", "advance.track.ru"]}
+{"case_id": "advance.21.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk", "advance.track.kk"]}
+{"case_id": "advance.22.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.states.ru"]}
+{"case_id": "advance.22.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.states.kk"]}
+{"case_id": "advance.23.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.payment.ru"]}
+{"case_id": "advance.23.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.payment.kk"]}
+{"case_id": "advance.24.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk"]}
+{"case_id": "advance.24.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru"]}
+{"case_id": "advance.25.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.ru"]}
+{"case_id": "advance.25.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.create.kk"]}
+{"case_id": "advance.26.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.notifications.ru"]}
+{"case_id": "advance.26.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.notifications.kk"]}
+{"case_id": "advance.27.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.ru", "advance.conflict.ru"]}
+{"case_id": "advance.27.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.kk", "advance.conflict.kk"]}
+{"case_id": "advance.28.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.revoked.ru"]}
+{"case_id": "advance.28.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.revoked.kk"]}
+{"case_id": "advance.29.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.long.ru", "advance.cancel.ru"]}
+{"case_id": "advance.29.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.long.kk", "advance.cancel.kk"]}
+{"case_id": "advance.30.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.team_a.ru"]}
+{"case_id": "advance.30.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.team_a.kk"]}
+{"case_id": "advance.31.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.team_a.ru"]}
+{"case_id": "advance.31.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.team_a.kk"]}
+{"case_id": "advance.32.ru", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.ru"]}
+{"case_id": "advance.32.kk", "as_of_date": "2026-10-17", "candidate_pool_ids": ["advance.policy.v1.kk"]}
