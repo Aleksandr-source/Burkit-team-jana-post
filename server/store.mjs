@@ -70,6 +70,10 @@ export function openStore(dataDir, options = {}) {
         const notification={id:uid('n'),type:'welcome',title:{ru:'Добро пожаловать в JanaMen',kk:'JanaMen платформасына қош келдіңіз',en:'Welcome to JanaMen'},body:{ru:'Профиль, заявки и обучение — теперь в одном месте.',kk:'Профиль, өтінімдер және оқу — бір жерде.',en:'Your profile, requests and learning, all in one place.'},readAt:null,createdAt:iso(),view:'home'};
         db.prepare('INSERT INTO notifications VALUES (?,?,?)').run(notification.id,person.id,JSON.stringify(notification));
       }
+      for (const enrollment of demoEnrollments) {
+        const course = demoCourses.find(item => item.id === enrollment.courseId);
+        notify(db, enrollment.userId, 'course_assigned', { ru: 'Вам назначен курс', kk: 'Сізге курс тағайындалды', en: 'New course assigned' }, course.title, 'academy', course.id);
+      }
     });
     const credentials = demoPeople.map(p => `${p.role.padEnd(10)} ${p.email.padEnd(25)} ${password}`).join('\n');
     writeFileSync(join(dataDir,'demo-accounts.txt'),`JANAMEN — только вымышленные демонстрационные аккаунты\n${credentials}\n`,{mode:0o600});

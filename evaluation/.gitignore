@@ -1,7 +1,7 @@
 .runtime/
 results/
 **/__pycache__/
-# These two files are immutable inputs covered by the imported pack manifest,
-# not runtime logs. Override the repository-wide *.log rule for this pair only.
-!vendor/janamen-eval-v1.0/reports/check-1.log
-!vendor/janamen-eval-v1.0/reports/check-2.log
+demo-qwen06/*/
+
+# Generated test databases and accounts are not experiment results.
+runs/**/http-data/

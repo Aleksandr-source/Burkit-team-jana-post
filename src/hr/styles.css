@@ -788,3 +788,64 @@ button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
   .hr-view-enter, .hr-chat-message, .hr-modal, .hr-toast, .hr-search-results { animation: none !important; }
   .hr-app .hr-button, .hr-nav-item, .hr-icon-button, .hr-profile-button, .hr-brand-home, .hr-prompt-list button { transform: none !important; }
 }
+
+/* Prototype integration overview uses the same theme tokens as the HR shell. */
+.hr-integration-notice { display: flex; gap: 12px; align-items: center; padding: 16px; margin-bottom: 20px !important; background: var(--hr-accent-soft); border-radius: 12px; color: var(--hr-text-secondary); }
+.hr-integration-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.hr-integration-card { background: var(--hr-surface); border: 1px solid var(--hr-border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+.hr-integration-card header { display: flex; gap: 12px; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+.hr-integration-card h2 { font-size: 21px; }
+.hr-integration-card p { color: var(--hr-text-secondary); line-height: 1.7; }
+.hr-integration-card .hr-button { white-space: normal; }
+.hr-integration-select { display: grid; gap: 8px; width: 100%; }
+.hr-integration-select select { padding: 12px; border-radius: 8px; background: var(--hr-surface-soft); color: var(--hr-text); border: 1px solid var(--hr-border); width: 100%; min-width: 0; }
+.hr-integration-people { list-style: none; padding: 0; margin: 14px 0 0; }
+.hr-integration-people li { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--hr-border); }
+.hr-integration-people span { display: block; color: var(--hr-muted); font-size: 12px; }
+.hr-integration-document { display: grid; gap: 10px; width: 100%; }
+.hr-integration-document code { font-size: 11px; overflow-wrap: anywhere; color: var(--hr-muted); }
+.hr-integration-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 1050px) { .hr-integration-grid { grid-template-columns: 1fr; } }
+
+.hr-profile-leave { padding: 20px; border-radius: 13px; background: var(--hr-accent-soft); }
+.hr-profile-leave h4 { display: flex; align-items: center; gap: 9px; font-size: var(--hr-fs-body); color: var(--hr-accent-ink); margin-bottom: 18px; }
+.hr-profile-leave dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: 0; }
+.hr-profile-leave dt { font-size: var(--hr-fs-label); color: var(--hr-text-secondary); margin-bottom: 7px; }
+.hr-profile-leave dd { margin: 0; font-size: calc(25px * var(--hr-text-scale)); font-weight: 700; color: var(--hr-text); }
+.hr-profile-leave dd small { font-size: var(--hr-fs-label); font-weight: 500; color: var(--hr-muted); }
+.hr-profile-leave .hr-profile-leave-available dd { color: var(--hr-accent-ink); }
+.hr-profile-leave p { margin-top: 18px; font-size: var(--hr-fs-sm); line-height: 1.7; color: var(--hr-text-secondary); max-width: 800px; }
+.hr-personal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 22px; margin-top: 22px; }
+.hr-personal-grid > * { min-width: 0; }
+.hr-personal-notifications { margin-top: 22px; overflow: hidden; }
+.hr-personal-grid > .hr-personal-notifications { margin-top: 0; }
+.hr-personal-grid .hr-panel-heading { gap: 12px; flex-wrap: wrap; }
+.hr-personal-grid .hr-panel-heading h2, .hr-personal-notifications .hr-panel-heading h2 { display: flex; align-items: center; gap: 9px; }
+.hr-personal-count { display: inline-flex; align-items: center; justify-content: center; padding: 3px 7px; min-width: 23px; border-radius: 7px; color: var(--hr-accent-ink); background: var(--hr-accent-soft); font-size: var(--hr-fs-sm); }
+.hr-personal-caption { padding: 0 24px 18px; font-size: var(--hr-fs-label); color: var(--hr-muted); }
+.hr-personal-course-list { padding: 0 24px; }
+.hr-personal-course { padding: 20px 0; border-top: 1px solid var(--hr-line); }
+.hr-personal-course-title { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.hr-personal-course-title h3 { font-size: var(--hr-fs-md); color: var(--hr-text); line-height: 1.5; margin: 0 0 5px; overflow-wrap: anywhere; }
+.hr-personal-course-title > div { min-width: 0; }
+.hr-personal-course-title > div > span { font-size: var(--hr-fs-sm); color: var(--hr-muted); }
+.hr-personal-course-action { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 17px; }
+.hr-personal-course-action > span { font-size: var(--hr-fs-sm); color: var(--hr-muted); }
+.hr-notification-row { display: flex; align-items: center; border-bottom: 1px solid var(--hr-line); }
+.hr-notification-row:last-child { border-bottom: 0; }
+.hr-notification-row.unread { background: var(--hr-accent-soft); }
+.hr-notification-row .hr-notification-item { flex: 1; min-width: 0; border-bottom: 0; }
+.hr-notification-copy { min-width: 0; overflow-wrap: anywhere; }
+.hr-notification-row > .hr-notification-read { flex-shrink: 0; margin-right: 12px; }
+.hr-personal-grid .hr-notification-item { padding: 20px; gap: 12px; }
+.hr-personal-grid .hr-notification-icon { flex-shrink: 0; width: 36px; height: 36px; }
+@media (max-width: 1180px) { .hr-personal-grid { grid-template-columns: 1fr; } }
+@media (max-width: 580px) {
+  .hr-profile-leave { padding: 16px; }
+  .hr-profile-leave dl { gap: 12px; }
+  .hr-profile-leave dt { font-size: var(--hr-fs-sm); }
+  .hr-profile-leave dd { font-size: calc(21px * var(--hr-text-scale)); }
+  .hr-personal-caption { padding-left: 20px; padding-right: 20px; }
+  .hr-personal-course-list { padding: 0 20px; }
+  .hr-notification-row > .hr-notification-read { margin-right: 6px; }
+}

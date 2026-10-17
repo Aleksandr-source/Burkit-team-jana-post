@@ -1,0 +1,9 @@
+{
+  "accepted_winner": null,
+  "status": "NO_CANDIDATE_PASSED",
+  "most_promising_for_further_experiments": "Qwen3-1.7B",
+  "reason": "Better Russian performance does not satisfy bilingual acceptance: new RU 80.6%, KK 36.1%, no correct KK unknown-fact refusals; two measured calls exceeded 10 seconds.",
+  "production_recommendation": false,
+  "cleanup": "NOT_TRIGGERED_NO_ACCEPTED_WINNER",
+  "source_files_modified": false
+}

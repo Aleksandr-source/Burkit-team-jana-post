@@ -33,6 +33,7 @@ const groups = [
 ];
 const stopWords = new Set(['как', 'что', 'для', 'мне', 'мой', 'мои', 'меня', 'это', 'the', 'how', 'and', 'can', 'with', 'you', 'are', 'мен', 'үшін', 'бұл', 'қалай']);
 function retrieve(question, allowed, lang) {
+  allowed = allowed.filter(document => document.kind !== 'demo_script');
   const normalized = normalize(question);
   const tokens = normalized.match(/[\p{L}\p{N}]{3,}/gu)?.filter((token) => !stopWords.has(token)) || [];
   const scores = new Map(allowed.map((item) => [item.id, 0]));
@@ -79,7 +80,7 @@ function ownBalance(question, user, lang, allowed) {
 
 function sentencesFrom(documents, lang) {
   return documents.flatMap((document) => (document.content[lang].match(/[^.!?]+[.!?]+|[^.!?]+$/gu) || [])
-    .map((text) => ({ text: text.trim(), document })).filter(({ text }) => text)).slice(0, 8)
+    .map((text) => ({ text: text.trim(), document })).filter(({ text }) => text))
     .map((sentence, index) => ({ ...sentence, number: index + 1 }));
 }
 
@@ -97,18 +98,17 @@ export function createAssistant({ modelProvider = localModelProvider } = {}) {
   async function selectEvidence(question, sentences) {
     const result = { selected: null, raw_model_output: null, model_context_ids: [], generation_ms: null };
     try {
-      // This older laptop processes ~2 prompt tokens/second. Present two tiny
-      // previews; the local model selects a fragment, and the server renders
-      // that fragment's complete original sentences, never model-written policy.
-      const candidates = [];
-      for (let index = 0; index < sentences.length && candidates.length < 3; index += 2) {
-        const group = sentences.slice(index, index + 2);
-        candidates.push({ group, preview: group.map(({ text }) => text).join(' ').slice(0, 35) });
+      // Keep complete sources together so selection cannot lose the fact
+      // needed to answer or correctly refuse the question.
+      const byDocument = new Map();
+      for (const sentence of sentences) {
+        const id = sentence.document.id;
+        if (!byDocument.has(id)) byDocument.set(id, []);
+        byDocument.get(id).push(sentence);
       }
-      const stems = (normalize(question).match(/[\p{L}]{4,}/gu) || []).filter((word) => !stopWords.has(word)).map((word) => word.slice(0, 5));
-      const choices = candidates.map((candidate, index) => ({ ...candidate, index,
-        relevance: stems.reduce((sum, stem) => sum + (normalize(candidate.group.map(({ text }) => text).join(' ')).includes(stem) ? 1 : 0), 0),
-      })).sort((a, b) => b.relevance - a.relevance || a.index - b.index).slice(0, 2);
+      const choices = [...byDocument.values()].slice(0, 2).map(group => ({
+        group, preview: group.map(({ text }) => text).join(' '),
+      }));
       result.model_context_ids = [...new Set(choices.flatMap(({ group }) => group.map(({ document }) => document.id)))];
       const output = await modelProvider.select({ question, previews: choices.map(({ preview }) => preview) });
       const content = output?.raw_model_output;
@@ -139,6 +139,12 @@ export function createAssistant({ modelProvider = localModelProvider } = {}) {
     if (/(?:компенсац|больничн|беремен|декрет|увольнен|свадьб|бракосочет|похорон|донор|аванс|страхов|учебн[\p{L}\s]*отпуск|сколько.*(?:положен|в\s+год)|по\s+закону|sick\s+leave|maternity|dismissal|compensation|annual\s+entitlement|wedding|bereave|insurance|salary\s+advance|ауру|өтемақы)/u.test(normalized)) return refuse(lang);
     // Access filtering happens before retrieval, scoring and model invocation.
     const allowed = knowledgeForRole(user.role);
+    // A rehearsed demo quote is intentionally distinct from model inference.
+    // Only this complete RU question matches; appended instructions do not.
+    if (lang === 'ru' && normalized.replace(/[?!.]+$/u, '').trim() === 'как оформить отпуск') {
+      const document = allowed.find(item => item.id === 'demo-leave-walkthrough');
+      if (document) return { answer: document.content[lang], sources: [knowledgeSource(document, lang)], mode: 'demo_quote' };
+    }
     const balance = ownBalance(clean, user, lang, allowed);
     if (balance) return balance;
     const documents = retrieve(clean, allowed, lang);

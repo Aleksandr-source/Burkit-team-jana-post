@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Explicit, one-time installation. No downloaded shell/install scripts are run.
+import { AI_MODEL } from './ai-model.mjs';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream, existsSync } from 'node:fs';
@@ -9,13 +10,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const AI_DIRECTORY = fileURLToPath(new URL('../.local-ai/', import.meta.url));
-export const AI_MODEL = {
-  name: 'Qwen3.5-0.8B-Q4_0.gguf',
-  revision: '9447f74101aeb4e93621884dfa36ee8effb8831b',
-  sha256: '57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf',
-  license: 'Apache-2.0',
-};
-AI_MODEL.url = `https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/${AI_MODEL.revision}/${AI_MODEL.name}`;
+export { AI_MODEL } from './ai-model.mjs';
 export const LLAMA_COMMIT = '2dd84169d1225c2a56ddd1902d718f4514d7536a';
 export const MODEL_PATH = join(AI_DIRECTORY, 'models', AI_MODEL.name);
 export const SOURCE_PATH = join(AI_DIRECTORY, 'llama.cpp');
@@ -96,14 +91,14 @@ async function installModel() {
     if (await sha256(MODEL_PATH) === AI_MODEL.sha256) {
       console.log('[AI] The verified model is already installed.'); return;
     }
-    throw new Error(`Existing model checksum differs from the pinned official file: ${MODEL_PATH}. Move that file aside before retrying.`);
+    throw new Error(`Existing model checksum differs from the pinned GGUF file: ${MODEL_PATH}. Move that file aside before retrying.`);
   }
-  console.log('[AI] Downloading Qwen3.5-0.8B Q4_0 (~563 MB). Internet is needed only for installation.');
+  console.log('[AI] Downloading Qwen3-0.6B Q4_K_M (~484 MB). Internet is needed only for installation.');
   console.log(`[AI] Model: ${AI_MODEL.url}`);
   const temporaryPath = `${MODEL_PATH}.part`;
   // curl only downloads a fixed data file and can resume an interrupted transfer.
   await run(DOWNLOAD_COMMAND, ['--fail', '--location', '--retry', '3', '--retry-delay', '2', '--connect-timeout', '30', '--continue-at', '-', '--output', temporaryPath, AI_MODEL.url]);
-  console.log('[AI] Verifying the official model SHA-256…');
+  console.log('[AI] Verifying the pinned model SHA-256…');
   const digest = await sha256(temporaryPath);
   if (digest !== AI_MODEL.sha256) throw new Error(`Model checksum mismatch: ${digest}. The partial file was retained for inspection; it will not be loaded.`);
   await rename(temporaryPath, MODEL_PATH);
@@ -237,7 +232,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     console.error(`[AI] ${error.message}`);
     console.error(process.platform === 'win32'
       ? '[AI] Use the official Windows CPU archive with all DLLs, PowerShell and curl.exe. If DLL loading fails, install Microsoft Visual C++ Redistributable x64.'
-      : '[AI] On Arch Linux install prerequisites if missing: sudo pacman -S --needed base-devel cmake git curl');
+      : '[AI] Install curl and tar; source builds also require a C++ compiler, CMake and Git.');
     process.exitCode = 1;
   }
 }

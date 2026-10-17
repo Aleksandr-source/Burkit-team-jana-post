@@ -1,0 +1,12 @@
+{
+  "elapsed_ms": 2041.9024790000003,
+  "status": {
+    "ready": true,
+    "engine": "llama.cpp · CPU · local",
+    "model": "Qwen3.5-0.8B · Q4_0"
+  },
+  "threads": 2,
+  "context": 2048,
+  "parallel": 1,
+  "gpu_layers": 0
+}

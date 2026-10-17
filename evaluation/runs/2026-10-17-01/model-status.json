@@ -1,0 +1,20 @@
+{
+  "installation": {
+    "modelInstalled": false,
+    "runtimeInstalled": false,
+    "model": "Qwen3.5-0.8B-Q4_0.gguf",
+    "modelPath": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/models/Qwen3.5-0.8B-Q4_0.gguf",
+    "serverPath": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/runtime-b8936/llama-server",
+    "verified": false,
+    "modelVerified": false,
+    "runtimeVerified": false,
+    "runtimeCommit": "2dd84169d1225c2a56ddd1902d718f4514d7536a",
+    "runtimeMode": "official-prebuilt",
+    "runtimePlatform": "linux-x64"
+  },
+  "runtime": {
+    "ready": false,
+    "engine": "knowledge_search",
+    "model": "Qwen3.5-0.8B · Q4_0"
+  }
+}

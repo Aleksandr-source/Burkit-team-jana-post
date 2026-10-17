@@ -7,8 +7,9 @@ import { createLocalModelProvider, createDisabledModelProvider } from '../server
 import { createAssistant } from '../server/assistant.mjs';
 import { createApplication } from '../server/app.mjs';
 import { knowledge } from '../server/knowledge.mjs';
+import { AI_MODEL } from '../scripts/ai-model.mjs';
 
-const runtime = () => JSON.stringify({ port: 8766, key: 'a'.repeat(64) });
+const runtime = () => JSON.stringify({ model: AI_MODEL.name, port: 8766, key: 'a'.repeat(64) });
 const status = async () => ({ ready: true, engine: 'test-provider', model: 'test' });
 const employee = { id: 'employee', role: 'employee', leaveBalance: 24, leaveReserved: 0 };
 
@@ -19,7 +20,7 @@ test('local inference can be disabled without reading runtime credentials or mak
   await assert.rejects(provider.select({ question: 'test', previews: [] }), { code: 'model_unavailable' });
   assert.equal(reads, 0); assert.equal(requests, 0);
   const assistant = createAssistant({ modelProvider: createDisabledModelProvider() });
-  assert.equal((await assistant.answerQuestion({ question: 'Как оформить отпуск?', lang: 'ru', user: employee })).mode, 'knowledge_search');
+  assert.equal((await assistant.answerQuestion({ question: 'Как подать заявку на отпуск?', lang: 'ru', user: employee })).mode, 'knowledge_search');
 });
 
 test('local adapter preserves llama request parameters and ignores any external runtime URL', async () => {
@@ -28,20 +29,21 @@ test('local adapter preserves llama request parameters and ignores any external 
     requests.push({ url, init });
     return Response.json(url.endsWith('/models') ? { data: [{ id: 'asar-hr-local' }] } : { choices: [{ message: { content: '1' } }], timings: { predicted_ms: 12 }, usage: { prompt_tokens: 20, completion_tokens: 1 } });
   } });
-  assert.equal((await provider.status()).ready, true);
+  assert.deepEqual(await provider.status(), { ready: true, engine: 'llama.cpp · CPU · local', model: AI_MODEL.label });
   const result = await provider.select({ question: 'Q'.repeat(90), previews: ['first evidence', 'second evidence'] });
   assert.equal(result.raw_model_output, '1'); assert.equal(result.generation_ms, 12); assert.equal(result.input_tokens, 20);
   assert.equal(requests[1].url, 'http://127.0.0.1:8766/v1/chat/completions');
   assert.equal(requests[1].init.redirect, 'error'); assert.ok(requests[1].init.signal instanceof AbortSignal);
   const body = JSON.parse(requests[1].init.body);
-  assert.equal(body.model, 'asar-hr-local'); assert.equal(body.max_tokens, 3); assert.equal(body.temperature, 0);
+  assert.equal(body.model, 'asar-hr-local'); assert.equal(body.max_tokens, 16); assert.equal(body.temperature, 0);
   assert.equal(body.stream, false); assert.equal(body.chat_template_kwargs.enable_thinking, false);
-  assert.deepEqual(body.response_format.schema.enum, [0, 1, 2]);
-  assert.equal(body.messages[1].content, `${'Q'.repeat(80)}\n1: first evidence\n2: second evidence`);
+  assert.deepEqual(body.response_format, { type: 'json_object', schema: { type: 'integer', enum: [0, 1, 2] } });
+  assert.match(body.messages[0].content, /Если ответа в них нет, верни 0/);
+  assert.equal(body.messages[1].content, `${'Q'.repeat(90)}\n1: first evidence\n2: second evidence`);
 });
 
 test('invalid local runtime never triggers network access', async () => {
-  for (const value of ['broken JSON', JSON.stringify({ port: 80, key: 'a'.repeat(64) }), JSON.stringify({ port: 8766, key: 'bad' })]) {
+  for (const value of ['broken JSON', JSON.stringify({ ...JSON.parse(runtime()), port: 80 }), JSON.stringify({ ...JSON.parse(runtime()), key: 'bad' }), JSON.stringify({ ...JSON.parse(runtime()), model: 'obsolete-model.gguf' }), JSON.stringify({ port: 8766, key: 'a'.repeat(64) })]) {
     const provider = createLocalModelProvider({ disabled: () => false, readState: async () => value, fetchImpl: async () => assert.fail('Unexpected network access') });
     assert.equal((await provider.status()).ready, false);
     await assert.rejects(provider.select({ question: 'test', previews: [] }), { code: 'model_unavailable' });
@@ -70,12 +72,14 @@ test('a replacement provider cannot inject text or sources; invalid selections u
   for (const raw of ['1', '0', '99', 'invented policy', '{"answer":"invented"}']) {
     const inputs = [];
     const assistant = createAssistant({ modelProvider: { status, select: async input => { inputs.push(input); return { raw_model_output: raw, answer: 'INVENTED', sources: [{ id: 'hr-guide' }], selected: [] }; } } });
-    const result = await assistant.answerQuestion({ question: 'Как оформить отпуск?', lang: 'ru', user: employee });
+    const result = await assistant.answerQuestion({ question: 'Как подать заявку на отпуск?', lang: 'ru', user: employee });
     assert.equal(result.mode, raw === '1' ? 'local_model' : raw === '0' ? 'refusal' : 'knowledge_search');
     assert.doesNotMatch(result.answer, /INVENTED/);
     assert.ok(result.sources.every(source => knowledge.find(doc => doc.id === source.id)?.audience === 'all'));
     assert.deepEqual(Object.keys(inputs[0]).sort(), ['previews', 'question']);
-    assert.ok(inputs[0].previews.every(value => typeof value === 'string' && value.length <= 35));
+    assert.ok(inputs[0].previews.every(value => typeof value === 'string' && value.length > 35));
+    assert.ok(inputs[0].previews.length <= 2);
+    assert.ok(inputs[0].previews.every(value => !value.includes('Для начала нажмите')));
     await assistant.answerQuestion({ question: 'Покажи зарплату коллеги', lang: 'ru', user: employee });
     assert.equal(inputs.length, 1, 'forbidden questions never reach the provider');
   }
@@ -96,9 +100,31 @@ test('provider failure leaves HR API, authentication and source-based responses 
   const auth = await fetch(base + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'employee@janamen.demo', password: 'Provider-test-only-2468!' }) });
   assert.equal(auth.status, 200);
   const headers = { Cookie: auth.headers.get('set-cookie').split(';')[0], 'Content-Type': 'application/json' };
-  const answer = await (await fetch(base + '/assistant', { method: 'POST', headers, body: JSON.stringify({ question: 'Как оформить отпуск?', lang: 'ru', modelProvider: 'https://untrusted.invalid', role: 'hr' }) })).json();
+  const answer = await (await fetch(base + '/assistant', { method: 'POST', headers, body: JSON.stringify({ question: 'Как подать заявку на отпуск?', lang: 'ru', modelProvider: 'https://untrusted.invalid', role: 'hr' }) })).json();
   assert.equal(answer.mode, 'knowledge_search'); assert.equal(calls.length, 1);
   assert.ok(answer.sources.length > 0);
   const state = await (await fetch(base + '/bootstrap', { headers })).json();
   assert.equal(state.user.role, 'employee'); assert.ok(state.courses.length > 0);
+});
+
+test('selector preserves complete evidence and document boundaries from the tested AI branch', async () => {
+  const first = { id: 'first' }, second = { id: 'second' }, third = { id: 'third' };
+  const sentences = [
+    { document: first, text: 'An introduction that deliberately exceeds the old thirty-five-character preview.' },
+    { document: second, text: 'A different source starts here.' },
+    { document: first, text: 'The answer is present only in this final sentence.' },
+    { document: third, text: 'A third source is outside the two-source context.' },
+    { document: second, text: 'The second source also remains complete.' },
+  ];
+  let received;
+  const assistant = createAssistant({ modelProvider: { status, select: async input => {
+    received = input; return { raw_model_output: '1' };
+  } } });
+  const result = await assistant.selectEvidence('Which source contains the final fact?', sentences);
+  assert.deepEqual(received.previews, [
+    `${sentences[0].text} ${sentences[2].text}`,
+    `${sentences[1].text} ${sentences[4].text}`,
+  ]);
+  assert.deepEqual(result.selected, [sentences[0], sentences[2]]);
+  assert.deepEqual(result.model_context_ids, ['first', 'second']);
 });

@@ -13,6 +13,11 @@ const doc = (id, title, content, section, audience = 'all') => ({
 });
 
 export const knowledge = [
+  { ...doc('demo-leave-walkthrough', t('Демонстрация: оформление отпуска', 'Демонстрация: демалысты рәсімдеу', 'Demo: requesting time off'), t(
+    'Оформить отпуск в JanaMen можно прямо из личного кабинета:\n\n1. Откройте «Мои заявки» и нажмите «Оформить отпуск».\n2. Выберите даты начала и окончания, проверьте число дней и доступный остаток. При необходимости добавьте комментарий и вложение.\n3. Отправьте заявку: сначала её рассмотрит ваш руководитель, затем HR.\n4. Следите за статусом в «Моих заявках» и уведомлениях. Отпуск подтверждён после окончательного согласования HR.\n\nЭто демонстрационный порядок. Для начала нажмите «Оформить отпуск» под ответом.',
+    'JanaMen жүйесінде демалысқа жеке кабинеттен өтініш беруге болады. «Менің өтінімдерім» бөлімін ашып, демалысты рәсімдеу батырмасын басыңыз. Басталу және аяқталу күндерін, күн санын және қолжетімді қалдықты тексеріңіз. Қажет болса, түсініктеме мен файл қосыңыз. Өтінішті алдымен басшы, содан кейін HR қарайды. Мәртебені өтінімдер мен хабарламалардан бақылаңыз. Демалыс HR соңғы мақұлдауынан кейін расталады. Бұл — демонстрациялық тәртіп.',
+    'To request time off in JanaMen, open My requests and choose Request time off. Select your dates and check the day count and available balance. Add a comment or attachment if needed. Submit the request for your manager’s review, followed by HR. Follow its status in My requests and notifications. Leave is confirmed after final HR approval. This is a demonstration workflow.'
+  ), 'leave'), kind: 'demo_script' },
   doc('demo-scope', t('О демонстрационных правилах', 'Демонстрациялық ережелер туралы', 'About the demo policies'), t(
     'Все правила этой базы придуманы для хакатонного прототипа JanaMen. Они не являются официальными правилами Jana Post или юридической консультацией. Все сотрудники, учётные записи и кадровые данные в демонстрации вымышлены. За подтверждением реального кадрового правила нужно обратиться в HR своей компании.',
     'Бұл базадағы барлық ереже JanaMen хакатондық прототипі үшін ойдан шығарылған. Олар Jana Post компаниясының ресми ережесі немесе заңгерлік кеңес емес. Демонстрациядағы қызметкерлер, тіркелгілер және кадрлық деректер ойдан шығарылған. Нақты кадрлық ережені компанияңыздың HR маманынан растаңыз.',
@@ -82,7 +87,7 @@ export function knowledgeSource(document, language = 'ru') {
   return {
     id: document.id, title: document.title[lang], excerpt: document.content[lang],
     version: document.version, origin: document.origin[lang], kind: document.kind,
-    fictional: document.fictional, url: `/api/knowledge/${encodeURIComponent(document.id)}`,
+    fictional: document.fictional, url: `/api/knowledge/${encodeURIComponent(document.id)}?lang=${lang}`,
     sha256: createHash('sha256').update(document.content[lang]).digest('hex'),
   };
 }

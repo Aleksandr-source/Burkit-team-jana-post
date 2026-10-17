@@ -1,7 +1,7 @@
 export type Lang = 'ru' | 'kk' | 'en';
 export type Localized = Record<Lang, string>;
 export type Role = 'employee' | 'manager' | 'hr';
-export type View = 'profile' | 'home' | 'requests' | 'team' | 'academy' | 'assistant' | 'notifications' | 'people';
+export type View = 'profile' | 'home' | 'requests' | 'team' | 'academy' | 'assistant' | 'notifications' | 'people' | 'integrations';
 export interface Person { id: string; name: string; email: string; role: Role; company: string; department: string; position: string; managerId: string | null; managerName?: string | null; phone?: string; employeeNumber?: string; hiredAt: string; leaveBalance: number; leaveReserved: number; }
 export interface HistoryEntry { id: string; actorName: string; action: string; comment: string; at: string; }
 export interface Attachment { id: string; name: string; size: number; mimeType: string; }
@@ -15,4 +15,4 @@ export interface Notification { id: string; type: string; title: Localized; body
 export interface KnowledgeDocument { id: string; title: Localized; content: Localized; section: string; version: string; origin?: Localized; kind?: string; url?: string; sha256?: string; audience: 'all' | 'manager' | 'hr'; }
 export interface AIStatus { ready: boolean; engine: string; model: string; }
 export interface Bootstrap { user: Person; people: Person[]; requests: LeaveRequest[]; courses: Course[]; enrollments: Enrollment[]; notifications: Notification[]; knowledge: KnowledgeDocument[]; ai: AIStatus; }
-export interface AssistantAnswer { answer: string; sources: { id: string; title: string; excerpt: string; version?: string; origin?: string; kind?: string; url?: string; sha256?: string }[]; mode: 'local_model' | 'knowledge_search' | 'refusal'; }
+export interface AssistantAnswer { answer: string; sources: { id: string; title: string; excerpt: string; version?: string; origin?: string; kind?: string; url?: string; sha256?: string }[]; mode: 'demo_quote' | 'local_model' | 'knowledge_search' | 'refusal'; }

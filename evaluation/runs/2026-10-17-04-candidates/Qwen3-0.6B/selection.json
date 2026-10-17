@@ -1,0 +1,54 @@
+{
+  "selected": {
+    "id": "sampled",
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0,
+    "max_tokens": 16,
+    "seed": 42
+  },
+  "ranking": [
+    {
+      "config": {
+        "id": "sampled",
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0,
+        "max_tokens": 16,
+        "seed": 42
+      },
+      "metrics": {
+        "n": 18,
+        "correct": 8,
+        "accuracy": 0.4444444444444444,
+        "ru_accuracy": 0.5555555555555556,
+        "kk_accuracy": 0.3333333333333333,
+        "absent_recall": 0.6666666666666666,
+        "invalid": 0,
+        "p95_ms": 2936.971063999983,
+        "max_ms": 2936.971063999983
+      }
+    },
+    {
+      "config": {
+        "id": "deterministic",
+        "temperature": 0,
+        "max_tokens": 16,
+        "seed": 42
+      },
+      "metrics": {
+        "n": 18,
+        "correct": 5,
+        "accuracy": 0.2777777777777778,
+        "ru_accuracy": 0.3333333333333333,
+        "kk_accuracy": 0.2222222222222222,
+        "absent_recall": 0.6666666666666666,
+        "invalid": 0,
+        "p95_ms": 4044.933454999991,
+        "max_ms": 4044.933454999991
+      }
+    }
+  ]
+}

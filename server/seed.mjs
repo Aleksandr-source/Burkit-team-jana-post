@@ -112,6 +112,7 @@ export const demoRequests = [
 ];
 
 export const demoEnrollments = [
-  { id: 'enrollment-demo-employee', userId: 'employee', userName: 'Алия Сейтова', courseId: 'onboarding', completedLessonIds: [], score: null, passed: false, completedAt: null, assignedAt: instant },
+  { id: 'enrollment-demo-employee', userId: 'employee', userName: 'Алия Сейтова', courseId: 'onboarding', completedLessonIds: ['onboarding-1'], score: null, passed: false, completedAt: null, assignedAt: instant },
+  { id: 'enrollment-demo-hr', userId: 'hr', userName: 'Мадина Ахметова', courseId: 'data-safety', completedLessonIds: ['safety-1'], score: null, passed: false, completedAt: null, assignedAt: instant },
   { id: 'enrollment-demo-outsider', userId: 'outsider', userName: 'Арман Ким', courseId: 'data-safety', completedLessonIds: [], score: null, passed: false, completedAt: null, assignedAt: instant },
 ];

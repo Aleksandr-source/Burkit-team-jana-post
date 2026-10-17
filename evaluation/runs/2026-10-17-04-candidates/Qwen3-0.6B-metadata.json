@@ -1,0 +1,126 @@
+{
+  "_id": "680fec4554f3f8295857ad0b",
+  "id": "ggml-org/Qwen3-0.6B-GGUF",
+  "private": false,
+  "pipeline_tag": "text-generation",
+  "tags": [
+    "gguf",
+    "quantized",
+    "text-generation",
+    "base_model:Qwen/Qwen3-0.6B",
+    "base_model:quantized:Qwen/Qwen3-0.6B",
+    "license:apache-2.0",
+    "endpoints_compatible",
+    "region:us",
+    "conversational"
+  ],
+  "downloads": 41120,
+  "likes": 19,
+  "modelId": "ggml-org/Qwen3-0.6B-GGUF",
+  "author": "ggml-org",
+  "sha": "b5f37287796e5be0ea3dab2e7430873fb3f73e49",
+  "lastModified": "2026-07-16T18:26:52.000Z",
+  "gated": false,
+  "disabled": false,
+  "widgetData": [
+    {
+      "text": "Hi, what can you help me with?"
+    },
+    {
+      "text": "What is 84 * 3 / 2?"
+    },
+    {
+      "text": "Tell me an interesting fact about the universe!"
+    },
+    {
+      "text": "Explain quantum computing in simple terms."
+    }
+  ],
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "license": "apache-2.0",
+    "pipeline_tag": "text-generation",
+    "tags": [
+      "gguf",
+      "quantized"
+    ],
+    "base_model": [
+      "Qwen/Qwen3-0.6B"
+    ]
+  },
+  "gguf": {
+    "total": 751632384,
+    "architecture": "qwen3",
+    "context_length": 40960,
+    "chat_template": "{%- if tools %}\n    {{- '<|im_start|>system\\n' }}\n    {%- if messages[0].role == 'system' %}\n        {{- messages[0].content + '\\n\\n' }}\n    {%- endif %}\n    {{- \"# Tools\\n\\nYou may call one or more functions to assist with the user query.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\\n\\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\": <args-json-object>}\\n</tool_call><|im_end|>\\n\" }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {{- '<|im_start|>system\\n' + messages[0].content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\" and message.content is string and not(message.content.startswith('<tool_response>') and message.content.endswith('</tool_response>')) %}\n        {%- set ns.multi_step_tool = false %}\n        {%- set ns.last_query_index = index %}\n    {%- endif %}\n{%- endfor %}\n{%- for message in messages %}\n    {%- if message.content is string %}\n        {%- set content = message.content %}\n    {%- else %}\n        {%- set content = '' %}\n    {%- endif %}\n    {%- if (message.role == \"user\") or (message.role == \"system\" and not loop.first) %}\n        {{- '<|im_start|>' + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is string %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {%- if loop.last or (not loop.last and reasoning_content) %}\n                {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content.strip('\\n') + '\\n</think>\\n\\n' + content.lstrip('\\n') }}\n            {%- else %}\n                {{- '<|im_start|>' + message.role + '\\n' + content }}\n            {%- endif %}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if (loop.first and content) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' }}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.first or (messages[loop.index0 - 1].role != \"tool\") %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- content }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != \"tool\") %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is false %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- endif %}\n{%- endif %}",
+    "bos_token": "<|endoftext|>",
+    "eos_token": "<|im_end|>",
+    "totalFileSize": 1509347552
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "2f5f4d1d5ba8d1c2b7d401c51d9066027a01515b",
+      "size": 1803
+    },
+    {
+      "rfilename": ".src_sha",
+      "blobId": "827710824e35e1379bb129dae1215085499db51f",
+      "size": 49
+    },
+    {
+      "rfilename": "Qwen3-0.6B-BF16.gguf",
+      "blobId": "a79b0b2b8e1848ec7e8e4087ca3fc89e3736ef94",
+      "size": 1509347552,
+      "lfs": {
+        "sha256": "65a16246f5814dc0587acadcf0328186b17febf6dcaeb1b13efa9243b551d38e",
+        "size": 1509347552,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "Qwen3-0.6B-Q4_0.gguf",
+      "blobId": "a93a9195fadfc2f6e53cc051c106638477abc45b",
+      "size": 428970080,
+      "lfs": {
+        "sha256": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+        "size": 428970080,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen3-0.6B-Q8_0.gguf",
+      "blobId": "af3a37a6fce2a8b41f457b3df9e3d6d5f0f9593b",
+      "size": 804753632,
+      "lfs": {
+        "sha256": "361cc68159042c36ebff7715dc5a2e4612153e88f3e9c9c234820849d6dc9e1d",
+        "size": 804753632,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen3-0.6B-f16.gguf",
+      "blobId": "b79ecf80cae5e47821bee3a9c1e8a4fd2f5c2b07",
+      "size": 1509347424,
+      "lfs": {
+        "sha256": "ab9004daf660cd6a6ba1c07556e74fcceb2b756063ccce3f9c69d3a637b361cc",
+        "size": 1509347424,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "3612070e4418702115ed8c9efa8eab0fc70d8d6a",
+      "size": 390
+    },
+    {
+      "rfilename": "convert.log",
+      "blobId": "cc52c0675350fb71da38acca8648855175989f55",
+      "size": 82679
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2025-04-28T20:59:49.000Z",
+  "usedStorage": 5057172192
+}

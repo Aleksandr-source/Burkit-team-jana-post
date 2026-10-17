@@ -1,0 +1,8 @@
+{
+  "requests": 288,
+  "source_unchanged": true,
+  "quotes_match_originals": true,
+  "sources_available_to_case_role": true,
+  "max_prompt_tokens": 806,
+  "context": 2048
+}

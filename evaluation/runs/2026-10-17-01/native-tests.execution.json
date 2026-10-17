@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/suprimee/.nvm/versions/node/v24.11.1/bin/node",
+    "--test",
+    "--test-isolation=none",
+    "--test-reporter=tap",
+    "tests/assistant.test.mjs",
+    "tests/hr.test.mjs",
+    "tests/paths.test.mjs",
+    "tests/runtime-config.test.mjs"
+  ],
+  "exit_code": 0,
+  "started_utc": "2026-10-17T12:59:23.397070+00:00",
+  "finished_utc": "2026-10-17T12:59:27.861490+00:00"
+}

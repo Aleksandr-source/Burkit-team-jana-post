@@ -1,0 +1,321 @@
+{
+  "_id": "680fb38323f5063a59efd782",
+  "id": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+  "private": false,
+  "pipeline_tag": "text-generation",
+  "tags": [
+    "gguf",
+    "text-generation",
+    "base_model:Qwen/Qwen3-0.6B",
+    "base_model:quantized:Qwen/Qwen3-0.6B",
+    "endpoints_compatible",
+    "region:us",
+    "conversational"
+  ],
+  "downloads": 88488,
+  "likes": 28,
+  "modelId": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+  "author": "bartowski",
+  "sha": "60b85c0e3d8fe0f6474f406922a26d12aca4550d",
+  "lastModified": "2025-04-28T17:26:40.000Z",
+  "gated": false,
+  "disabled": false,
+  "widgetData": [
+    {
+      "text": "Hi, what can you help me with?"
+    },
+    {
+      "text": "What is 84 * 3 / 2?"
+    },
+    {
+      "text": "Tell me an interesting fact about the universe!"
+    },
+    {
+      "text": "Explain quantum computing in simple terms."
+    }
+  ],
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "quantized_by": "bartowski",
+    "pipeline_tag": "text-generation",
+    "base_model": "Qwen/Qwen3-0.6B",
+    "base_model_relation": "quantized"
+  },
+  "gguf": {
+    "total": 751632384,
+    "architecture": "qwen3",
+    "context_length": 32768,
+    "chat_template": "{%- if tools %}\n    {{- '<|im_start|>system\\n' }}\n    {%- if messages[0].role == 'system' %}\n        {{- messages[0].content + '\\n\\n' }}\n    {%- endif %}\n    {{- \"# Tools\\n\\nYou may call one or more functions to assist with the user query.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\\n\\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\": <args-json-object>}\\n</tool_call><|im_end|>\\n\" }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {{- '<|im_start|>system\\n' + messages[0].content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- set tool_start = \"<tool_response>\" %}\n    {%- set tool_start_length = tool_start|length %}\n    {%- set start_of_message = message.content[:tool_start_length] %}\n    {%- set tool_end = \"</tool_response>\" %}\n    {%- set tool_end_length = tool_end|length %}\n    {%- set start_pos = (message.content|length) - tool_end_length %}\n    {%- if start_pos < 0 %}\n        {%- set start_pos = 0 %}\n    {%- endif %}\n    {%- set end_of_message = message.content[start_pos:] %}\n    {%- if ns.multi_step_tool and message.role == \"user\" and not(start_of_message == tool_start and end_of_message == tool_end) %}\n        {%- set ns.multi_step_tool = false %}\n        {%- set ns.last_query_index = index %}\n    {%- endif %}\n{%- endfor %}\n{%- for message in messages %}\n    {%- if (message.role == \"user\") or (message.role == \"system\" and not loop.first) %}\n        {{- '<|im_start|>' + message.role + '\\n' + message.content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set content = message.content %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is defined and message.reasoning_content is not none %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in message.content %}\n                {%- set content = (message.content.split('</think>')|last).lstrip('\\n') %}\n        {%- set reasoning_content = (message.content.split('</think>')|first).rstrip('\\n') %}\n        {%- set reasoning_content = (reasoning_content.split('<think>')|last).lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {%- if loop.last or (not loop.last and reasoning_content) %}\n                {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content.strip('\\n') + '\\n</think>\\n\\n' + content.lstrip('\\n') }}\n            {%- else %}\n                {{- '<|im_start|>' + message.role + '\\n' + content }}\n            {%- endif %}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if (loop.first and content) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' }}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.first or (messages[loop.index0 - 1].role != \"tool\") %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- message.content }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != \"tool\") %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is false %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- endif %}\n{%- endif %}",
+    "bos_token": "<|endoftext|>",
+    "eos_token": "<|im_end|>",
+    "totalFileSize": 1509347488
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "d56cd31ad4245947134dd4ebbfbbe43abbc94c70",
+      "size": 3103
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ2_M.gguf",
+      "blobId": "47cbfe011353226de8aecfacf60cb4834e94e025",
+      "size": 331761056,
+      "lfs": {
+        "sha256": "d129244d6f5285594084390f05ca5c3f7d194fd82f9d63f76c47e64725cf3b07",
+        "size": 331761056,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ3_M.gguf",
+      "blobId": "729f2abf3b3ca8a791e07c24d19a4b5396084934",
+      "size": 402878880,
+      "lfs": {
+        "sha256": "b4efdacce21a52b1ca0018d7850f67562c59c27a1507d485cc1142bef1a09f44",
+        "size": 402878880,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ3_XS.gguf",
+      "blobId": "834ab73ec267a30dc8c5a2e382a6dd1771e4733d",
+      "size": 379605408,
+      "lfs": {
+        "sha256": "0906dcf62aa4f005887e855731376f0bf3be8f5ffa61f547df71e6154ea748d9",
+        "size": 379605408,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ3_XXS.gguf",
+      "blobId": "f876d28f994493299d8f2ac3b3ac4d6681968d15",
+      "size": 345867680,
+      "lfs": {
+        "sha256": "4553e20544d2667785db4e48b5556d02e70989234be5853b8bf200d65381d701",
+        "size": 345867680,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ4_NL.gguf",
+      "blobId": "147ef0295514fc44c882ad1cb77dcfa79c7d3962",
+      "size": 469081504,
+      "lfs": {
+        "sha256": "96c4d65dc596b294d7e74a5c849532836d009bc68ce763b80acb4995b4d30d09",
+        "size": 469081504,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-IQ4_XS.gguf",
+      "blobId": "c5810b056414a1332c20164988a0937e83031e0c",
+      "size": 450456992,
+      "lfs": {
+        "sha256": "87c112e51ae42471c51081e9ea35c7ec57d6b93d72d857affbc84790eda31341",
+        "size": 450456992,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q2_K.gguf",
+      "blobId": "e5cfc148dbf91f873700fd1b5e23ba4a95c27f36",
+      "size": 347288992,
+      "lfs": {
+        "sha256": "a1960f01d2aa0d8c7d4e5cb13026e4c3dc85c899c0851bddb2cabbbde18ac52b",
+        "size": 347288992,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q2_K_L.gguf",
+      "blobId": "1c8ce93cd9ea7c36777e7b26a9eb9848b22056f9",
+      "size": 499224992,
+      "lfs": {
+        "sha256": "6e2c3e043d29a52dad50003fde24f201cf4006b3e5dd7e45dcde270cd180d9d2",
+        "size": 499224992,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q3_K_L.gguf",
+      "blobId": "7735adb6b8a3f9fd3fe9d2e32ddd8f493d82b135",
+      "size": 435343776,
+      "lfs": {
+        "sha256": "0793e0df451c226d5229fb9728624c5359d539ffaab3f6a0d28935eb09f8e016",
+        "size": 435343776,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q3_K_M.gguf",
+      "blobId": "d965d9664693b905e07907e1c0fcd919754146ab",
+      "size": 413979040,
+      "lfs": {
+        "sha256": "81771904092305dcf02980cb7705111c7ec0c8b8cffd497a7d05964d3373a45e",
+        "size": 413979040,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q3_K_S.gguf",
+      "blobId": "d1fc650b9d5e1c7117140ea1873560bfd0a97c6b",
+      "size": 389927328,
+      "lfs": {
+        "sha256": "c6552632340ff82d8ea6f519c384eede4dd37933b200a05890a65dabae612327",
+        "size": 389927328,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q3_K_XL.gguf",
+      "blobId": "32f8f8b76822ed9b4ecccc6f314cfec1c44c4eab",
+      "size": 571478432,
+      "lfs": {
+        "sha256": "03f95d27a9d8374b1298d80bef80a5b33f93cd943e7806139239d99d6e2be092",
+        "size": 571478432,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q4_0.gguf",
+      "blobId": "7f935f756e6e14e8e2df8842e5c1a992f1cb33fc",
+      "size": 469671328,
+      "lfs": {
+        "sha256": "4b78d8e3c61976cebb78ef5affe19d0eca75b1b47ec66f613a5a3245484758d5",
+        "size": 469671328,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q4_1.gguf",
+      "blobId": "af5162df0825d29569ae5294aaa285d9969440af",
+      "size": 506330528,
+      "lfs": {
+        "sha256": "459dad8b75080ce0c96ba2ed7514887f942bd9739c40aad0923ba324c34fb25e",
+        "size": 506330528,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q4_K_L.gguf",
+      "blobId": "b1994a9e56917742991600fa855e24d008e88411",
+      "size": 599691680,
+      "lfs": {
+        "sha256": "109aa91357a258782343e60edf46b83e1403652af1b91635b4f1c91b4a69ddc6",
+        "size": 599691680,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+      "blobId": "4c42fc7355a3c2df336e365cfdb3462ca41e34ca",
+      "size": 484220320,
+      "lfs": {
+        "sha256": "9acfc1e001311f34b4252001b626f2e466d592a42065f66571bff3790d4e1b14",
+        "size": 484220320,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q4_K_S.gguf",
+      "blobId": "684e306b932d880783b6e10d10b7bdce4866b9c8",
+      "size": 470785440,
+      "lfs": {
+        "sha256": "64d751138caefeb5a6c8d8839598ce66916b16a47b9be54b12b2ad78a3f6b4ef",
+        "size": 470785440,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q5_K_L.gguf",
+      "blobId": "504b12e024d392a018ef75e32953c086b0a5f0eb",
+      "size": 647401888,
+      "lfs": {
+        "sha256": "74e71eae7916b4c007e5c48f8ae477292f067c69060a4202dfc25d85b23baf91",
+        "size": 647401888,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q5_K_M.gguf",
+      "blobId": "04cf6990812ffd78ba62140fa7fb9e586f992648",
+      "size": 551378336,
+      "lfs": {
+        "sha256": "2df7894c99ee7716f0ed3c7d454c2386a7ae976c4b0ad0e716d55399c1360648",
+        "size": 551378336,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q5_K_S.gguf",
+      "blobId": "61585bb1b999475f648ca775f7a100259ee095cb",
+      "size": 543579552,
+      "lfs": {
+        "sha256": "43c5efb14850c6aa2f4c70384fe6e8079d9cf5a9f457e68f9a25c9a1aaa6a04b",
+        "size": 543579552,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q6_K.gguf",
+      "blobId": "7ed0ba9d6473ef3cf48ca80c0ebc6c11fbcaba1a",
+      "size": 622733728,
+      "lfs": {
+        "sha256": "21e95febea68b223089e2382378e8c3155e587f5a6618ae3595e3d00c6885575",
+        "size": 622733728,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q6_K_L.gguf",
+      "blobId": "feaeb2ff26c31d0452e8a70912ae5793d45a47e7",
+      "size": 698093984,
+      "lfs": {
+        "sha256": "f3356ceb1dc0916ceb45022b50351cc7341aeaa3b15ec89e71fc4194f603b538",
+        "size": 698093984,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-Q8_0.gguf",
+      "blobId": "f664e22af60d6e3660bf1de9ea18cd203d81038c",
+      "size": 804753824,
+      "lfs": {
+        "sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+        "size": 804753824,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B-bf16.gguf",
+      "blobId": "f18fd1028c16d371a5b1cf77145dc3890400bcfb",
+      "size": 1509347488,
+      "lfs": {
+        "sha256": "6bbe7c978ab2dab9f4e70c040ef4ad53928cacf3d24bc5dc7252aff93be92386",
+        "size": 1509347488,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "Qwen_Qwen3-0.6B.imatrix",
+      "blobId": "d0a640742051ce65bf96ba19aabec004c7580a19",
+      "size": 1153382,
+      "lfs": {
+        "sha256": "86c939f5185eff29eb6f94fec0c37b95b5614119709f8f78d1cc66127d99a386",
+        "size": 1153382,
+        "pointerSize": 132
+      }
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "22b9d8d702396a94e577e9c8065f7abc9a7ef0ef",
+      "size": 12986
+    }
+  ],
+  "spaces": [
+    "sergey21000/chatbot-rag"
+  ],
+  "createdAt": "2025-04-28T16:57:39.000Z",
+  "usedStorage": 12946035558
+}

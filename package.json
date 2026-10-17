@@ -9,13 +9,14 @@
     "start": "node scripts/launch.mjs --production",
     "preview": "node server/index.mjs",
     "lint": "eslint src/hr src/main.tsx vite.config.ts && tsc --noEmit",
-    "test": "node --test --test-isolation=none tests/*.test.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "accounts": "node scripts/accounts.mjs",
     "ai:setup": "node scripts/setup-ai.mjs",
     "ai:start": "node scripts/start-ai.mjs",
     "eval:validate": "node scripts/eval.mjs validate",
     "eval:self-test": "node scripts/eval.mjs self-test",
-    "eval:serve": "node scripts/eval-server.mjs"
+    "eval:serve": "node scripts/eval-server.mjs",
+    "ai:check": "node scripts/check-demo-ai.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

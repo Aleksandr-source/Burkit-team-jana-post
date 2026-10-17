@@ -1,38 +1,38 @@
 {
-  "candidate_id": "qwen3.5-0.8b-q4_0-cpu-low-selector",
-  "base_model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
-  "immutable_revision": "9447f74101aeb4e93621884dfa36ee8effb8831b",
+  "candidate_id": "qwen3-0.6b-q4_k_m-cpu-low-selector",
+  "base_model_id": "Qwen/Qwen3-0.6B",
+  "immutable_revision": "60b85c0e3d8fe0f6474f406922a26d12aca4550d",
   "total_loaded_parameters": null,
   "language_model_parameters": null,
   "adapter_parameters": null,
-  "artifact_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "artifact_sha256": "9acfc1e001311f34b4252001b626f2e466d592a42065f66571bff3790d4e1b14",
   "training_state": "original",
   "serving_format": "GGUF",
-  "weight_precision": "Q4_0",
+  "weight_precision": "Q4_K_M",
   "compute_dtype": null,
-  "quantization_method": "GGUF Q4_0",
+  "quantization_method": "GGUF Q4_K_M",
   "tokenizer_revision": null,
   "chat_template_sha256": null,
   "prompt_sha256": null,
   "context_tokens": 1024,
-  "max_output_tokens": 3,
+  "max_output_tokens": 16,
   "do_sample": false,
   "temperature": 0,
   "top_p": null,
   "seed": null,
   "thinking_mode": "disabled",
-  "retriever_id": "fixture-lexical-top3+product-evidence-selector",
+  "retriever_id": "fixture-lexical-top3+product-full-document-selector",
   "top_k": 3,
   "response_cache_enabled": false,
   "prefix_cache_enabled": null,
   "hardware": {
     "gpu": null,
     "vram_gib": null,
-    "cpu": "AMD A6-4400M APU with Radeon(tm) HD Graphics",
-    "ram_gib": 7.23
+    "cpu": null,
+    "ram_gib": null
   },
   "software": {
-    "os": "linux 7.0.12-zen1-1-zen x64",
+    "os": null,
     "driver": null,
     "cuda": null,
     "engine": "llama.cpp CPU",
@@ -44,5 +44,5 @@
     "rss_peak_gib": null,
     "load_s": null
   },
-  "measurement_notes": "Configuration recorded on 2026-10-17. Native launch: one CPU thread, context1024, batch64/32, one slot, GPU layers0. Local systemd unit: MemoryMax900MiB, CPUQuota80%. Selector max_output_tokens3 overrides runtime n_predict32. One product smoke request returned local_model with leave-submit citation in15s; not a benchmark or quality result. No full128-case run, no model training. Parameter counts, per-process RSS/GPU peaks, TTFT, chat-template hash and prefix-cache behavior remain unmeasured. The adapter selects evidence; its raw output does not match the pack generative JSON contract."
+  "measurement_notes": "Current low-profile configuration from AI-branch. Runtime: CPU, one thread, context 1024, batch 64/32, one slot. Selector receives up to two complete documents, outputs a source number with a 16-token limit and 8-second timeout. No training. Hardware and measured metrics must be recorded on the demonstration computer; historical measurements are in evaluation/runs. The raw selector output differs from the evaluation pack generative JSON contract."
 }

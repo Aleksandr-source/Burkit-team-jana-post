@@ -1,0 +1,22 @@
+{
+  "status": "EXPERIMENTAL_NOT_ACCEPTED",
+  "model": "Qwen3.5-0.8B-Q4_0.gguf",
+  "runtime": "llama.cpp b8936",
+  "cpu_threads": 2,
+  "context_tokens": 2048,
+  "gpu_layers": 0,
+  "parallel": 1,
+  "candidate": {
+    "id": "D_full_semantic_native_16",
+    "prompt": "semantic_native",
+    "max_tokens": 16,
+    "temperature": 0
+  },
+  "prompts_file": "validated/configs.json",
+  "acceptance": {
+    "ru": false,
+    "kk": false,
+    "overall": false
+  },
+  "warning": "Best of measured development configurations; failed final holdout; do not treat as production recommendation."
+}

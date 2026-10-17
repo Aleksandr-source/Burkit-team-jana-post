@@ -1,0 +1,11 @@
+{
+  "elapsed_ms": 1036.4442319999798,
+  "model": "Qwen3-0.6B",
+  "sha256": "9acfc1e001311f34b4252001b626f2e466d592a42065f66571bff3790d4e1b14",
+  "threads": 2,
+  "context": 2048,
+  "parallel": 1,
+  "gpu_layers": 0,
+  "thinking": false,
+  "other_download_complete": false
+}

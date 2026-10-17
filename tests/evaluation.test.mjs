@@ -44,7 +44,7 @@ test('product citations expose honest origin, version, hash and authenticated so
     const source = knowledgeSource(document, language);
     assert.equal(source.excerpt, document.content[language]); assert.equal(source.fictional, true);
     assert.match(source.version, /DEMO/); assert.match(source.origin, /Jana Post/);
-    assert.match(source.sha256, /^[a-f0-9]{64}$/); assert.equal(source.url, `/api/knowledge/${document.id}`);
+    assert.match(source.sha256, /^[a-f0-9]{64}$/); assert.equal(source.url, `/api/knowledge/${document.id}?lang=${language}`);
   }
   assert.deepEqual(knowledgeForRole('administrator'), []);
 });

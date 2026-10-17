@@ -47,7 +47,7 @@ export async function startLocalAI() {
     const port = boundedNumber(process.env.ASAR_AI_PORT, 8766, 1024, 65535);
     const threads = plan.threads;
     await writeFile(join(AI_DIRECTORY, 'runtime.json'), JSON.stringify({ port, key, model: installed.model }, null, 2), { mode: 0o600 });
-    console.log(`[AI] Starting local Qwen3.5-0.8B on CPU (${threads} thread(s)), loopback port ${port}.`);
+    console.log(`[AI] Starting local ${installed.model} on CPU (${threads} thread(s)), loopback port ${port}.`);
     console.log(resourceMessage(plan));
     console.log('[AI] Обработка остаётся на этом компьютере. При нехватке памяти модель будет остановлена.');
     child = spawn(installed.serverPath, ['--model', MODEL_PATH, '--alias', 'asar-hr-local', '--host', '127.0.0.1',

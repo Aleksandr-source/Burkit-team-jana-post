@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { AI_MODEL } from '../../scripts/ai-model.mjs';
 
-// Keep the current branch's model and generation parameters unchanged.
-const MODEL = 'Qwen3.5-0.8B · Q4_0';
+// The installer and inference adapter use the same pinned model identity.
+const MODEL = AI_MODEL.label;
 const stateFile = fileURLToPath(new URL('../../.local-ai/runtime.json', import.meta.url));
 const unavailable = () => Object.assign(new Error('Local model unavailable'), { code: 'model_unavailable' });
 
@@ -23,7 +24,7 @@ export function createLocalModelProvider({ readState = () => readFile(stateFile,
     if (disabled()) return null;
     try {
       const config = JSON.parse(await readState());
-      if (!Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
+      if (config.model !== AI_MODEL.name || !Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
         || typeof config.key !== 'string' || !/^[a-f0-9]{64}$/.test(config.key)) return null;
       return { url: `http://127.0.0.1:${config.port}`, key: config.key };
     } catch { return null; }
@@ -55,15 +56,16 @@ export function createLocalModelProvider({ readState = () => readFile(stateFile,
       }
       generating = true;
       try {
+        // Reserve time for API and rendering within the ten-second demo target.
         const response = await fetchImpl(`${config.url}/v1/chat/completions`, {
-          method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
+          method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.key}` },
           body: JSON.stringify({
-            model: 'asar-hr-local', temperature: 0, max_tokens: 3, stream: false,
+            model: 'asar-hr-local', temperature: 0, max_tokens: 16, stream: false,
             chat_template_kwargs: { enable_thinking: false },
             messages: [
-              { role: 'system', content: 'Select evidence number. None: 0.' },
-              { role: 'user', content: `${question.slice(0, 80)}\n${previews.map((preview, index) => `${index + 1}: ${preview}`).join('\n')}` },
+              { role: 'system', content: 'Выбери номер источника, который содержит ответ на вопрос. Используй только приведённые тексты. Если ответа в них нет, верни 0. Верни только одно число: 0, 1 или 2.' },
+              { role: 'user', content: `${question}\n${previews.map((preview, index) => `${index + 1}: ${preview}`).join('\n')}` },
             ],
             response_format: { type: 'json_object', schema: { type: 'integer', enum: [0, ...previews.map((_, index) => index + 1)] } },
           }),
