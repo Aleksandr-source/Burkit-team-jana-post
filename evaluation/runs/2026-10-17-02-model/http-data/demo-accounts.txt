@@ -1,0 +1,6 @@
+ASAR HR — только вымышленные демонстрационные аккаунты
+employee   employee@asar.demo        Isolated-model-eval-only-2026!
+manager    manager@asar.demo         Isolated-model-eval-only-2026!
+hr         hr@asar.demo              Isolated-model-eval-only-2026!
+employee   outsider@asar.demo        Isolated-model-eval-only-2026!
+manager    secondmanager@asar.demo   Isolated-model-eval-only-2026!

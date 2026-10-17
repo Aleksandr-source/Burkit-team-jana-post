@@ -1,0 +1,8 @@
+{
+  "full_text_matches_snapshot": true,
+  "role_filter_valid_for_cases": true,
+  "balanced_labels_each_language_and_split": true,
+  "max_prompt_tokens": 565,
+  "context_tokens": 2048,
+  "source_unchanged": true
+}

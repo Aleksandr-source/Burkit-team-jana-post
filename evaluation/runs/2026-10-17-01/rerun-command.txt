@@ -1,0 +1,2 @@
+Use a new run directory for each execution.
+/home/suprimee/.nvm/versions/node/v24.11.1/bin/node --test --test-isolation=none --test-reporter=tap tests/assistant.test.mjs tests/hr.test.mjs tests/paths.test.mjs tests/runtime-config.test.mjs

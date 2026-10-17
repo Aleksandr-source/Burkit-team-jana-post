@@ -1,0 +1,16 @@
+{
+  "status": "NOT_TRIGGERED_NO_ACCEPTED_WINNER",
+  "reason": "User authorized removal after selecting a suitable winner; neither model met the frozen acceptance gates. No weights or archives removed.",
+  "deleted": [],
+  "retained_new_weights": [
+    {
+      "path": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/evaluation-models/Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+      "bytes": 484220320
+    },
+    {
+      "path": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/evaluation-models/Qwen3-1.7B-Q4_K_M.gguf",
+      "bytes": 1282439264
+    }
+  ],
+  "retained_new_bytes": 1766659584
+}

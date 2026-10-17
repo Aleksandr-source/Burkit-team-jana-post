@@ -1,0 +1,1605 @@
+{
+  "models": {
+    "Qwen3-0.6B": {
+      "pin": {
+        "id": "Qwen3-0.6B",
+        "repo": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+        "revision": "60b85c0e3d8fe0f6474f406922a26d12aca4550d",
+        "file": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+        "sha256": "9acfc1e001311f34b4252001b626f2e466d592a42065f66571bff3790d4e1b14",
+        "bytes": 484220320,
+        "path": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/evaluation-models/Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF/resolve/60b85c0e3d8fe0f6474f406922a26d12aca4550d/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+      },
+      "selected": {
+        "id": "sampled",
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0,
+        "max_tokens": 16,
+        "seed": 42
+      },
+      "development": {
+        "deterministic": {
+          "ru": {
+            "n": 9,
+            "correct": 3,
+            "score": 33.333333333333336,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 3,
+            "absent_n": 3,
+            "absent_recall": 1.0,
+            "positive_correct": 0,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 3,
+            "p50_ms": 1515.7851600000286,
+            "p95_ms": 1903.6472200000426,
+            "max_ms": 1903.6472200000426,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 6,
+              "1": 3
+            }
+          },
+          "kk": {
+            "n": 9,
+            "correct": 2,
+            "score": 22.22222222222222,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 1,
+            "absent_n": 3,
+            "absent_recall": 0.3333333333333333,
+            "positive_correct": 1,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 2,
+            "false_abstentions": 3,
+            "p50_ms": 3137.082066999981,
+            "p95_ms": 4044.933454999991,
+            "max_ms": 4044.933454999991,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 4,
+              "1": 5
+            }
+          }
+        },
+        "sampled": {
+          "ru": {
+            "n": 9,
+            "correct": 5,
+            "score": 55.55555555555556,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 3,
+            "absent_n": 3,
+            "absent_recall": 1.0,
+            "positive_correct": 2,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 4,
+            "p50_ms": 89.43223400000716,
+            "p95_ms": 110.41326499998104,
+            "max_ms": 110.41326499998104,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 7,
+              "1": 2
+            }
+          },
+          "kk": {
+            "n": 9,
+            "correct": 3,
+            "score": 33.333333333333336,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 1,
+            "absent_n": 3,
+            "absent_recall": 0.3333333333333333,
+            "positive_correct": 2,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 2,
+            "false_abstentions": 3,
+            "p50_ms": 133.28940799995326,
+            "p95_ms": 2936.971063999983,
+            "max_ms": 2936.971063999983,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 5,
+              "0": 4
+            }
+          }
+        }
+      },
+      "tests": {
+        "existing_holdout": {
+          "ru": {
+            "n": 18,
+            "correct": 5,
+            "score": 27.77777777777778,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 3,
+            "absent_n": 6,
+            "absent_recall": 0.5,
+            "positive_correct": 2,
+            "positive_n": 12,
+            "invalid": 0,
+            "unsupported_answers": 3,
+            "false_abstentions": 8,
+            "p50_ms": 1447.3582274999935,
+            "p95_ms": 1723.2953160000034,
+            "max_ms": 1723.2953160000034,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 11,
+              "1": 7
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 1603.6451380000217,
+                "p95_ms": 1723.2953160000034,
+                "max_ms": 1723.2953160000034
+              },
+              "2": {
+                "p50_ms": 90.73416300001554,
+                "p95_ms": 1458.0618879999965,
+                "max_ms": 1458.0618879999965
+              }
+            },
+            "accepted": false
+          },
+          "kk": {
+            "n": 18,
+            "correct": 8,
+            "score": 44.44444444444444,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 6,
+            "absent_n": 6,
+            "absent_recall": 1.0,
+            "positive_correct": 2,
+            "positive_n": 12,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 9,
+            "p50_ms": 1390.7797394999943,
+            "p95_ms": 3551.2144259999623,
+            "max_ms": 3551.2144259999623,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 15,
+              "1": 3
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 3149.551295000012,
+                "p95_ms": 3551.2144259999623,
+                "max_ms": 3551.2144259999623
+              },
+              "2": {
+                "p50_ms": 125.35606500005815,
+                "p95_ms": 133.03651000000536,
+                "max_ms": 133.03651000000536
+              }
+            },
+            "accepted": false
+          }
+        },
+        "new_control": {
+          "ru": {
+            "n": 36,
+            "correct": 15,
+            "score": 41.666666666666664,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 10,
+            "absent_n": 12,
+            "absent_recall": 0.8333333333333334,
+            "positive_correct": 5,
+            "positive_n": 24,
+            "invalid": 0,
+            "unsupported_answers": 2,
+            "false_abstentions": 13,
+            "p50_ms": 739.8356314999401,
+            "p95_ms": 1729.2852880000137,
+            "max_ms": 1789.5427640000125,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 13,
+              "0": 23
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 1552.1480634999461,
+                "p95_ms": 1789.5427640000125,
+                "max_ms": 1789.5427640000125
+              },
+              "2": {
+                "p50_ms": 91.58301849995041,
+                "p95_ms": 108.09677299996838,
+                "max_ms": 108.09677299996838
+              }
+            },
+            "accepted": false
+          },
+          "kk": {
+            "n": 36,
+            "correct": 8,
+            "score": 22.22222222222222,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 6,
+            "absent_n": 12,
+            "absent_recall": 0.5,
+            "positive_correct": 2,
+            "positive_n": 24,
+            "invalid": 0,
+            "unsupported_answers": 6,
+            "false_abstentions": 21,
+            "p50_ms": 2660.1597305000178,
+            "p95_ms": 3494.0241730000125,
+            "max_ms": 3692.476386000053,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "0": 27,
+              "1": 9
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 3106.6188214999856,
+                "p95_ms": 3692.476386000053,
+                "max_ms": 3692.476386000053
+              },
+              "2": {
+                "p50_ms": 131.09617899998557,
+                "p95_ms": 2682.1607869999716,
+                "max_ms": 2682.1607869999716
+              }
+            },
+            "accepted": false
+          }
+        }
+      },
+      "accepted": false,
+      "failures": [
+        {
+          "id": "balance-ru-p1",
+          "question": "В какой момент резерв отпуска окончательно списывается с остатка?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 1,
+          "expected_source": "leave-balance",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "balance-ru-p2",
+          "question": "В какой момент резерв отпуска окончательно списывается с остатка?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-balance",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "approval-ru-p1",
+          "question": "Кто принимает окончательное решение после согласования руководителем?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 1,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "approval-ru-p2",
+          "question": "Кто принимает окончательное решение после согласования руководителем?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "hr-course-ru-p2",
+          "question": "Что должен сделать HR перед публикацией курса и кому он может его назначить?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "hr-guide",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "payment-ru",
+          "question": "В какой день мне перечислят отпускные?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            0,
+            1
+          ],
+          "predicted_sources": [
+            null,
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "sick-ru",
+          "question": "Как рассчитывается сумма оплаты больничного?",
+          "lang": "ru",
+          "phase": "existing_holdout",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        },
+        {
+          "id": "balance-kk-p1",
+          "question": "Демалыс резерві қалдықтан нақты қай кезде шегеріледі?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 1,
+          "expected_source": "leave-balance",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "balance-kk-p2",
+          "question": "Демалыс резерві қалдықтан нақты қай кезде шегеріледі?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-balance",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "approval-kk-p2",
+          "question": "Басшы мақұлдағаннан кейін соңғы шешімді кім қабылдайды?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "hr-course-kk-p1",
+          "question": "HR курсты жарияламас бұрын не істеуі керек және оны кімдерге тағайындайды?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 1,
+          "expected_source": "hr-guide",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "hr-course-kk-p2",
+          "question": "HR курсты жарияламас бұрын не істеуі керек және оны кімдерге тағайындайды?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "hr-guide",
+          "actual": [
+            1,
+            0
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            null
+          ]
+        },
+        {
+          "id": "new-rejection-reason-ru-p2",
+          "question": "Должен ли руководитель объяснить отказ в отпуске и увижу ли я причину?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            0
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            null
+          ]
+        },
+        {
+          "id": "new-approved-cancel-ru-p1",
+          "question": "Отпуск уже окончательно одобрен. Могу ли я отменить его сам или надо обратиться в HR?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-approved-cancel-ru-p2",
+          "question": "Отпуск уже окончательно одобрен. Могу ли я отменить его сам или надо обратиться в HR?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-overlap-ru-p1",
+          "question": "Можно ли отправить новую заявку с датами, пересекающимися с уже одобренным отпуском?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "leave-days",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-overlap-ru-p2",
+          "question": "Можно ли отправить новую заявку с датами, пересекающимися с уже одобренным отпуском?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-days",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-quiz-retry-ru-p2",
+          "question": "Не набрал проходной балл в тесте курса. Разрешена ли повторная попытка?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "academy-learning",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-profile-error-ru-p1",
+          "question": "В кабинете неверно указаны моя должность и подразделение. К кому обращаться?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "onboarding",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-profile-error-ru-p2",
+          "question": "В кабинете неверно указаны моя должность и подразделение. К кому обращаться?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "onboarding",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-manager-self-ru-p1",
+          "question": "Я руководитель. Можно ли согласовать собственную заявку вместо моего руководителя?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "manager-review",
+          "actual": [
+            1,
+            0
+          ],
+          "predicted_sources": [
+            "manager-review",
+            null
+          ]
+        },
+        {
+          "id": "new-manager-self-ru-p2",
+          "question": "Я руководитель. Можно ли согласовать собственную заявку вместо моего руководителя?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "manager-review",
+          "actual": [
+            1,
+            0
+          ],
+          "predicted_sources": [
+            "leave-days",
+            null
+          ]
+        },
+        {
+          "id": "new-certificate-ru",
+          "question": "Сколько лет действует сертификат после завершения курса?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "new-rejection-reason-kk-p1",
+          "question": "Басшы демалыстан бас тарту себебін көрсетуі керек пе және мен оны көре аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-rejection-reason-kk-p2",
+          "question": "Басшы демалыстан бас тарту себебін көрсетуі керек пе және мен оны көре аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-approved-cancel-kk-p1",
+          "question": "Демалысым соңғы рет мақұлданды. Оны өзім жоя аламын ба, әлде HR маманына жүгінуім керек пе?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            1
+          ],
+          "predicted_sources": [
+            null,
+            "leave-decisions"
+          ]
+        },
+        {
+          "id": "new-approved-cancel-kk-p2",
+          "question": "Демалысым соңғы рет мақұлданды. Оны өзім жоя аламын ба, әлде HR маманына жүгінуім керек пе?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            0,
+            1
+          ],
+          "predicted_sources": [
+            null,
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-overlap-kk-p1",
+          "question": "Күндері мақұлданған демалыспен қабаттасатын жаңа өтініш беруге бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "leave-days",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-overlap-kk-p2",
+          "question": "Күндері мақұлданған демалыспен қабаттасатын жаңа өтініш беруге бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-days",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-quiz-retry-kk-p1",
+          "question": "Курс тестінде өту балын жинамадым. Қайта тапсыруға бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "academy-learning",
+          "actual": [
+            1,
+            0
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            null
+          ]
+        },
+        {
+          "id": "new-quiz-retry-kk-p2",
+          "question": "Курс тестінде өту балын жинамадым. Қайта тапсыруға бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "academy-learning",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-profile-error-kk-p1",
+          "question": "Жеке кабинетте лауазымым мен бөлімшем қате көрсетілген. Кімге хабарласуым керек?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "onboarding",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-profile-error-kk-p2",
+          "question": "Жеке кабинетте лауазымым мен бөлімшем қате көрсетілген. Кімге хабарласуым керек?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "onboarding",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-manager-self-kk-p1",
+          "question": "Мен басшымын. Өз өтінішімді өз басшымның орнына мақұлдай аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "manager-review",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-manager-self-kk-p2",
+          "question": "Мен басшымын. Өз өтінішімді өз басшымның орнына мақұлдай аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "manager-review",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-advance-eligibility-kk",
+          "question": "Авансты тек штаттағы қызметкерлер ала ма, әлде тағылымдамадан өтушілер де ала ала ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-certificate-kk",
+          "question": "Курсты аяқтағаннан кейін сертификат неше жыл жарамды болады?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "new-file-size-kk",
+          "question": "Өтінішке тіркелетін файлдың ең үлкен рұқсат етілген көлемі қандай?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        }
+      ],
+      "repeat_inconsistencies": [
+        "new-quiz-retry-kk-p1",
+        "payment-ru",
+        "new-manager-self-ru-p2",
+        "new-approved-cancel-kk-p1",
+        "new-rejection-reason-ru-p2",
+        "new-manager-self-ru-p1",
+        "new-approved-cancel-kk-p2",
+        "hr-course-kk-p2"
+      ],
+      "all_timing": {
+        "n": 144,
+        "correct": 49,
+        "score": 34.02777777777778,
+        "baseline_first_score": 33.333333333333336,
+        "absent_correct": 33,
+        "absent_n": 48,
+        "absent_recall": 0.6875,
+        "positive_correct": 16,
+        "positive_n": 96,
+        "invalid": 0,
+        "unsupported_answers": 15,
+        "false_abstentions": 64,
+        "p50_ms": 1454.24731050001,
+        "p95_ms": 3378.2154240000527,
+        "max_ms": 4044.933454999991,
+        "over_10s": 0,
+        "http_errors": 0,
+        "choices": {
+          "0": 97,
+          "1": 47
+        }
+      }
+    },
+    "Qwen3-1.7B": {
+      "pin": {
+        "id": "Qwen3-1.7B",
+        "repo": "ggml-org/Qwen3-1.7B-GGUF",
+        "revision": "daeb8e2d528a760970442092f6bf1e55c3b659eb",
+        "file": "Qwen3-1.7B-Q4_K_M.gguf",
+        "sha256": "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5",
+        "bytes": 1282439264,
+        "path": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/evaluation-models/Qwen3-1.7B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/ggml-org/Qwen3-1.7B-GGUF/resolve/daeb8e2d528a760970442092f6bf1e55c3b659eb/Qwen3-1.7B-Q4_K_M.gguf"
+      },
+      "selected": {
+        "id": "sampled",
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0,
+        "max_tokens": 16,
+        "seed": 42
+      },
+      "development": {
+        "deterministic": {
+          "ru": {
+            "n": 9,
+            "correct": 8,
+            "score": 88.88888888888889,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 3,
+            "absent_n": 3,
+            "absent_recall": 1.0,
+            "positive_correct": 5,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 0,
+            "p50_ms": 4029.75791199971,
+            "p95_ms": 5373.587443000171,
+            "max_ms": 5373.587443000171,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 4,
+              "2": 2,
+              "0": 3
+            }
+          },
+          "kk": {
+            "n": 9,
+            "correct": 3,
+            "score": 33.333333333333336,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 0,
+            "absent_n": 3,
+            "absent_recall": 0.0,
+            "positive_correct": 3,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 3,
+            "false_abstentions": 0,
+            "p50_ms": 8263.903121000156,
+            "p95_ms": 10587.072242999915,
+            "max_ms": 10587.072242999915,
+            "over_10s": 1,
+            "http_errors": 0,
+            "choices": {
+              "1": 9
+            }
+          }
+        },
+        "sampled": {
+          "ru": {
+            "n": 9,
+            "correct": 8,
+            "score": 88.88888888888889,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 3,
+            "absent_n": 3,
+            "absent_recall": 1.0,
+            "positive_correct": 5,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 0,
+            "p50_ms": 149.35962399980053,
+            "p95_ms": 896.6160789998248,
+            "max_ms": 896.6160789998248,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 4,
+              "2": 2,
+              "0": 3
+            }
+          },
+          "kk": {
+            "n": 9,
+            "correct": 3,
+            "score": 33.333333333333336,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 0,
+            "absent_n": 3,
+            "absent_recall": 0.0,
+            "positive_correct": 3,
+            "positive_n": 6,
+            "invalid": 0,
+            "unsupported_answers": 3,
+            "false_abstentions": 0,
+            "p50_ms": 262.79879700019956,
+            "p95_ms": 8191.654312999919,
+            "max_ms": 8191.654312999919,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 9
+            }
+          }
+        }
+      },
+      "tests": {
+        "existing_holdout": {
+          "ru": {
+            "n": 18,
+            "correct": 18,
+            "score": 100.0,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 6,
+            "absent_n": 6,
+            "absent_recall": 1.0,
+            "positive_correct": 12,
+            "positive_n": 12,
+            "invalid": 0,
+            "unsupported_answers": 0,
+            "false_abstentions": 0,
+            "p50_ms": 3859.349155000178,
+            "p95_ms": 4563.6013939999975,
+            "max_ms": 4563.6013939999975,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 6,
+              "2": 6,
+              "0": 6
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 4246.325280999765,
+                "p95_ms": 4563.6013939999975,
+                "max_ms": 4563.6013939999975
+              },
+              "2": {
+                "p50_ms": 220.77325899992138,
+                "p95_ms": 3898.909132000059,
+                "max_ms": 3898.909132000059
+              }
+            },
+            "accepted": true
+          },
+          "kk": {
+            "n": 18,
+            "correct": 7,
+            "score": 38.888888888888886,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 0,
+            "absent_n": 6,
+            "absent_recall": 0.0,
+            "positive_correct": 7,
+            "positive_n": 12,
+            "invalid": 0,
+            "unsupported_answers": 6,
+            "false_abstentions": 0,
+            "p50_ms": 4019.752018999774,
+            "p95_ms": 9276.545579999685,
+            "max_ms": 9276.545579999685,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 17,
+              "2": 1
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 8384.529062000103,
+                "p95_ms": 9276.545579999685,
+                "max_ms": 9276.545579999685
+              },
+              "2": {
+                "p50_ms": 263.19170899968594,
+                "p95_ms": 1027.8432249999605,
+                "max_ms": 1027.8432249999605
+              }
+            },
+            "accepted": false
+          }
+        },
+        "new_control": {
+          "ru": {
+            "n": 36,
+            "correct": 29,
+            "score": 80.55555555555556,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 10,
+            "absent_n": 12,
+            "absent_recall": 0.8333333333333334,
+            "positive_correct": 19,
+            "positive_n": 24,
+            "invalid": 0,
+            "unsupported_answers": 2,
+            "false_abstentions": 2,
+            "p50_ms": 1971.6183840001468,
+            "p95_ms": 4523.78197199991,
+            "max_ms": 4640.014475999866,
+            "over_10s": 0,
+            "http_errors": 0,
+            "choices": {
+              "1": 15,
+              "2": 9,
+              "0": 12
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 4121.232022000011,
+                "p95_ms": 4640.014475999866,
+                "max_ms": 4640.014475999866
+              },
+              "2": {
+                "p50_ms": 202.9286205000244,
+                "p95_ms": 232.30796100012958,
+                "max_ms": 232.30796100012958
+              }
+            },
+            "accepted": false
+          },
+          "kk": {
+            "n": 36,
+            "correct": 13,
+            "score": 36.111111111111114,
+            "baseline_first_score": 33.333333333333336,
+            "absent_correct": 0,
+            "absent_n": 12,
+            "absent_recall": 0.0,
+            "positive_correct": 13,
+            "positive_n": 24,
+            "invalid": 0,
+            "unsupported_answers": 12,
+            "false_abstentions": 0,
+            "p50_ms": 6823.167393499985,
+            "p95_ms": 8985.851452999748,
+            "max_ms": 10080.85880499985,
+            "over_10s": 1,
+            "http_errors": 0,
+            "choices": {
+              "1": 35,
+              "2": 1
+            },
+            "timing_by_repeat": {
+              "1": {
+                "p50_ms": 8118.571493000258,
+                "p95_ms": 10080.85880499985,
+                "max_ms": 10080.85880499985
+              },
+              "2": {
+                "p50_ms": 888.9861660001334,
+                "p95_ms": 7711.44429899985,
+                "max_ms": 7711.44429899985
+              }
+            },
+            "accepted": false
+          }
+        }
+      },
+      "accepted": false,
+      "failures": [
+        {
+          "id": "balance-kk-p2",
+          "question": "Демалыс резерві қалдықтан нақты қай кезде шегеріледі?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-balance",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        },
+        {
+          "id": "approval-kk-p2",
+          "question": "Басшы мақұлдағаннан кейін соңғы шешімді кім қабылдайды?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            2
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "leave-decisions"
+          ]
+        },
+        {
+          "id": "hr-course-kk-p2",
+          "question": "HR курсты жарияламас бұрын не істеуі керек және оны кімдерге тағайындайды?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 2,
+          "expected_source": "hr-guide",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "payment-kk",
+          "question": "Демалыс ақысын маған қай күні аударады?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "sick-kk",
+          "question": "Ауру демалысының төлем сомасы қалай есептеледі?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        },
+        {
+          "id": "carryover-kk",
+          "question": "Пайдаланылмаған демалыстың қанша күнін келесі жылға ауыстыруға болады?",
+          "lang": "kk",
+          "phase": "existing_holdout",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-quiz-retry-ru-p2",
+          "question": "Не набрал проходной балл в тесте курса. Разрешена ли повторная попытка?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "academy-learning",
+          "actual": [
+            1,
+            2
+          ],
+          "predicted_sources": [
+            "onboarding",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "new-profile-error-ru-p2",
+          "question": "В кабинете неверно указаны моя должность и подразделение. К кому обращаться?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "onboarding",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-manager-self-ru-p1",
+          "question": "Я руководитель. Можно ли согласовать собственную заявку вместо моего руководителя?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 1,
+          "expected_source": "manager-review",
+          "actual": [
+            0,
+            0
+          ],
+          "predicted_sources": [
+            null,
+            null
+          ]
+        },
+        {
+          "id": "new-advance-eligibility-ru",
+          "question": "Кто имеет право на аванс: только штатные сотрудники или также стажёры?",
+          "lang": "ru",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-rejection-reason-kk-p2",
+          "question": "Басшы демалыстан бас тарту себебін көрсетуі керек пе және мен оны көре аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-approved-cancel-kk-p2",
+          "question": "Демалысым соңғы рет мақұлданды. Оны өзім жоя аламын ба, әлде HR маманына жүгінуім керек пе?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-decisions",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-overlap-kk-p2",
+          "question": "Күндері мақұлданған демалыспен қабаттасатын жаңа өтініш беруге бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "leave-days",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-quiz-retry-kk-p2",
+          "question": "Курс тестінде өту балын жинамадым. Қайта тапсыруға бола ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "academy-learning",
+          "actual": [
+            1,
+            2
+          ],
+          "predicted_sources": [
+            "onboarding",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "new-profile-error-kk-p2",
+          "question": "Жеке кабинетте лауазымым мен бөлімшем қате көрсетілген. Кімге хабарласуым керек?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "onboarding",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-balance",
+            "leave-balance"
+          ]
+        },
+        {
+          "id": "new-manager-self-kk-p2",
+          "question": "Мен басшымын. Өз өтінішімді өз басшымның орнына мақұлдай аламын ба?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 2,
+          "expected_source": "manager-review",
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        },
+        {
+          "id": "new-advance-eligibility-kk",
+          "question": "Авансты тек штаттағы қызметкерлер ала ма, әлде тағылымдамадан өтушілер де ала ала ма?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-minimum-tenure-kk",
+          "question": "Алғаш рет демалыс алу үшін неше ай жұмыс істеу керек?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        },
+        {
+          "id": "new-certificate-kk",
+          "question": "Курсты аяқтағаннан кейін сертификат неше жыл жарамды болады?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "academy-learning",
+            "academy-learning"
+          ]
+        },
+        {
+          "id": "new-hr-number-kk",
+          "question": "Кеңес алу үшін HR бөлімінің нақты телефон нөмірін айт.",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "onboarding",
+            "onboarding"
+          ]
+        },
+        {
+          "id": "new-file-size-kk",
+          "question": "Өтінішке тіркелетін файлдың ең үлкен рұқсат етілген көлемі қандай?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-submit",
+            "leave-submit"
+          ]
+        },
+        {
+          "id": "new-law-number-kk",
+          "question": "Осы есептеу тәртібін заңның қай нөмірлі бабы белгілейді?",
+          "lang": "kk",
+          "phase": "new_control",
+          "expected": 0,
+          "expected_source": null,
+          "actual": [
+            1,
+            1
+          ],
+          "predicted_sources": [
+            "leave-days",
+            "leave-days"
+          ]
+        }
+      ],
+      "repeat_inconsistencies": [
+        "approval-kk-p2",
+        "new-quiz-retry-kk-p2",
+        "new-quiz-retry-ru-p2"
+      ],
+      "all_timing": {
+        "n": 144,
+        "correct": 89,
+        "score": 61.80555555555556,
+        "baseline_first_score": 33.333333333333336,
+        "absent_correct": 22,
+        "absent_n": 48,
+        "absent_recall": 0.4583333333333333,
+        "positive_correct": 67,
+        "positive_n": 96,
+        "invalid": 0,
+        "unsupported_answers": 26,
+        "false_abstentions": 2,
+        "p50_ms": 3849.717195000034,
+        "p95_ms": 8786.410181999672,
+        "max_ms": 10587.072242999915,
+        "over_10s": 2,
+        "http_errors": 0,
+        "choices": {
+          "1": 99,
+          "2": 21,
+          "0": 24
+        }
+      }
+    }
+  },
+  "winner": null,
+  "method": "Exact source selection; question+full authorized evidence. Per-question 100 correct, 0 incorrect/invalid. Not general language quality.",
+  "gates": {
+    "accuracy_each_language_each_test_split_min": 0.9,
+    "absent_fact_recall": 1,
+    "invalid_outputs": 0,
+    "max_observed_seconds": 10
+  },
+  "total_requests": 288,
+  "all_timing": {
+    "n": 288,
+    "correct": 138,
+    "score": 47.916666666666664,
+    "baseline_first_score": 33.333333333333336,
+    "absent_correct": 55,
+    "absent_n": 96,
+    "absent_recall": 0.5729166666666666,
+    "positive_correct": 83,
+    "positive_n": 192,
+    "invalid": 0,
+    "unsupported_answers": 41,
+    "false_abstentions": 66,
+    "p50_ms": 1458.3271279999753,
+    "p95_ms": 8406.126209000126,
+    "max_ms": 10587.072242999915,
+    "over_10s": 2,
+    "http_errors": 0,
+    "choices": {
+      "0": 121,
+      "1": 146,
+      "2": 21
+    }
+  }
+}

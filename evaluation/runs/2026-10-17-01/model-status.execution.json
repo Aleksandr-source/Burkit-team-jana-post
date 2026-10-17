@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/home/suprimee/.nvm/versions/node/v24.11.1/bin/node",
+    "scripts/setup-ai.mjs",
+    "--status"
+  ],
+  "exit_code": 0,
+  "started_utc": "2026-10-17T12:59:23.362006+00:00",
+  "finished_utc": "2026-10-17T12:59:23.396336+00:00"
+}

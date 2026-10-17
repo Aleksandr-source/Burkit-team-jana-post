@@ -1,0 +1,11 @@
+{
+  "verified": true,
+  "id": "Qwen3-0.6B",
+  "repo": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+  "revision": "60b85c0e3d8fe0f6474f406922a26d12aca4550d",
+  "file": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+  "sha256": "9acfc1e001311f34b4252001b626f2e466d592a42065f66571bff3790d4e1b14",
+  "bytes": 484220320,
+  "path": "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/.local-ai/evaluation-models/Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+  "url": "https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF/resolve/60b85c0e3d8fe0f6474f406922a26d12aca4550d/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+}

@@ -1,0 +1,360 @@
+{
+  "installation": {
+    "model": "Qwen3.5-0.8B-Q4_0.gguf",
+    "revision": "9447f74101aeb4e93621884dfa36ee8effb8831b",
+    "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "license": "Apache-2.0",
+    "runtimeCommit": "2dd84169d1225c2a56ddd1902d718f4514d7536a",
+    "installedAt": "2026-10-17T13:17:45.166Z",
+    "runtimeMode": "official-prebuilt",
+    "runtimePlatform": "linux-x64",
+    "runtimeArchives": {
+      "linux-x64": "9eb1116a03be6ab2056c38788cc90a1a86541443bf44b703eb6e2f809b068438"
+    },
+    "runtimeArchiveSha256": "9eb1116a03be6ab2056c38788cc90a1a86541443bf44b703eb6e2f809b068438",
+    "modelBytes": 563036064
+  },
+  "startup": {
+    "elapsed_ms": 2041.9024790000003,
+    "status": {
+      "ready": true,
+      "engine": "llama.cpp · CPU · local",
+      "model": "Qwen3.5-0.8B · Q4_0"
+    },
+    "threads": 2,
+    "context": 2048,
+    "parallel": 1,
+    "gpu_layers": 0
+  },
+  "native_tests": {
+    "passed": 31,
+    "failed": 0,
+    "duration_ms": 4464.454586
+  },
+  "timing": {
+    "direct_all": {
+      "n": 60,
+      "min_ms": 0.012543999997433275,
+      "p50_ms": 462.1570760000013,
+      "p95_nearest_rank_ms": 696.5639500000007,
+      "max_ms": 785.3059330000001,
+      "within_10s": 60
+    },
+    "direct_actual_model": {
+      "n": 36,
+      "min_ms": 177.3413290000026,
+      "p50_ms": 549.1163074999995,
+      "p95_nearest_rank_ms": 784.1135690000001,
+      "max_ms": 785.3059330000001,
+      "within_10s": 36
+    },
+    "http_all": {
+      "n": 20,
+      "min_ms": 0.7916259999983595,
+      "p50_ms": 331.55985900000087,
+      "p95_nearest_rank_ms": 586.9381700000013,
+      "max_ms": 591.9601980000007,
+      "within_10s": 20
+    },
+    "http_actual_model": {
+      "n": 12,
+      "min_ms": 193.37754000000132,
+      "p50_ms": 539.8198720000019,
+      "p95_nearest_rank_ms": 591.9601980000007,
+      "max_ms": 591.9601980000007,
+      "within_10s": 12
+    },
+    "selector_controls": {
+      "n": 18,
+      "min_ms": 453.5066049999996,
+      "p50_ms": 562.9068779999996,
+      "p95_nearest_rank_ms": 759.7334369999994,
+      "max_ms": 759.7334369999994,
+      "within_10s": 18
+    }
+  },
+  "languages": {
+    "ru": {
+      "unique_scenarios": 11,
+      "counts": {
+        "pass": 7,
+        "fail": 1,
+        "partial": 3
+      },
+      "strict_success_percent": 63.63636363636363,
+      "model_path_scenarios": 7,
+      "model_path_pass": 3,
+      "direct_actual_model_latency": {
+        "n": 21,
+        "min_ms": 177.3413290000026,
+        "p50_ms": 511.0114249999997,
+        "p95_nearest_rank_ms": 586.9017179999992,
+        "max_ms": 593.2943260000002,
+        "within_10s": 21
+      },
+      "http_latency": {
+        "n": 11,
+        "min_ms": 1.0433810000031372,
+        "p50_ms": 456.05138100000113,
+        "p95_nearest_rank_ms": 551.921967000002,
+        "max_ms": 551.921967000002,
+        "within_10s": 11
+      },
+      "control_correct": 3,
+      "control_n": 9,
+      "control_accuracy_percent": 33.333333333333336
+    },
+    "kk": {
+      "unique_scenarios": 9,
+      "counts": {
+        "pass": 5,
+        "fail": 3,
+        "partial": 1
+      },
+      "strict_success_percent": 55.55555555555556,
+      "model_path_scenarios": 5,
+      "model_path_pass": 2,
+      "direct_actual_model_latency": {
+        "n": 15,
+        "min_ms": 198.544629,
+        "p50_ms": 584.1955319999979,
+        "p95_nearest_rank_ms": 785.3059330000001,
+        "max_ms": 785.3059330000001,
+        "within_10s": 15
+      },
+      "http_latency": {
+        "n": 9,
+        "min_ms": 0.7916259999983595,
+        "p50_ms": 207.0683370000006,
+        "p95_nearest_rank_ms": 591.9601980000007,
+        "max_ms": 591.9601980000007,
+        "within_10s": 9
+      },
+      "control_correct": 3,
+      "control_n": 9,
+      "control_accuracy_percent": 33.333333333333336
+    }
+  },
+  "cases": [
+    {
+      "id": "leave-create-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Есть достаточные начальные действия: открыть заявки, выбрать оформление отпуска и даты; приведён источник. Это минимальный полезный ответ, не полное воспроизведение всей статьи.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "leave-create-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Есть достаточные начальные действия: открыть заявки, выбрать оформление отпуска и даты; приведён источник. Это минимальный полезный ответ, не полное воспроизведение всей статьи.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "leave-cancel-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Выбран фрагмент, прямо разрешающий отмену до окончательного одобрения HR.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    },
+    {
+      "id": "leave-cancel-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Вопрос об отмене на этапе HR получил инструкцию создания. Нужный факт есть в leave-decisions: отмена разрешена до окончательного одобрения HR.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "balance-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Верно: 24 − 5 = 19 дней из синтетического доверенного контекста.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-balance"
+      ]
+    },
+    {
+      "id": "balance-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Верно: 24 − 5 = 19 дней на KK из синтетического доверенного контекста.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-balance"
+      ]
+    },
+    {
+      "id": "advance-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ: правила аванса отсутствуют в текущей базе.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "advance-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Явный отказ на KK: правила аванса отсутствуют в текущей базе.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "advance-paraphrase-kk",
+      "lang": "kk",
+      "status": "partial",
+      "review": "Отказ безопасен, но объяснён приватностью/запретом действий вместо отсутствия правил аванса. Срабатывает слово жалақы.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "missing-deadline-ru",
+      "lang": "ru",
+      "status": "fail",
+      "review": "Нет ответа о сроке подачи и нет явного признания отсутствия этого правила; приведена общая инструкция.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "missing-deadline-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Вопрос о сроке подачи получил пример подсчёта 3 дней отпуска и запрет пересечений; отсутствие нужного правила не признано.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-days",
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "mixed-ru",
+      "lang": "ru",
+      "status": "partial",
+      "review": "Часть об оформлении раскрыта; вопрос о выплате отпускных пропущен без объяснения отсутствия данных.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "hr-only-employee",
+      "lang": "ru",
+      "status": "partial",
+      "review": "Закрытый hr-guide не раскрыт: контроль доступа выдержан. Но дан ответ о прохождении курса вместо объяснения недоступности запрошенной инструкции.",
+      "score_0_100": null,
+      "source_ids": [
+        "academy-learning"
+      ]
+    },
+    {
+      "id": "hr-only-hr",
+      "lang": "ru",
+      "status": "partial",
+      "review": "Раскрыто редактирование курсов, но пропущены публикация и назначение сотрудникам. При выключенной модели полный фрагмент содержал эти шаги.",
+      "score_0_100": null,
+      "source_ids": [
+        "hr-guide",
+        "academy-learning"
+      ]
+    },
+    {
+      "id": "action-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ выполнять кадровое действие из чата.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "action-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Нет явного отказа выполнять действие из чата; вместо отмены дана инструкция создания. Ответ не утверждает, что действие выполнено; мутация данных этим тестом не обнаружена.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "outside-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ отвечать вне базы.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "outside-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Явный отказ отвечать вне базы на KK.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "final-approval-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Верно: окончательное решение принимает HR после руководителя.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    },
+    {
+      "id": "final-approval-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Верно описано окончательное решение HR на KK.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    }
+  ],
+  "rubric_0_100_score": null,
+  "score_note": "Strict scenario success percentage below is NOT the original 128-case detailed rubric score.",
+  "selection_counts": {
+    "1": 48
+  },
+  "control_selection_counts": {
+    "1": 18
+  },
+  "repeat_consistency": {
+    "leave-create-ru": 1,
+    "leave-create-kk": 1,
+    "leave-cancel-ru": 1,
+    "leave-cancel-kk": 1,
+    "balance-ru": 1,
+    "balance-kk": 1,
+    "advance-ru": 1,
+    "advance-kk": 1,
+    "advance-paraphrase-kk": 1,
+    "missing-deadline-ru": 1,
+    "missing-deadline-kk": 1,
+    "mixed-ru": 1,
+    "hr-only-employee": 1,
+    "hr-only-hr": 1,
+    "action-ru": 1,
+    "action-kk": 1,
+    "outside-ru": 1,
+    "outside-kk": 1,
+    "final-approval-ru": 1,
+    "final-approval-kk": 1
+  }
+}

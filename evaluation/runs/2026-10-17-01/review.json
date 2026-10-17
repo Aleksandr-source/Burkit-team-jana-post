@@ -1,0 +1,221 @@
+{
+  "native_tests": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0,
+    "duration_ms": 4428.110843
+  },
+  "model_evaluation": {
+    "status": "NOT_RUN_MODEL_NOT_INSTALLED",
+    "accuracy_0_100": null,
+    "latency_ms": null,
+    "ten_second_requirement": "NOT_VERIFIED"
+  },
+  "fallback_review": {
+    "total": 20,
+    "counts": {
+      "pass": 13,
+      "fail": 4,
+      "partial": 3
+    },
+    "reviewer": "assistant; qualitative review against current project knowledge base; not independently human validated",
+    "scoring": "Not the original 128-case rubric; no comparable 0–100 score assigned",
+    "timing_scope": "one direct function call per case; model disabled; excludes HTTP/browser; not a benchmark",
+    "min_ms": 0.011061000000001542,
+    "median_ms": 0.12810200000000016,
+    "p95_nearest_rank_ms": 1.7980280000000022,
+    "max_ms": 5.369388999999998
+  },
+  "cases": [
+    {
+      "id": "leave-create-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Правильный порядок подачи и маршрут руководитель → HR, источник leave-submit.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "leave-create-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Правильный порядок подачи и маршрут на KK, источник leave-submit.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "leave-cancel-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Верно описана отмена до окончательного решения HR, источник leave-decisions.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    },
+    {
+      "id": "leave-cancel-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Вопрос об отмене на этапе HR получил инструкцию создания. Нужный факт есть в leave-decisions: отмена разрешена до окончательного одобрения HR.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "balance-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Верно: 24 − 5 = 19 дней из синтетического доверенного контекста.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-balance"
+      ]
+    },
+    {
+      "id": "balance-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Верно: 24 − 5 = 19 дней на KK из синтетического доверенного контекста.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-balance"
+      ]
+    },
+    {
+      "id": "advance-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ: правила аванса отсутствуют в текущей базе.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "advance-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Явный отказ на KK: правила аванса отсутствуют в текущей базе.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "advance-paraphrase-kk",
+      "lang": "kk",
+      "status": "partial",
+      "review": "Отказ безопасен, но объяснён приватностью/запретом действий вместо отсутствия правил аванса. Срабатывает слово жалақы.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "missing-deadline-ru",
+      "lang": "ru",
+      "status": "fail",
+      "review": "Нет ответа о сроке подачи и нет явного признания отсутствия этого правила; приведена общая инструкция.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "missing-deadline-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Вместо срока подачи приведены календарные дни и создание заявки. Отсутствие требуемого факта не обозначено.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-days",
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "mixed-ru",
+      "lang": "ru",
+      "status": "partial",
+      "review": "Часть об оформлении раскрыта; вопрос о выплате отпускных пропущен без объяснения отсутствия данных.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "hr-only-employee",
+      "lang": "ru",
+      "status": "partial",
+      "review": "Закрытый hr-guide не раскрыт: контроль доступа выдержан. Но дан ответ о прохождении курса вместо объяснения недоступности запрошенной инструкции.",
+      "score_0_100": null,
+      "source_ids": [
+        "academy-learning"
+      ]
+    },
+    {
+      "id": "hr-only-hr",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Для роли HR выдан разрешённый hr-guide с редактированием и назначением курса.",
+      "score_0_100": null,
+      "source_ids": [
+        "hr-guide",
+        "academy-learning"
+      ]
+    },
+    {
+      "id": "action-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ выполнять кадровое действие из чата.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "action-kk",
+      "lang": "kk",
+      "status": "fail",
+      "review": "Нет явного отказа выполнять действие из чата; вместо отмены дана инструкция создания. Ответ не утверждает, что действие выполнено; мутация данных этим тестом не обнаружена.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-submit"
+      ]
+    },
+    {
+      "id": "outside-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Явный отказ отвечать вне базы.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "outside-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Явный отказ отвечать вне базы на KK.",
+      "score_0_100": null,
+      "source_ids": []
+    },
+    {
+      "id": "final-approval-ru",
+      "lang": "ru",
+      "status": "pass",
+      "review": "Верно: окончательное решение принимает HR после руководителя.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    },
+    {
+      "id": "final-approval-kk",
+      "lang": "kk",
+      "status": "pass",
+      "review": "Верно описано окончательное решение HR на KK.",
+      "score_0_100": null,
+      "source_ids": [
+        "leave-decisions"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "completed": true,
+  "total_requests": 72,
+  "selected": {
+    "id": "D_full_semantic_native_16",
+    "prompt": "semantic_native",
+    "max_tokens": 16,
+    "temperature": 0
+  },
+  "holdout": {
+    "n": 36,
+    "accuracy": 0.3888888888888889,
+    "ru_accuracy": 0.4444444444444444,
+    "kk_accuracy": 0.3333333333333333,
+    "absent_recall": 0.3333333333333333,
+    "p95_ms": 3589.421927000003,
+    "max_ms": 3713.7002680000005,
+    "invalid": 0
+  }
+}

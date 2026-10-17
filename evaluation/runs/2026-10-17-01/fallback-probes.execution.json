@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/home/suprimee/.nvm/versions/node/v24.11.1/bin/node",
+    "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/evaluation/runs/2026-10-17-01/probe-fallback.mjs",
+    "/home/suprimee/Documents/GitHub/Burkit-team-jana-post/evaluation/runs/2026-10-17-01/fallback-results.jsonl"
+  ],
+  "exit_code": 0,
+  "started_utc": "2026-10-17T12:59:27.861685+00:00",
+  "finished_utc": "2026-10-17T12:59:27.902276+00:00"
+}
