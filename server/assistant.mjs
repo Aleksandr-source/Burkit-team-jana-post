@@ -1,41 +1,8 @@
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { localModelProvider } from './ai/local-model-provider.mjs';
 import { knowledgeForRole, knowledgeSource } from './knowledge.mjs';
 
 const langOf = (lang) => ['ru', 'kk', 'en'].includes(lang) ? lang : 'ru';
 const local = (lang, ru, kk, en) => ({ ru, kk, en })[lang];
-const MODEL = 'Qwen3.5-0.8B · Q4_0';
-const stateFile = fileURLToPath(new URL('../.local-ai/runtime.json', import.meta.url));
-let generating = false;
-
-// Never accept a caller-supplied URL or model endpoint. Model traffic can only
-// reach the local llama.cpp process started by scripts/start-ai.mjs.
-async function runtime() {
-  if (process.env.ASAR_AI_DISABLED === '1' || process.env.ASAR_DISABLE_AI === '1') return null;
-  try {
-    const config = JSON.parse(await readFile(stateFile, 'utf8'));
-    if (!Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
-      || typeof config.key !== 'string' || !/^[a-f0-9]{64}$/.test(config.key)) return null;
-    return { url: `http://127.0.0.1:${config.port}`, key: config.key };
-  } catch { return null; }
-}
-
-export async function getAIStatus() {
-  const config = await runtime();
-  if (config) {
-    try {
-      const response = await fetch(`${config.url}/v1/models`, {
-        headers: { Authorization: `Bearer ${config.key}` }, signal: AbortSignal.timeout(700), redirect: 'error',
-      });
-      if (response.ok) {
-        const body = await response.json();
-        if (body.data?.some((item) => item.id === 'asar-hr-local')) return { ready: true, engine: 'llama.cpp · CPU · local', model: MODEL };
-      }
-    } catch { /* Knowledge search remains available while the local model loads. */ }
-  }
-  return { ready: false, engine: 'knowledge_search', model: MODEL };
-}
-
 function refuse(lang, reason = 'unknown') {
   const answer = reason === 'privacy'
     ? local(lang,
@@ -116,85 +83,84 @@ function sentencesFrom(documents, lang) {
     .map((sentence, index) => ({ ...sentence, number: index + 1 }));
 }
 
-// Shared with the isolated evaluation service. The raw output is the actual
-// selector number, never a server-composed answer disguised as model JSON.
-export async function selectEvidence(question, sentences) {
-  const started = performance.now();
-  const result = { selected: null, raw_model_output: null, model_context_ids: [], generation_ms: null };
-  const config = await runtime();
-  if (!config || generating) return { ...result, error: generating ? 'model_busy' : 'model_unavailable' };
-  generating = true;
-  try {
-    // This older laptop processes ~2 prompt tokens/second. Present two tiny
-    // previews; the local model selects a fragment, and the server renders
-    // that fragment's complete original sentences, never model-written policy.
-    const candidates = [];
-    for (let index = 0; index < sentences.length && candidates.length < 3; index += 2) {
-      const group = sentences.slice(index, index + 2);
-      candidates.push({ group, preview: group.map(({ text }) => text).join(' ').slice(0, 35) });
+// Role filtering, refusal rules and rendering remain independent of inference.
+export function createAssistant({ modelProvider = localModelProvider } = {}) {
+  if (typeof modelProvider?.status !== 'function' || typeof modelProvider?.select !== 'function') {
+    throw new TypeError('Model provider must implement status() and select()');
+  }
+  async function getAIStatus() {
+    try { return await modelProvider.status(); }
+    catch { return { ready: false, engine: 'knowledge_search', model: modelProvider.model || 'Model' }; }
+  }
+  // Shared with the isolated evaluation service. The raw output is the actual
+  // selector number, never a server-composed answer disguised as model JSON.
+  async function selectEvidence(question, sentences) {
+    const result = { selected: null, raw_model_output: null, model_context_ids: [], generation_ms: null };
+    try {
+      // This older laptop processes ~2 prompt tokens/second. Present two tiny
+      // previews; the local model selects a fragment, and the server renders
+      // that fragment's complete original sentences, never model-written policy.
+      const candidates = [];
+      for (let index = 0; index < sentences.length && candidates.length < 3; index += 2) {
+        const group = sentences.slice(index, index + 2);
+        candidates.push({ group, preview: group.map(({ text }) => text).join(' ').slice(0, 35) });
+      }
+      const stems = (normalize(question).match(/[\p{L}]{4,}/gu) || []).filter((word) => !stopWords.has(word)).map((word) => word.slice(0, 5));
+      const choices = candidates.map((candidate, index) => ({ ...candidate, index,
+        relevance: stems.reduce((sum, stem) => sum + (normalize(candidate.group.map(({ text }) => text).join(' ')).includes(stem) ? 1 : 0), 0),
+      })).sort((a, b) => b.relevance - a.relevance || a.index - b.index).slice(0, 2);
+      result.model_context_ids = [...new Set(choices.flatMap(({ group }) => group.map(({ document }) => document.id)))];
+      const output = await modelProvider.select({ question, previews: choices.map(({ preview }) => preview) });
+      const content = output?.raw_model_output;
+      result.raw_model_output = typeof content === 'string' ? content : null;
+      for (const key of ['model_request_ms', 'generation_ms', 'input_tokens', 'output_tokens']) {
+        if (Number.isFinite(output?.[key]) && output[key] >= 0) result[key] = output[key];
+      }
+      if (typeof content !== 'string' || content.length > 100) return { ...result, error: 'invalid_model_output' };
+      const parsed = JSON.parse(content);
+      if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return { ...result, error: 'invalid_model_output' };
+      return { ...result, selected: parsed === 0 ? [] : choices[parsed - 1].group };
+    } catch (error) {
+      const known = ['model_busy', 'model_unavailable', 'model_http_error'];
+      const code = known.includes(error?.code) ? error.code : error instanceof SyntaxError ? 'invalid_model_output' : 'model_connection_error';
+      if (code === 'model_busy' || code === 'model_unavailable') result.model_context_ids = [];
+      return { ...result, error: code };
     }
-    const stems = (normalize(question).match(/[\p{L}]{4,}/gu) || []).filter((word) => !stopWords.has(word)).map((word) => word.slice(0, 5));
-    const choices = candidates.map((candidate, index) => ({ ...candidate, index,
-      relevance: stems.reduce((sum, stem) => sum + (normalize(candidate.group.map(({ text }) => text).join(' ')).includes(stem) ? 1 : 0), 0),
-    })).sort((a, b) => b.relevance - a.relevance || a.index - b.index).slice(0, 2);
-    result.model_context_ids = [...new Set(choices.flatMap(({ group }) => group.map(({ document }) => document.id)))];
-    const response = await fetch(`${config.url}/v1/chat/completions`, {
-      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.key}` },
-      body: JSON.stringify({
-        model: 'asar-hr-local', temperature: 0, max_tokens: 3, stream: false,
-        chat_template_kwargs: { enable_thinking: false },
-        messages: [
-          { role: 'system', content: 'Select evidence number. None: 0.' },
-          { role: 'user', content: `${question.slice(0, 80)}\n${choices.map(({ preview }, index) => `${index + 1}: ${preview}`).join('\n')}` },
-        ],
-        response_format: { type: 'json_object', schema: { type: 'integer', enum: [0, ...choices.map((_, index) => index + 1)] } },
-      }),
-    });
-    if (!response.ok) return { ...result, error: 'model_http_error' };
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    result.raw_model_output = typeof content === 'string' ? content : null;
-    result.model_request_ms = performance.now() - started;
-    // A buffered HTTP duration includes prefill and transport. Only report
-    // generation time when the engine actually provides that measurement.
-    if (Number.isFinite(data.timings?.predicted_ms) && data.timings.predicted_ms >= 0) result.generation_ms = data.timings.predicted_ms;
-    if (data.usage && Number.isInteger(data.usage.prompt_tokens)) result.input_tokens = data.usage.prompt_tokens;
-    if (data.usage && Number.isInteger(data.usage.completion_tokens)) result.output_tokens = data.usage.completion_tokens;
-    if (typeof content !== 'string' || content.length > 100) return { ...result, error: 'invalid_model_output' };
-    const parsed = JSON.parse(content);
-    if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return { ...result, error: 'invalid_model_output' };
-    return { ...result, selected: parsed === 0 ? [] : choices[parsed - 1].group };
-  } catch (error) { return { ...result, error: error instanceof SyntaxError ? 'invalid_model_output' : 'model_connection_error' }; }
-  finally { generating = false; }
+  }
+
+  async function answerQuestion({ question, lang: inputLang, user } = {}) {
+    const lang = langOf(inputLang);
+    if (!user || !['employee', 'manager', 'hr'].includes(user.role)) return refuse(lang, 'privacy');
+    if (typeof question !== 'string' || question.trim().length < 3 || question.length > 1200) return refuse(lang);
+    const clean = question.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
+    if (isPrivateOrAction(clean)) return refuse(lang, 'privacy');
+    const normalized = normalize(clean);
+    if (/(?:битко|bitcoin|доллар|рубл|тенге|валют|крипто|cryptocurrenc|exchange\s+rate|\bbtc\b|\busd\b|\beur\b)/u.test(normalized)) return refuse(lang);
+    if (/(?:компенсац|больничн|беремен|декрет|увольнен|свадьб|бракосочет|похорон|донор|аванс|страхов|учебн[\p{L}\s]*отпуск|сколько.*(?:положен|в\s+год)|по\s+закону|sick\s+leave|maternity|dismissal|compensation|annual\s+entitlement|wedding|bereave|insurance|salary\s+advance|ауру|өтемақы)/u.test(normalized)) return refuse(lang);
+    // Access filtering happens before retrieval, scoring and model invocation.
+    const allowed = knowledgeForRole(user.role);
+    const balance = ownBalance(clean, user, lang, allowed);
+    if (balance) return balance;
+    const documents = retrieve(clean, allowed, lang);
+    if (!documents.length) return refuse(lang);
+    const sentences = sentencesFrom(documents, lang);
+    const { selected } = await selectEvidence(clean, sentences);
+    if (selected?.length === 0) return refuse(lang);
+    const mode = selected ? 'local_model' : 'knowledge_search';
+    // Output is rendered only from original source text. The model chooses
+    // evidence, and cannot fabricate policy text, links, numbers or employees.
+    const result = selected || sentences.slice(0, Math.min(6, sentences.length));
+    const sourceIds = new Set(result.map(({ document }) => document.id));
+    return {
+      answer: `${local(lang, 'По демонстрационным правилам:', 'Демонстрациялық ережелер бойынша:', 'According to the demonstration policies:')}\n\n${result.map(({ text }) => text).join(' ')}`.slice(0, 3500),
+      sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => knowledgeSource(item, lang)),
+      mode,
+    };
+  }
+
+  return { getAIStatus, selectEvidence, answerQuestion };
 }
 
-export async function answerQuestion({ question, lang: inputLang, user } = {}) {
-  const lang = langOf(inputLang);
-  if (!user || !['employee', 'manager', 'hr'].includes(user.role)) return refuse(lang, 'privacy');
-  if (typeof question !== 'string' || question.trim().length < 3 || question.length > 1200) return refuse(lang);
-  const clean = question.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
-  if (isPrivateOrAction(clean)) return refuse(lang, 'privacy');
-  const normalized = normalize(clean);
-  if (/(?:битко|bitcoin|доллар|рубл|тенге|валют|крипто|cryptocurrenc|exchange\s+rate|\bbtc\b|\busd\b|\beur\b)/u.test(normalized)) return refuse(lang);
-  if (/(?:компенсац|больничн|беремен|декрет|увольнен|свадьб|бракосочет|похорон|донор|аванс|страхов|учебн[\p{L}\s]*отпуск|сколько.*(?:положен|в\s+год)|по\s+закону|sick\s+leave|maternity|dismissal|compensation|annual\s+entitlement|wedding|bereave|insurance|salary\s+advance|ауру|өтемақы)/u.test(normalized)) return refuse(lang);
-  // Access filtering happens before retrieval, scoring and model invocation.
-  const allowed = knowledgeForRole(user.role);
-  const balance = ownBalance(clean, user, lang, allowed);
-  if (balance) return balance;
-  const documents = retrieve(clean, allowed, lang);
-  if (!documents.length) return refuse(lang);
-  const sentences = sentencesFrom(documents, lang);
-  const { selected } = await selectEvidence(clean, sentences);
-  if (selected?.length === 0) return refuse(lang);
-  const mode = selected ? 'local_model' : 'knowledge_search';
-  // Output is rendered only from original source text. The model chooses
-  // evidence, and cannot fabricate policy text, links, numbers or employees.
-  const result = selected || sentences.slice(0, Math.min(6, sentences.length));
-  const sourceIds = new Set(result.map(({ document }) => document.id));
-  return {
-    answer: `${local(lang, 'По демонстрационным правилам:', 'Демонстрациялық ережелер бойынша:', 'According to the demonstration policies:')}\n\n${result.map(({ text }) => text).join(' ')}`.slice(0, 3500),
-    sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => knowledgeSource(item, lang)),
-    mode,
-  };
-}
+// Preserve public imports used by the app, setup command and evaluation server.
+const defaultAssistant = createAssistant();
+export const { getAIStatus, selectEvidence, answerQuestion } = defaultAssistant;
