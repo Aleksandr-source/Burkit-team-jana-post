@@ -4,7 +4,7 @@
 
 ## Набор и результаты
 
-`vendor/janamen-eval-v1.0` содержит пакет Якова: 128 случаев RU/KK, 58 тестовых источников, 74 случая dev и 54 verification. Правила в нём вымышлены и не добавлены в рабочую базу знаний. Аванс есть в испытательном наборе; в приложении реализован отпуск.
+`vendor/janamen-eval-v1.0` содержит JanaMen Evaluation Pack v1.0: 128 случаев RU/KK, 58 тестовых источников, 74 случая dev и 54 verification. Правила в нём вымышлены и не добавлены в рабочую базу знаний. Аванс есть в испытательном наборе; в приложении реализован отпуск.
 
 [Протокол](vendor/janamen-eval-v1.0/docs/PROTOCOL.md), [оценка](vendor/janamen-eval-v1.0/docs/SCORING.md) и [контракт адаптера](vendor/janamen-eval-v1.0/docs/INTEGRATION.md) описывают условия испытаний.
 
@@ -24,7 +24,7 @@
 ```bash
 npm run eval:validate
 npm run eval:self-test
-node --test --test-isolation=none --test-concurrency=1 tests/evaluation.test.mjs tests/assistant.test.mjs
+node --test --test-concurrency=1 tests/evaluation.test.mjs tests/assistant.test.mjs
 ```
 
 Команды не скачивают и не запускают модель. `validate` проверяет состав пакета, `self-test` — Python-оценщик на искусственных ответах. Для оценщика нужен Python 3 без дополнительных пакетов. Node-тесты используют временный локальный HTTP-сервис и заглушку модели.
