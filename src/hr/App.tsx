@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, Bell, BookOpen, CalendarDays, Check, CheckCheck, CheckCircle2, ChevronDown, ChevronRight, Clock3, FileText, GraduationCap, LayoutDashboard, Loader2, LogOut, Menu, MessageCircle, Palette, Paperclip, Pencil, Plus, Search, Send, Settings, ShieldCheck, Trash2, Users, X, XCircle } from 'lucide-react';
 import { api, ApiError, askAssistant, bootstrap, login, logout } from './api';
-import type { AssistantAnswer, Bootstrap, Course, Enrollment, Lang, LeaveRequest, Localized, Notification, Person, Role, View } from './types';
+import type { AssistantAnswer, Bootstrap, Course, Enrollment, HrInquiry, Lang, LeaveRequest, Localized, Notification, Person, Role, View } from './types';
 import { formatDate, localized, locales, makeT, readLanguage } from './i18n';
 import type { Translator } from './i18n';
 import { createWorkspaceSync, commitAndRefresh } from './workspace-sync';
@@ -11,10 +11,10 @@ import './appearance.css';
 import { useAppearance } from './appearance';
 import AppearanceSettings from './AppearanceSettings';
 
-type ModalState = { kind: 'request'; id: string } | { kind: 'newRequest' } | { kind: 'course'; id: string } | { kind: 'editor'; course?: Course } | { kind: 'assign'; id: string } | { kind: 'person' } | { kind: 'employeeProfile'; id: string } | { kind: 'editProfile'; person: Person } | { kind: 'appearance' } | { kind: 'settings' } | null;
+type ModalState = { kind: 'request'; id: string } | { kind: 'newRequest' } | { kind: 'course'; id: string } | { kind: 'editor'; course?: Course } | { kind: 'assign'; id: string } | { kind: 'person' } | { kind: 'employeeProfile'; id: string } | { kind: 'editProfile'; person: Person } | { kind: 'inquiry'; id: string } | { kind: 'escalate'; question: string; language?: Lang } | { kind: 'appearance' } | { kind: 'settings' } | null;
 type Mutation = <T = unknown>(path: string, body?: unknown, message?: string) => Promise<T>;
 interface CommonProps { data: Bootstrap; lang: Lang; t: Translator; mutate: Mutation; open: (modal: ModalState) => void; navigate: (view: View) => void; }
-const viewIcons = { home: LayoutDashboard, requests: FileText, team: Users, academy: GraduationCap, assistant: MessageCircle, notifications: Bell, integrations: Settings, profile: Users, people: Users };
+const viewIcons = { home: LayoutDashboard, requests: FileText, team: Users, academy: GraduationCap, assistant: MessageCircle, hrInquiries: MessageCircle, notifications: Bell, integrations: Settings, profile: Users, people: Users };
 const initials = (name: string) => name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
 const activeStatus = (request: LeaveRequest) => request.status === 'pending_manager' || request.status === 'pending_hr';
 const canApprove = (request: LeaveRequest, user: Person, people: Person[]) => request.employeeId !== user.id && (((user.role === 'manager' || user.role === 'hr') && request.status === 'pending_manager' && people.some(person => person.id === request.employeeId && person.managerId === user.id)) || (user.role === 'hr' && request.status === 'pending_hr'));
@@ -217,16 +217,89 @@ function IntegrationsPage({ data, lang, t, navigate }: CommonProps) {
   </>;
 }
 
-interface ChatMessage { id: string; role: 'user' | 'assistant'; text: string; result?: AssistantAnswer; }
-function AssistantPage({ data, lang, t, open, active }: CommonProps & { active: boolean }) {
+function InquiryStatus({ inquiry, t }: { inquiry: HrInquiry; t: Translator }) {
+  return <span className={`hr-status hr-inquiry-status ${inquiry.status}`}><i />{t(inquiry.status === 'answered' ? 'inquiryAnswered' : 'inquiryOpen')}</span>;
+}
+
+function HrInquiriesPage({ data, lang, t, open }: CommonProps) {
+  const isHr = data.user.role === 'hr';
+  const [filter, setFilter] = useState<'all' | 'open' | 'answered'>(isHr ? 'open' : 'all');
+  const inquiries = [...(data.hrInquiries ?? [])].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const filtered = inquiries.filter(inquiry => filter === 'all' || inquiry.status === filter);
+  return <><div className="hr-page-intro"><div><span className="hr-eyebrow">{t('hrSupport')}</span><h1>{t(isHr ? 'hrInbox' : 'hrInquiries')}</h1><p>{t(isHr ? 'hrInboxDesc' : 'hrInquiriesDesc')}</p></div><button className="hr-button primary" onClick={() => open({ kind: 'escalate', question: '' })}><Plus size={16} />{t('escalateToHr')}</button></div>
+    <section className="hr-panel"><div className="hr-tabs hr-inquiry-tabs" role="group" aria-label={t('status')}>{(['open', 'all', 'answered'] as const).map(value => <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{t(value === 'all' ? 'all' : value === 'open' ? 'inquiryPending' : 'inquiryResolved')}<span>{inquiries.filter(inquiry => value === 'all' || inquiry.status === value).length}</span></button>)}</div>
+      {filtered.length ? <div className="hr-inquiry-list">{filtered.map(inquiry => <button key={inquiry.id} className="hr-inquiry-row" onClick={() => open({ kind: 'inquiry', id: inquiry.id })}>
+        <span className="hr-inquiry-icon"><MessageCircle size={20} /></span><span className="hr-inquiry-copy"><strong>{inquiry.question}</strong><span>{inquiry.authorName} · {formatDate(inquiry.createdAt, lang, true)}</span>{inquiry.answer && <small>{inquiry.answeredByName}: {inquiry.answer}</small>}</span><InquiryStatus inquiry={inquiry} t={t} /><ChevronRight size={17} />
+      </button>)}</div> : <Empty icon={<MessageCircle size={28} />} title={t(inquiries.length ? 'inquiryFilterEmpty' : 'inquiryEmpty')} text={!inquiries.length ? t('inquiryEmptyText') : undefined} />}
+    </section></>;
+}
+
+function EscalateInquiry({ question: initialQuestion, language, lang, t, mutate, open, close }: Pick<CommonProps, 'lang' | 't' | 'mutate' | 'open'> & { question: string; language?: Lang; close: () => void }) {
+  const [question, setQuestion] = useState(initialQuestion);
+  const [questionLanguage] = useState(language || lang);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const requestRef = useRef({ id: crypto.randomUUID(), question: initialQuestion.trim() });
+  const inFlight = useRef(false);
+  const safeClose = useCallback(() => { if (!inFlight.current) close(); }, [close]);
+  async function submit(event: FormEvent) {
+    event.preventDefault(); const text = question.trim();
+    if (!text || inFlight.current) return;
+    if (requestRef.current.question !== text) requestRef.current = { id: crypto.randomUUID(), question: text };
+    inFlight.current = true; setBusy(true); setError('');
+    try {
+      const inquiry = await mutate<HrInquiry>('/hr-inquiries', { question: text, language: questionLanguage, clientRequestId: requestRef.current.id }, t('inquirySent'));
+      if (mounted.current) open({ kind: 'inquiry', id: inquiry.id });
+    } catch (error) { if (mounted.current) setError(error instanceof Error ? error.message : t('networkError')); }
+    finally { inFlight.current = false; if (mounted.current) setBusy(false); }
+  }
+  return <Modal title={t('escalateToHr')} subtitle={t('inquiryConfirm')} close={safeClose} t={t}><form className="hr-form hr-inquiry-form" onSubmit={submit}>
+    <p className="hr-info-note"><ShieldCheck size={17} />{t('inquiryPrivacy')}</p>
+    <label>{t('inquiryQuestion')}<textarea required maxLength={1200} rows={5} value={question} disabled={busy} onChange={event => { setQuestion(event.target.value); setError(''); }} /><small className="hr-inquiry-counter">{question.length} / 1200</small></label>
+    {error && <p className="hr-form-error" role="alert">{error}</p>}
+    <div className="hr-form-actions"><button type="button" className="hr-button secondary" disabled={busy} onClick={safeClose}>{t('cancel')}</button><button className="hr-button primary" disabled={busy || !question.trim()}>{busy ? <Loader2 size={16} className="hr-spin" /> : <Send size={16} />}{t('escalateToHr')}</button></div>
+  </form></Modal>;
+}
+
+function InquiryDetail({ inquiry, data, lang, t, mutate, close }: CommonProps & { inquiry: HrInquiry; close: () => void }) {
+  const [answer, setAnswer] = useState(''); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const inFlight = useRef(false);
+  const mayAnswer = data.user.role === 'hr' && inquiry.authorId !== data.user.id && inquiry.status === 'open';
+  const safeClose = useCallback(() => { if (!inFlight.current) close(); }, [close]);
+  async function submit(event: FormEvent) {
+    event.preventDefault(); if (inFlight.current || !answer.trim() || !mayAnswer) return;
+    inFlight.current = true; setBusy(true); setError('');
+    try { await mutate<HrInquiry>(`/hr-inquiries/${inquiry.id}/answer`, { answer: answer.trim() }, t('inquiryAnswerSent')); setAnswer(''); }
+    catch (error) { setError(error instanceof Error ? error.message : t('networkError')); }
+    finally { inFlight.current = false; setBusy(false); }
+  }
+  return <Modal title={t('inquiryDetail')} close={safeClose} t={t}><article className="hr-inquiry-detail">
+    <InquiryStatus inquiry={inquiry} t={t} />
+    <dl className="hr-detail-fields"><div><dt>{t('inquiryAuthor')}</dt><dd>{inquiry.authorName}</dd></div><div><dt>{t('createdAt')}</dt><dd>{formatDate(inquiry.createdAt, lang, true)}</dd></div><div><dt>{t('inquiryLanguage')}</dt><dd lang={inquiry.language}>{({ ru: 'Русский', kk: 'Қазақша', en: 'English' })[inquiry.language]}</dd></div></dl>
+    <section className="hr-inquiry-question"><h3>{t('inquiryQuestion')}</h3><p lang={inquiry.language}>{inquiry.question}</p></section>
+    {inquiry.status === 'answered' ? <section className="hr-inquiry-response"><span className="hr-inquiry-human"><Users size={16} />{t('inquiryHumanAnswer')}</span><h3>{t('inquiryHrAnswer')}</h3><p>{inquiry.answer}</p><footer><strong>{inquiry.answeredByName}</strong><time dateTime={inquiry.answeredAt || undefined}>{inquiry.answeredAt ? formatDate(inquiry.answeredAt, lang, true) : ''}</time></footer></section>
+      : mayAnswer ? <form className="hr-form hr-inquiry-form" onSubmit={submit}><label>{t('inquiryAnswerLabel')}<textarea required maxLength={4000} rows={5} value={answer} disabled={busy} onChange={event => { setAnswer(event.target.value); setError(''); }} /><small>{t('inquiryAnswerHint')}</small><small className="hr-inquiry-counter">{answer.length} / 4000</small></label>{error && <p className="hr-form-error" role="alert">{error}</p>}<div className="hr-form-actions"><button className="hr-button primary" disabled={busy || !answer.trim()}>{busy ? <Loader2 size={16} className="hr-spin" /> : <Send size={16} />}{t('inquirySendAnswer')}</button></div></form>
+      : <p className="hr-info-note"><Clock3 size={17} />{t(data.user.role === 'hr' && inquiry.authorId === data.user.id ? 'inquiryOwnHr' : 'inquiryWaitingText')}</p>}
+  </article></Modal>;
+}
+
+function RecentHrInquiries({ data, lang, t, open, navigate }: CommonProps) {
+  const own = (data.hrInquiries ?? []).filter(inquiry => inquiry.authorId === data.user.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 3);
+  if (!own.length) return null;
+  return <section className="hr-panel hr-recent-inquiries"><div className="hr-panel-heading"><h2>{t('inquiryRecent')}</h2><button className="hr-text-link" onClick={() => navigate('hrInquiries')}>{t('seeAll')}<ArrowRight size={15} /></button></div><div className="hr-inquiry-list">{own.map(inquiry => <button className="hr-inquiry-row" key={inquiry.id} onClick={() => open({ kind: 'inquiry', id: inquiry.id })}><span className="hr-inquiry-copy"><strong>{inquiry.question}</strong><span>{inquiry.answer ? `${inquiry.answeredByName}: ${inquiry.answer}` : formatDate(inquiry.createdAt, lang, true)}</span></span><InquiryStatus inquiry={inquiry} t={t} /><ChevronRight size={16} /></button>)}</div></section>;
+}
+
+interface ChatMessage { id: string; role: 'user' | 'assistant'; text: string; result?: AssistantAnswer; originalQuestion?: string; questionLanguage?: Lang; }
+function AssistantPage({ data, lang, t, open, navigate, mutate, active }: CommonProps & { active: boolean }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]); const [question, setQuestion] = useState(''); const [busy, setBusy] = useState(false); const [error, setError] = useState(''); const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!active || !messages.length) return;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     endRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
   }, [active, messages, busy]);
-  async function send(text = question) { if (!text.trim() || busy) return; setQuestion(''); setError(''); setMessages(previous => [...previous.slice(-39), { id: crypto.randomUUID(), role: 'user', text: text.trim() }]); setBusy(true); try { const result = await askAssistant(text.trim(), lang); setMessages(previous => [...previous.slice(-39), { id: crypto.randomUUID(), role: 'assistant', text: result.answer, result }]); } catch (error) { setError(error instanceof Error ? error.message : t('networkError')); } finally { setBusy(false); } }
-  return <><div className="hr-page-intro"><div><span className="hr-eyebrow">YOUR EVERYDAY HR GUIDE</span><h1>{t('assistant')}<span className="hr-ai-title-tag">AI</span></h1><p>{t('assistantDesc')}</p></div><button className="hr-button secondary" onClick={() => { setMessages([]); setQuestion(''); setError(''); }} disabled={busy}><Plus size={16} />{t('newChat')}</button></div><section className="hr-chat-panel"><div className="hr-chat-top"><span className="hr-jana-orb"><MessageCircle size={20} /></span><div><strong>{t('assistantName')}</strong><span><i className={data.ai.ready ? 'ready' : ''} />{data.ai.ready ? `${t('localAI')} · ${data.ai.model}` : t('knowledgeSearch')}</span></div><ShieldCheck size={20} className="hr-muted-icon" /></div>{!data.ai.ready && <p className="hr-ai-fallback">{t('aiFallback')}</p>}<details className="hr-knowledge-catalog"><summary><BookOpen size={14} />{t('knowledgeDocuments')}<ChevronDown size={14} /></summary><p>{t('knowledgeDocumentsHint')}</p><ul>{data.knowledge.map(document => <li key={document.id}><strong>{localized(document.title, lang)}</strong><span>{t('version')} {document.version} · {document.origin ? localized(document.origin, lang) : t('demoSource')}</span></li>)}</ul></details><div className={`hr-chat-messages ${!messages.length ? 'is-empty' : ''}`}>{!messages.length ? <div className="hr-ai-welcome"><div className="hr-ai-welcome-orb"><MessageCircle size={40} /></div><h2>{t('aiWelcome')}</h2><p>{t('aiWelcomeText')}</p><div className="hr-prompt-list">{['promptLeave', 'promptApproval', 'promptLearning'].map(key => <button key={key} onClick={() => send(t(key))}><MessageCircle size={16} />{t(key)}<ArrowUpRight size={15} /></button>)}</div></div> : messages.map(message => <div key={message.id} className={`hr-chat-message ${message.role}`}><span className={message.role === 'assistant' ? 'hr-jana-orb' : 'hr-chat-user'}>{message.role === 'assistant' ? <MessageCircle size={16} /> : initials(data.user.name)}</span><div className="hr-chat-bubble">{message.result && <span className={`hr-answer-mode mode-${message.result.mode}`}>{t(message.result.mode === 'demo_quote' ? 'demoQuote' : message.result.mode === 'local_model' ? 'localAI' : message.result.mode === 'knowledge_search' ? 'knowledgeSearch' : 'refusal')}</span>}<p>{message.text}</p>{!!message.result?.sources.length && <div className="hr-chat-sources"><strong><BookOpen size={13} />{t('sources')}</strong>{message.result.sources.map((source, index) => <details key={source.id}><summary><span>{index + 1}</span>{source.title}<ChevronDown size={13} /></summary><p className="hr-source-meta">{t('source')}: {source.origin || t('demoSource')}{source.version && <> · {t('version')} {source.version}</>}</p><p>{source.excerpt}</p>{source.url && /^\/api\/knowledge\/[\w-]+\?lang=(ru|kk|en)$/.test(source.url) && <p><a href={source.url} target="_blank" rel="noopener noreferrer">{t('openSource')}</a></p>}</details>)}</div>}{message.role === 'assistant' && message.result?.sources.some(source => /leave|vacation|отпуск|demalys/i.test(`${source.id} ${source.title}`)) && <button className="hr-chat-action" onClick={() => open({ kind: 'newRequest' })}>{t('newRequest')}<ArrowRight size={14} /></button>}</div></div>)}{busy && <div className="hr-chat-message assistant"><span className="hr-jana-orb"><MessageCircle size={16} /></span><div className="hr-chat-bubble hr-thinking"><span className="hr-typing-dots" aria-hidden="true"><i /><i /><i /></span><span role="status">{t('thinking')}</span></div></div>}<div ref={endRef} /></div><div className="hr-chat-bottom">{error && <p className="hr-form-error" role="alert">{error}</p>}<form className="hr-chat-input" onSubmit={event => { event.preventDefault(); send(); }}><textarea aria-label={t('askPlaceholder')} placeholder={t('askPlaceholder')} maxLength={1200} rows={2} value={question} onChange={event => setQuestion(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }} /><button className="hr-button primary" disabled={!question.trim() || busy} aria-label={t('send')}><Send size={19} /></button></form><p><ShieldCheck size={12} />{t('aiSafety')}</p></div></section></>;
+  async function send(text = question) { if (!text.trim() || busy) return; const originalQuestion = text.trim(); const questionLanguage = lang; setQuestion(''); setError(''); setMessages(previous => [...previous.slice(-39), { id: crypto.randomUUID(), role: 'user', text: text.trim() }]); setBusy(true); try { const result = await askAssistant(text.trim(), lang); setMessages(previous => [...previous.slice(-39), { id: crypto.randomUUID(), role: 'assistant', text: result.answer, result, originalQuestion, questionLanguage }]); } catch (error) { setError(error instanceof Error ? error.message : t('networkError')); } finally { setBusy(false); } }
+  return <><div className="hr-page-intro"><div><span className="hr-eyebrow">YOUR EVERYDAY HR GUIDE</span><h1>{t('assistant')}<span className="hr-ai-title-tag">AI</span></h1><p>{t('assistantDesc')}</p></div><button className="hr-button secondary" onClick={() => { setMessages([]); setQuestion(''); setError(''); }} disabled={busy}><Plus size={16} />{t('newChat')}</button></div><section className="hr-chat-panel"><div className="hr-chat-top"><span className="hr-jana-orb"><MessageCircle size={20} /></span><div><strong>{t('assistantName')}</strong><span><i className={data.ai.ready ? 'ready' : ''} />{data.ai.ready ? `${t('localAI')} · ${data.ai.model}` : t('knowledgeSearch')}</span></div><ShieldCheck size={20} className="hr-muted-icon" /></div>{!data.ai.ready && <p className="hr-ai-fallback">{t('aiFallback')}</p>}<details className="hr-knowledge-catalog"><summary><BookOpen size={14} />{t('knowledgeDocuments')}<ChevronDown size={14} /></summary><p>{t('knowledgeDocumentsHint')}</p><ul>{data.knowledge.map(document => <li key={document.id}><strong>{localized(document.title, lang)}</strong><span>{t('version')} {document.version} · {document.origin ? localized(document.origin, lang) : t('demoSource')}</span></li>)}</ul></details><div className={`hr-chat-messages ${!messages.length ? 'is-empty' : ''}`}>{!messages.length ? <div className="hr-ai-welcome"><div className="hr-ai-welcome-orb"><MessageCircle size={40} /></div><h2>{t('aiWelcome')}</h2><p>{t('aiWelcomeText')}</p><div className="hr-prompt-list">{['promptLeave', 'promptApproval', 'promptLearning'].map(key => <button key={key} onClick={() => send(t(key))}><MessageCircle size={16} />{t(key)}<ArrowUpRight size={15} /></button>)}</div></div> : messages.map(message => <div key={message.id} className={`hr-chat-message ${message.role}`}><span className={message.role === 'assistant' ? 'hr-jana-orb' : 'hr-chat-user'}>{message.role === 'assistant' ? <MessageCircle size={16} /> : initials(data.user.name)}</span><div className="hr-chat-bubble">{message.result && <span className={`hr-answer-mode mode-${message.result.mode}`}>{t(message.result.mode === 'demo_quote' ? 'demoQuote' : message.result.mode === 'local_model' ? 'localAI' : message.result.mode === 'knowledge_search' ? 'knowledgeSearch' : 'refusal')}</span>}<p>{message.text}</p>{!!message.result?.sources.length && <div className="hr-chat-sources"><strong><BookOpen size={13} />{t('sources')}</strong>{message.result.sources.map((source, index) => <details key={source.id}><summary><span>{index + 1}</span>{source.title}<ChevronDown size={13} /></summary><p className="hr-source-meta">{t('source')}: {source.origin || t('demoSource')}{source.version && <> · {t('version')} {source.version}</>}</p><p>{source.excerpt}</p>{source.url && /^\/api\/knowledge\/[\w-]+\?lang=(ru|kk|en)$/.test(source.url) && <p><a href={source.url} target="_blank" rel="noopener noreferrer">{t('openSource')}</a></p>}</details>)}</div>}{message.role === 'assistant' && message.originalQuestion && <button className="hr-chat-action hr-escalate-action" onClick={() => open({ kind: 'escalate', question: message.originalQuestion!, language: message.questionLanguage })}><Users size={15} />{t(message.result?.mode === 'refusal' ? 'escalateToHr' : 'needHrHelp')}<ArrowRight size={14} /></button>}{message.role === 'assistant' && message.result?.sources.some(source => /leave|vacation|отпуск|demalys/i.test(`${source.id} ${source.title}`)) && <button className="hr-chat-action" onClick={() => open({ kind: 'newRequest' })}>{t('newRequest')}<ArrowRight size={14} /></button>}</div></div>)}{busy && <div className="hr-chat-message assistant"><span className="hr-jana-orb"><MessageCircle size={16} /></span><div className="hr-chat-bubble hr-thinking"><span className="hr-typing-dots" aria-hidden="true"><i /><i /><i /></span><span role="status">{t('thinking')}</span></div></div>}<div ref={endRef} /></div><div className="hr-chat-bottom">{error && <p className="hr-form-error" role="alert">{error}</p>}<form className="hr-chat-input" onSubmit={event => { event.preventDefault(); send(); }}><textarea aria-label={t('askPlaceholder')} placeholder={t('askPlaceholder')} maxLength={1200} rows={2} value={question} onChange={event => setQuestion(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } }} /><button className="hr-button primary" disabled={!question.trim() || busy} aria-label={t('send')}><Send size={19} /></button></form><p><ShieldCheck size={12} />{t('aiSafety')}</p></div></section><RecentHrInquiries data={data} lang={lang} t={t} open={open} navigate={navigate} mutate={mutate} /></>;
 }
 
 function NotificationFeed({ items, data, lang, t, mutate, navigate, open }: CommonProps & { items: Notification[] }) {
@@ -239,6 +312,7 @@ function NotificationFeed({ items, data, lang, t, mutate, navigate, open }: Comm
       if (openTarget) {
         navigate(item.view);
         if (item.entityId && item.view === 'requests' && data.requests.some(request => request.id === item.entityId)) open({ kind: 'request', id: item.entityId });
+        if (item.entityId && item.view === 'hrInquiries' && (data.hrInquiries ?? []).some(inquiry => inquiry.id === item.entityId)) open({ kind: 'inquiry', id: item.entityId });
         if (item.entityId && item.view === 'academy' && data.courses.some(course => course.id === item.entityId)) open({ kind: 'course', id: item.entityId });
       }
     } catch { /* The shared mutation handler displays the error. */ }
@@ -247,7 +321,7 @@ function NotificationFeed({ items, data, lang, t, mutate, navigate, open }: Comm
   if (!items.length) return <Empty icon={<Bell size={28} />} title={t('allRead')} text={t('allReadText')} />;
   return <div className="hr-notification-list">{items.map(item => <div key={item.id} className={`hr-notification-row ${!item.readAt ? 'unread' : ''}`}>
     <button className={`hr-notification-item ${!item.readAt ? 'unread' : ''}`} disabled={pendingId !== null} onClick={() => select(item, true)}>
-      <span className={`hr-notification-icon ${item.view === 'academy' ? 'violet' : 'blue'}`}>{item.view === 'academy' ? <GraduationCap size={21} /> : item.view === 'requests' ? <CalendarDays size={20} /> : <Bell size={20} />}</span>
+      <span className={`hr-notification-icon ${item.view === 'academy' ? 'violet' : 'blue'}`}>{item.view === 'academy' ? <GraduationCap size={21} /> : item.view === 'requests' ? <CalendarDays size={20} /> : item.view === 'hrInquiries' ? <MessageCircle size={20} /> : <Bell size={20} />}</span>
       <span className="hr-notification-copy"><strong>{localized(item.title, lang)}{!item.readAt && <i />}</strong><span>{localized(item.body, lang)}</span><small>{formatDate(item.createdAt, lang, true)}</small></span><ChevronRight size={17} />
     </button>
     {!item.readAt && <button className="hr-icon-button hr-notification-read" disabled={pendingId !== null} title={t('markRead')} aria-label={`${t('markRead')}: ${localized(item.title, lang)}`} onClick={() => select(item, false)}>{pendingId === item.id ? <Loader2 size={17} className="hr-spin" /> : <CheckCheck size={17} />}</button>}
@@ -413,21 +487,28 @@ export default function HRApp() {
     window.scrollTo({ top: 0 });
   }, []);
   const mutate: Mutation = async (path, body, message = t('saved')) => {
+    const mutationAccountId = accountId.current;
     sync.invalidate();
     try {
       return await commitAndRefresh(
         () => api(path, { method: 'POST', ...(body !== undefined ? { body: JSON.stringify(body) } : {}) }),
         result => {
+          if (accountId.current !== mutationAccountId) return;
           sync.invalidate();
           // Show the acknowledged request even if the following snapshot fails.
           if (path === '/requests' || /^\/requests\/[^/]+\/action$/.test(path)) {
             const request = result as LeaveRequest;
             setData(previous => previous ? { ...previous, requests: [request, ...previous.requests.filter(item => item.id !== request.id)] } : previous);
           }
+          if (path === '/hr-inquiries' || /^\/hr-inquiries\/[^/]+\/answer$/.test(path)) {
+            const inquiry = result as HrInquiry;
+            setData(previous => previous?.user.id === mutationAccountId ? { ...previous, hrInquiries: [inquiry, ...(previous.hrInquiries ?? []).filter(item => item.id !== inquiry.id)] } : previous);
+          }
           if (message) setToast({ text: message });
-        }, refresh, () => setToast({ text: t('savedRefreshPending'), error: true }),
+        }, refresh, () => { if (accountId.current === mutationAccountId) setToast({ text: t('savedRefreshPending'), error: true }); },
       ) as never;
     } catch (error) {
+      if (accountId.current !== mutationAccountId) throw error;
       if (error instanceof ApiError && error.status === 401) {
         sync.invalidate(); accountId.current = null; setData(null); setModal(null); setAssistantVisited(false);
       } else {
@@ -451,7 +532,7 @@ export default function HRApp() {
     }
   }
   async function doLogout() { sync.invalidate(); try { await logout(); sync.invalidate(); accountId.current = null; setData(null); setModal(null); setAssistantVisited(false); } catch (error) { setToast({ text: error instanceof Error ? error.message : t('networkError'), error: true }); } }
-  const allowedViews: View[] = data ? ['home', 'profile', 'requests', ...(data.user.role === 'manager' ? ['team' as View] : []), 'academy', 'assistant', 'notifications', ...(data.user.role === 'hr' ? ['people' as View, 'integrations' as View] : [])] : [];
+  const allowedViews: View[] = data ? ['home', 'profile', 'requests', ...(data.user.role === 'manager' ? ['team' as View] : []), 'academy', 'assistant', 'hrInquiries', 'notifications', ...(data.user.role === 'hr' ? ['people' as View, 'integrations' as View] : [])] : [];
   const unread = data?.notifications.filter(item => !item.readAt).length || 0;
   const common: CommonProps | null = data ? { data, lang, t, mutate, open: setModal, navigate } : null;
   const searchResults = data && search.trim().length > 1 ? [...data.requests.filter(request => `${request.employeeName} ${request.startDate} ${t('request')}`.toLowerCase().includes(search.toLowerCase())).slice(0, 4).map(request => ({ id: request.id, label: `${t('request')} · ${request.employeeName}`, detail: `${formatDate(request.startDate, lang)} · ${t(request.status)}`, type: 'request' as const })), ...data.courses.filter(course => `${localized(course.title, lang)} ${localized(course.description, lang)}`.toLowerCase().includes(search.toLowerCase())).slice(0, 3).map(course => ({ id: course.id, label: localized(course.title, lang), detail: t('academy'), type: 'course' as const })), ...(data.user.role === 'hr' ? data.people.filter(person => `${person.name} ${person.email}`.toLowerCase().includes(search.toLowerCase())).slice(0, 3).map(person => ({ id: person.id, label: person.name, detail: person.position, type: 'person' as const })) : [])] : [];
@@ -465,6 +546,7 @@ export default function HRApp() {
       case 'team': return <TeamPage {...common} />;
       case 'academy': return <AcademyPage {...common} />;
       case 'assistant': return <AssistantPage {...common} active={activeView === 'assistant'} />;
+      case 'hrInquiries': return <HrInquiriesPage {...common} />;
       case 'notifications': return <NotificationsPage {...common} />;
       case 'integrations': return <IntegrationsPage {...common} />;
       case 'people': return <PeoplePage {...common} />;
@@ -474,6 +556,7 @@ export default function HRApp() {
   if (connectionError && !data) return <div className="hr-app hr-starting" {...appearanceRoot}><Brand /><XCircle size={35} /><h2>{t('connectionError')}</h2><p>{connectionError}</p><button className="hr-button primary" onClick={() => { setLoading(true); setConnectionError(''); refresh().catch(error => setConnectionError(error.message)).finally(() => setLoading(false)); }}>{t('retry')}</button></div>;
   if (!data || !common) return <div className="hr-app" {...appearanceRoot}><LoginPage lang={lang} setLang={setLang} onLogin={doLogin} t={t} /></div>;
   const selectedRequest = modal?.kind === 'request' ? data.requests.find(request => request.id === modal.id) : null;
+  const selectedInquiry = modal?.kind === 'inquiry' ? (data.hrInquiries ?? []).find(inquiry => inquiry.id === modal.id) : null;
   const selectedCourse = modal?.kind === 'course' || modal?.kind === 'assign' ? data.courses.find(course => course.id === modal.id) : null;
   return (
     <div className="hr-app" {...appearanceRoot}>
@@ -490,8 +573,9 @@ export default function HRApp() {
           {allowedViews.map(item => {
             const Icon = viewIcons[item];
             return <button className={`hr-nav-item ${activeView === item ? 'active' : ''}`} key={item} onClick={() => navigate(item)} aria-current={activeView === item ? 'page' : undefined}>
-              <Icon size={19} aria-hidden="true" /><span>{t(item)}</span>
+              <Icon size={19} aria-hidden="true" /><span>{t(item === 'hrInquiries' && data.user.role === 'hr' ? 'hrInbox' : item)}</span>
               {item === 'notifications' && unread > 0 && <b>{unread}</b>}
+              {item === 'hrInquiries' && (data.hrInquiries ?? []).some(inquiry => inquiry.status === 'open' && inquiry.authorId !== data.user.id) && data.user.role === 'hr' && <b>{(data.hrInquiries ?? []).filter(inquiry => inquiry.status === 'open' && inquiry.authorId !== data.user.id).length}</b>}
               {item === 'assistant' && <small aria-hidden="true">AI</small>}
             </button>;
           })}
@@ -508,7 +592,7 @@ export default function HRApp() {
         <header className="hr-header">
           <div className="hr-header-left">
             <button className="hr-mobile-menu hr-icon-button" aria-label={t('menu')} onClick={() => setMenu(true)}><Menu size={22} /></button>
-            <span className="hr-breadcrumb">{t('workspace')}<ChevronRight size={13} /><strong>{t(activeView)}</strong></span>
+            <span className="hr-breadcrumb">{t('workspace')}<ChevronRight size={13} /><strong>{t(activeView === 'hrInquiries' && data.user.role === 'hr' ? 'hrInbox' : activeView)}</strong></span>
           </div>
           <div className="hr-header-actions">
             <div className="hr-global-search">
@@ -534,6 +618,8 @@ export default function HRApp() {
           <footer className="hr-page-footer"><span>JanaMen · Digital HR</span><span className="hr-jana-logo">jana<span>post</span></span></footer>
         </main>
       </div>
+      {modal?.kind === 'escalate' && <EscalateInquiry {...common} question={modal.question} language={modal.language} close={closeModal} />}
+      {modal?.kind === 'inquiry' && (selectedInquiry ? <InquiryDetail key={selectedInquiry.id} {...common} inquiry={selectedInquiry} close={closeModal} /> : <Modal title={t('inquiryDetail')} close={closeModal} t={t}><Empty title={t('inquiryUnavailable')} /></Modal>)}
       {modal?.kind === 'settings' && <SettingsModal user={data.user} t={t} close={closeModal} openAppearance={() => setModal({ kind: 'appearance' })} onLogout={doLogout} />}
       {appearanceDialog}
       {modal?.kind === 'employeeProfile' && data.people.some(person => person.id === modal.id) && <Modal title={t('employeeProfile')} close={closeModal} t={t}><ProfileCard {...common} person={data.people.find(person => person.id === modal.id)!} /></Modal>}

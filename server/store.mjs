@@ -28,6 +28,9 @@ export function openStore(dataDir, options = {}) {
     CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY,actorId TEXT NOT NULL,action TEXT NOT NULL,entityId TEXT NOT NULL,at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS person_profiles (personId TEXT PRIMARY KEY REFERENCES people(id) ON DELETE CASCADE,phone TEXT NOT NULL DEFAULT '',employeeNumber TEXT NOT NULL DEFAULT '');
     CREATE TABLE IF NOT EXISTS request_documents (requestId TEXT PRIMARY KEY REFERENCES requests(id) ON DELETE CASCADE,data TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS hr_inquiries (id TEXT PRIMARY KEY,authorId TEXT NOT NULL REFERENCES people(id),question TEXT NOT NULL,language TEXT NOT NULL CHECK(language IN ('ru','kk','en')),status TEXT NOT NULL CHECK(status IN ('open','answered')),createdAt TEXT NOT NULL,updatedAt TEXT NOT NULL,answer TEXT,answeredBy TEXT REFERENCES people(id),answeredByName TEXT,answeredAt TEXT,CHECK((status='open' AND answer IS NULL AND answeredBy IS NULL AND answeredByName IS NULL AND answeredAt IS NULL) OR (status='answered' AND answer IS NOT NULL AND answeredBy IS NOT NULL AND answeredByName IS NOT NULL AND answeredAt IS NOT NULL)));
+    CREATE INDEX IF NOT EXISTS hr_inquiries_author ON hr_inquiries(authorId,updatedAt);
+    CREATE TABLE IF NOT EXISTS hr_inquiry_submissions (authorId TEXT NOT NULL REFERENCES people(id),submissionKey TEXT NOT NULL,fingerprint TEXT NOT NULL,inquiryId TEXT NOT NULL REFERENCES hr_inquiries(id),PRIMARY KEY(authorId,submissionKey));
     CREATE TABLE IF NOT EXISTS schema_migrations (id TEXT PRIMARY KEY);
   `);
   const transaction = (fn) => { db.exec('BEGIN IMMEDIATE'); try { const result = fn(); db.exec('COMMIT'); return result; } catch (error) { db.exec('ROLLBACK'); throw error; } };

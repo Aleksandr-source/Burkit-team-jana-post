@@ -12,6 +12,7 @@ import { renderLeaveDocument, documentCSP } from './leave-document.mjs';
 import { HttpError, fail } from './errors.mjs';
 import { required, dateValue, today } from './validation.mjs';
 import { createLeaveService } from './leave-service.mjs';
+import { createHRInquiryService } from './hr-inquiries.mjs';
 import { createMockIntegrations, integrationMode } from './integrations/mock-providers.mjs';
 import { renderKnowledgeSource, knowledgeCSP } from './knowledge-page.mjs';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -44,6 +45,7 @@ export function createApplication(options={}) {
  const requireUser=req=>getUser(req)||fail(401,'unauthorized','Войдите в аккаунт.');
  const hr=user=>{ if(user.role!=='hr') fail(403,'forbidden','Это действие доступно только HR.'); };
  const leave = createLeaveService({ db, transaction });
+ const hrInquiries = createHRInquiryService({ db, transaction });
  const getRequest = leave.get;
  const server=createServer(async(req,res)=>{
   res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Referrer-Policy','same-origin'); res.setHeader('X-Frame-Options','DENY');
@@ -93,8 +95,16 @@ export function createApplication(options={}) {
       const enrollments=db.prepare('SELECT * FROM enrollments ORDER BY assignedAt DESC').all().filter(e=>visibleEmployee(user,personById(db,e.userId))).map(e=>enrollmentData(e,db));
       const notifications=db.prepare('SELECT data FROM notifications WHERE userId=?').all(user.id).map(x=>JSON.parse(x.data)).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
       const documents=knowledge.filter(k=>k.audience==='all'||user.role==='hr'||(user.role==='manager'&&k.audience==='manager'));
-      return send(res,200,{user:publicPerson(db,user),people:people.map(p=>publicPerson(db,p)),requests,courses,enrollments,notifications,knowledge:documents,ai:await getAIStatus()});
+      return send(res,200,{user:publicPerson(db,user),people:people.map(p=>publicPerson(db,p)),requests,courses,enrollments,notifications,hrInquiries:hrInquiries.list(user),knowledge:documents,ai:await getAIStatus()});
     }
+    if(path==='/api/hr-inquiries'&&req.method==='GET') return send(res,200,hrInquiries.list(user));
+    if(path==='/api/hr-inquiries'&&req.method==='POST') {
+      const result=hrInquiries.submit(user,await jsonBody(req));
+      return send(res,result.replayed?200:201,result.inquiry);
+    }
+    const inquiryMatch=path.match(/^\/api\/hr-inquiries\/([\w-]+)(\/answer)?$/);
+    if(inquiryMatch&&req.method==='GET'&&!inquiryMatch[2]) return send(res,200,hrInquiries.get(user,inquiryMatch[1]));
+    if(inquiryMatch&&req.method==='POST'&&inquiryMatch[2]) return send(res,200,hrInquiries.answer(user,inquiryMatch[1],await jsonBody(req)));
     let profileMatch=path.match(/^\/api\/people\/([\w-]+)\/profile$/);
     if(profileMatch&&req.method==='GET') {
       const person=personById(db,profileMatch[1]);if(!person||!visibleEmployee(user,person))fail(404,'not_found','Профиль не найден или недоступен.');

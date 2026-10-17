@@ -10,9 +10,9 @@ function refuse(lang, reason = 'unknown') {
       'Мен әріптестердің жеке деректерін ашпаймын және чаттан кадрлық әрекет жасамаймын. Өз деректеріңізді жеке кабинеттен, команданың рұқсат етілген деректерін тиісті бөлімнен қараңыз. Арнайы сұрақ бойынша HR маманына хабарласыңыз.',
       'I cannot disclose colleagues’ personal data or perform personnel actions from chat. View your own data in your dashboard and permitted team data in the relevant section. Contact HR for a specific request.')
     : local(lang,
-      'В доступной демонстрационной базе знаний нет надёжного ответа на этот вопрос. Я не буду придумывать кадровое правило. Уточните вопрос или обратитесь в HR через раздел «Сотрудники» / к своему руководителю.',
-      'Қолжетімді демонстрациялық білім базасында бұл сұраққа сенімді жауап жоқ. Мен кадрлық ереже ойлап таппаймын. Сұрақты нақтылаңыз немесе «Қызметкерлер» бөлімі арқылы HR маманына не басшыңызға хабарласыңыз.',
-      'The available demonstration knowledge base does not contain a reliable answer to this question. I will not invent an employment policy. Rephrase the question or contact HR through People / your manager.');
+      'В доступной демонстрационной базе знаний нет надёжного ответа на этот вопрос. Я не буду придумывать кадровое правило. Уточните вопрос или нажмите «Передать вопрос HR» — специалист ответит в обращении.',
+      'Қолжетімді демонстрациялық білім базасында бұл сұраққа сенімді жауап жоқ. Мен кадрлық ереже ойлап таппаймын. Сұрақты нақтылаңыз немесе «Сұрақты HR-ға жіберу» түймесін басыңыз — маман өтініште жауап береді.',
+      'The available demonstration knowledge base does not contain a reliable answer to this question. I will not invent an employment policy. Rephrase the question or click “Send question to HR” — a specialist will reply to your inquiry.');
   return { answer, sources: [], mode: 'refusal' };
 }
 

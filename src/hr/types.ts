@@ -1,7 +1,7 @@
 export type Lang = 'ru' | 'kk' | 'en';
 export type Localized = Record<Lang, string>;
 export type Role = 'employee' | 'manager' | 'hr';
-export type View = 'profile' | 'home' | 'requests' | 'team' | 'academy' | 'assistant' | 'notifications' | 'people' | 'integrations';
+export type View = 'profile' | 'home' | 'requests' | 'team' | 'academy' | 'assistant' | 'notifications' | 'people' | 'integrations' | 'hrInquiries';
 export interface Person { id: string; name: string; email: string; role: Role; company: string; department: string; position: string; managerId: string | null; managerName?: string | null; phone?: string; employeeNumber?: string; hiredAt: string; leaveBalance: number; leaveReserved: number; }
 export interface HistoryEntry { id: string; actorName: string; action: string; comment: string; at: string; }
 export interface Attachment { id: string; name: string; size: number; mimeType: string; }
@@ -14,5 +14,6 @@ export interface Enrollment { id: string; userId: string; userName: string; cour
 export interface Notification { id: string; type: string; title: Localized; body: Localized; readAt: string | null; createdAt: string; view: View; entityId?: string; }
 export interface KnowledgeDocument { id: string; title: Localized; content: Localized; section: string; version: string; origin?: Localized; kind?: string; url?: string; sha256?: string; audience: 'all' | 'manager' | 'hr'; }
 export interface AIStatus { ready: boolean; engine: string; model: string; }
-export interface Bootstrap { user: Person; people: Person[]; requests: LeaveRequest[]; courses: Course[]; enrollments: Enrollment[]; notifications: Notification[]; knowledge: KnowledgeDocument[]; ai: AIStatus; }
+export interface HrInquiry { id: string; authorId: string; authorName: string; question: string; language: Lang; status: 'open' | 'answered'; createdAt: string; updatedAt: string; answer: string | null; answeredBy: string | null; answeredByName: string | null; answeredAt: string | null; }
+export interface Bootstrap { user: Person; people: Person[]; requests: LeaveRequest[]; courses: Course[]; enrollments: Enrollment[]; notifications: Notification[]; knowledge: KnowledgeDocument[]; ai: AIStatus; hrInquiries: HrInquiry[]; }
 export interface AssistantAnswer { answer: string; sources: { id: string; title: string; excerpt: string; version?: string; origin?: string; kind?: string; url?: string; sha256?: string }[]; mode: 'demo_quote' | 'local_model' | 'knowledge_search' | 'refusal'; }
