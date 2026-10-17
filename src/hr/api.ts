@@ -6,7 +6,7 @@ export async function api<T = unknown>(path: string, options: RequestInit = {}):
   const t = makeT(lang);
   let response: Response;
   try {
-    response = await fetch(`/api${path}`, { credentials: 'same-origin', ...options, headers: { 'Accept-Language': lang, ...(options.body && !(options.body instanceof File) ? { 'Content-Type': 'application/json' } : {}), ...options.headers } });
+    response = await fetch(`/api${path}`, { credentials: 'same-origin', ...options, signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000), headers: { 'Accept-Language': lang, ...(options.body && !(options.body instanceof File) ? { 'Content-Type': 'application/json' } : {}), ...options.headers } });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') throw error;
     throw new ApiError(t('serverUnavailable'), 0);

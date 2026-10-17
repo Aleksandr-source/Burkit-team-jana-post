@@ -523,3 +523,133 @@ test('HR course editor publishes, assigns and invalidates stale progress after m
   assert.equal(enrollment.completedAt, null);
   assert.ok(refreshed.notifications.some((item) => item.type === 'course_updated'));
 });
+
+test('retried submission returns one request, one reservation and one set of notifications across restart', async t => {
+  const { request, login, restart } = await fixture(t);
+  const employee = await login('employee@janamen.demo');
+  const manager = await login('manager@janamen.demo');
+  const body = { startDate: date(60), endDate: date(62), reason: 'Network retry', clientRequestId: 'c4aa8cad-4fbc-431f-9902-82e04937a118' };
+  const post = () => request('/requests', { cookie: employee, method: 'POST', body });
+  const results = await Promise.all([post(), post()]);
+  assert.deepEqual(results.map(r => r.status).sort(), [200, 201]);
+  assert.equal(results[0].body.id, results[1].body.id);
+  const id = results[0].body.id;
+  let state = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(state.user.leaveReserved, 3);
+  assert.equal(state.requests.filter(r => r.id === id).length, 1);
+  assert.equal(state.notifications.filter(n => n.entityId === id).length, 1);
+  assert.equal((await request('/bootstrap', { cookie: manager })).body.notifications.filter(n => n.entityId === id).length, 1);
+  assert.equal((await request('/requests', { cookie: employee, method: 'POST', body: { ...body, reason: 'Changed payload' } })).status, 409);
+  await restart();
+  assert.equal((await post()).body.id, id);
+  await request(`/requests/${id}/action`, { cookie: employee, method: 'POST', body: { action: 'cancel', expectedStatus: 'pending_manager' } });
+  const replay = await post();
+  assert.equal(replay.status, 200); assert.equal(replay.body.status, 'cancelled');
+  state = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(state.user.leaveReserved, 0); assert.equal(state.user.leaveBalance, 24);
+});
+
+test('HR rejection informs employee and manager, preserves the reason and releases only that reservation', async t => {
+  const { request, login, createLeave } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo'), hr = await login('hr@janamen.demo');
+  const first = (await createLeave(employee, 50, 3)).body;
+  const second = (await createLeave(employee, 60, 4)).body;
+  const action = (id, cookie, body) => request(`/requests/${id}/action`, { cookie, method: 'POST', body });
+  assert.equal((await action(first.id, hr, { action: 'approve', expectedStatus: 'pending_manager' })).status, 403);
+  assert.equal((await action(first.id, manager, { action: 'approve', expectedStatus: 'pending_manager' })).body.status, 'pending_hr');
+  assert.equal((await action(first.id, hr, { action: 'reject', comment: 'Уточните даты заявления', expectedStatus: 'pending_hr' })).body.status, 'rejected');
+  for (const cookie of [employee, manager]) {
+    const state = (await request('/bootstrap', { cookie })).body;
+    const notice = state.notifications.find(n => n.entityId === first.id && n.type === 'request_rejected');
+    assert.ok(notice); assert.match(notice.body.ru, /Уточните даты заявления/);
+    const detail = (await request(`/requests/${first.id}`, { cookie })).body;
+    assert.equal(detail.history.at(-1).comment, 'Уточните даты заявления');
+  }
+  const state = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(state.user.leaveBalance, 24); assert.equal(state.user.leaveReserved, 4);
+  assert.equal((await request(`/requests/${first.id}/document`, { cookie: employee })).status, 409);
+  assert.equal((await action(first.id, hr, { action: 'approve', expectedStatus: 'pending_hr' })).status, 409);
+  assert.equal((await action(second.id, employee, { action: 'cancel', expectedStatus: 'pending_manager' })).status, 200);
+  assert.equal((await request('/bootstrap', { cookie: employee })).body.user.leaveReserved, 0);
+});
+
+test('a stale first-stage action cannot accidentally perform final approval when HR is also the manager', async t => {
+  const { request, login } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), hr = await login('hr@janamen.demo');
+  assert.equal((await request('/people/employee/profile', { cookie: hr, method: 'POST', body: { managerId: 'hr' } })).status, 200);
+  const created = await request('/requests', { cookie: employee, method: 'POST', body: { startDate: date(80), endDate: date(81) } });
+  assert.equal(created.status, 201);
+  const path = `/requests/${created.body.id}/action`;
+  const first = { cookie: hr, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_manager' } };
+  const results = await Promise.all([request(path, first), request(path, first)]);
+  assert.deepEqual(results.map(r => r.status).sort(), [200, 409]);
+  const state = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(state.requests.find(r => r.id === created.body.id).status, 'pending_hr');
+  assert.equal(state.user.leaveBalance, 24); assert.equal(state.user.leaveReserved, 2);
+  const final = await request(path, { cookie: hr, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_hr' } });
+  assert.equal(final.body.status, 'approved');
+  assert.equal((await request('/bootstrap', { cookie: employee })).body.user.leaveBalance, 22);
+});
+
+test('racing final approval and cancellation produces exactly one terminal decision and consistent balance', async t => {
+  const { request, login, createLeave } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo'), hr = await login('hr@janamen.demo');
+  const id = (await createLeave(employee, 90, 3)).body.id;
+  const path = `/requests/${id}/action`;
+  await request(path, { cookie: manager, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_manager' } });
+  const results = await Promise.all([
+    request(path, { cookie: hr, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_hr' } }),
+    request(path, { cookie: employee, method: 'POST', body: { action: 'cancel', expectedStatus: 'pending_hr' } }),
+  ]);
+  assert.deepEqual(results.map(r => r.status).sort(), [200, 409]);
+  const state = (await request('/bootstrap', { cookie: employee })).body;
+  const value = state.requests.find(r => r.id === id);
+  assert.equal(value.history.length, 3);
+  assert.equal(state.user.leaveReserved, 0);
+  assert.equal(state.user.leaveBalance, value.status === 'approved' ? 21 : 24);
+  const document = await request(`/requests/${id}/document`, { cookie: employee });
+  assert.equal(document.status, value.status === 'approved' ? 200 : 409);
+});
+
+test('the evidence reviewed by the manager cannot change while HR is deciding', async t => {
+  const { request, login, createLeave } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo'), hr = await login('hr@janamen.demo');
+  const id = (await createLeave(employee, 70, 2)).body.id;
+  const upload = cookie => request(`/requests/${id}/attachments`, { cookie, method: 'POST', binary: true, headers: { 'X-File-Name': 'evidence.txt' }, body: Buffer.from('Demo evidence') });
+  assert.equal((await upload(employee)).status, 201);
+  await request(`/requests/${id}/action`, { cookie: manager, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_manager' } });
+  assert.equal((await upload(employee)).status, 409);
+  assert.equal((await upload(hr)).status, 409);
+  const detail = (await request(`/requests/${id}`, { cookie: hr })).body;
+  assert.equal(detail.attachments.length, 1); assert.equal(detail.history.length, 3);
+});
+
+test('cancellation at the HR stage notifies both reviewers and removes the request from active work', async t => {
+  const { request, login, createLeave } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), manager = await login('manager@janamen.demo'), hr = await login('hr@janamen.demo');
+  const id = (await createLeave(employee, 45, 2)).body.id;
+  const path = `/requests/${id}/action`;
+  await request(path, { cookie: manager, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_manager' } });
+  assert.equal((await request(path, { cookie: employee, method: 'POST', body: { action: 'cancel', expectedStatus: 'pending_hr' } })).status, 200);
+  for (const cookie of [employee, manager, hr]) {
+    const state = (await request('/bootstrap', { cookie })).body;
+    assert.equal(state.requests.find(r => r.id === id).status, 'cancelled');
+    assert.equal(state.notifications.filter(n => n.entityId === id && n.type === 'request_cancelled').length, 1);
+  }
+  assert.equal((await request(path, { cookie: hr, method: 'POST', body: { action: 'approve', expectedStatus: 'pending_hr' } })).status, 409);
+  const person = (await request('/bootstrap', { cookie: employee })).body.user;
+  assert.equal(person.leaveBalance, 24); assert.equal(person.leaveReserved, 0);
+});
+
+test('a missing manager blocks submission without reserving days or creating a stranded request', async t => {
+  const { request, login, createLeave } = await fixture(t);
+  const employee = await login('employee@janamen.demo'), hr = await login('hr@janamen.demo');
+  assert.equal((await request('/people/employee/profile', { cookie: hr, method: 'POST', body: { managerId: null } })).status, 200);
+  const before = (await request('/bootstrap', { cookie: employee })).body;
+  const result = await createLeave(employee, 75);
+  assert.equal(result.status, 409); assert.equal(result.body.code, 'missing_manager');
+  const after = (await request('/bootstrap', { cookie: employee })).body;
+  assert.equal(after.requests.length, before.requests.length);
+  assert.equal(after.notifications.length, before.notifications.length);
+  assert.equal(after.user.leaveReserved, 0);
+});

@@ -97,16 +97,29 @@ export function createApplication(options={}) {
       const language=['ru','kk','en'].includes(url.searchParams.get('lang'))?url.searchParams.get('lang'):String(req.headers['accept-language']||'ru').slice(0,2);const lang=['ru','kk','en'].includes(language)?language:'ru';return send(res,200,knowledgeSource(document,lang));
     }
     if(path==='/api/requests'&&req.method==='POST') {
-      const body=await jsonBody(req);const start=dateValue(body.startDate),end=dateValue(body.endDate);if(body.startDate<today())fail(400,'past_date','Начало отпуска не может быть в прошлом.');const days=Math.round((end-start)/86400000)+1;if(days<1||days>366)fail(400,'invalid_range','Проверьте даты начала и окончания отпуска.');const reason=body.reason == null ? '' : typeof body.reason==='string' && body.reason.length<=2000 ? body.reason.trim() : fail(400,'invalid_input','Комментарий должен быть текстом до 2000 символов.'); if(!user.managerId)fail(409,'missing_manager','Для подачи заявки HR должен назначить руководителя.');
+      const body=await jsonBody(req);const start=dateValue(body.startDate),end=dateValue(body.endDate);const days=Math.round((end-start)/86400000)+1;if(days<1||days>366)fail(400,'invalid_range','Проверьте даты начала и окончания отпуска.');const reason=body.reason == null ? '' : typeof body.reason==='string' && body.reason.length<=2000 ? body.reason.trim() : fail(400,'invalid_input','Комментарий должен быть текстом до 2000 символов.');
+      const submissionKey=body.clientRequestId;
+      if(submissionKey!==undefined&&(typeof submissionKey!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(submissionKey)))fail(400,'invalid_input','Некорректный идентификатор отправки.');
+      const fingerprint=createHash('sha256').update(JSON.stringify([body.startDate,body.endDate,reason])).digest('hex');
+      let replay=false;
       const value=transaction(()=>{
-        const person=publicPerson(db,personById(db,user.id));if(days>person.leaveBalance-person.leaveReserved)fail(409,'insufficient_balance','Недостаточно доступных дней отпуска.');
+        if(submissionKey){
+          const previous=db.prepare('SELECT fingerprint,requestId FROM request_submissions WHERE userId=? AND submissionKey=?').get(user.id,submissionKey);
+          if(previous){if(previous.fingerprint!==fingerprint)fail(409,'submission_changed','Эта отправка уже сохранена с другими данными. Откройте заявку перед повторной отправкой.');replay=true;return requestById(db,previous.requestId);}
+        }
+        if(body.startDate<today())fail(400,'past_date','Начало отпуска не может быть в прошлом.');
+        const person=publicPerson(db,personById(db,user.id));
+        const manager=person.managerId?personById(db,person.managerId):null;
+        if(!manager||!['manager','hr'].includes(manager.role)||manager.id===person.id)fail(409,'missing_manager','Для подачи заявки HR должен назначить руководителя.');
+        if(days>person.leaveBalance-person.leaveReserved)fail(409,'insufficient_balance','Недостаточно доступных дней отпуска.');
         const overlap=db.prepare("SELECT id FROM requests WHERE employeeId=? AND status IN ('pending_manager','pending_hr','approved') AND startDate<=? AND endDate>=?").get(user.id,body.endDate,body.startDate);if(overlap)fail(409,'overlap','На эти даты уже есть активная заявка.');
         const id=uid('leave'),at=iso(); const entries=[{id:uid('h'),actorName:user.name,action:'submitted',comment:reason,at}];
         db.prepare('INSERT INTO requests VALUES (?,?,?,?,?,?,?,?,?,?)').run(id,user.id,body.startDate,body.endDate,days,reason,'pending_manager',at,at,JSON.stringify(entries));audit(db,user.id,'submitted',id);
-        notify(db,user.managerId,'request_submitted',L('Новая заявка на отпуск','Жаңа демалыс өтінімі','New leave request'),L(`${user.name} ожидает согласования.`,`${user.name} келісуді күтуде.`,`${user.name} is awaiting approval.`),'requests',id);
+        if(submissionKey)db.prepare('INSERT INTO request_submissions VALUES (?,?,?,?)').run(user.id,submissionKey,fingerprint,id);
+        notify(db,person.managerId,'request_submitted',L('Новая заявка на отпуск','Жаңа демалыс өтінімі','New leave request'),L(`${user.name} ожидает согласования.`,`${user.name} келісуді күтуде.`,`${user.name} is awaiting approval.`),'requests',id);
         notify(db,user.id,'request_submitted',L('Заявка отправлена','Өтінім жіберілді','Request submitted'),L('Руководитель получил заявку. Дни зарезервированы.','Басшы өтінімді алды. Күндер резервке қойылды.','Your manager received the request. Days are reserved.'),'requests',id);
         return requestById(db,id);
-      });return send(res,201,value);
+      });return send(res,replay?200:201,value);
     }
     let match=path.match(/^\/api\/requests\/([\w-]+)$/);
     if(match&&req.method==='GET') return send(res,200,getRequest(user,match[1]));
@@ -121,13 +134,13 @@ export function createApplication(options={}) {
     if(match&&req.method==='POST') {
       const body=await jsonBody(req);const action=body.action;if(!['approve','reject','cancel'].includes(action))fail(400,'invalid_action','Неизвестное действие.');
       const result=transaction(()=>{
-        const request=getRequest(user,match[1]), employee=personById(db,request.employeeId);if(!activeStatuses.includes(request.status))fail(409,'final_status','Решение по заявке уже принято.');
+        const request=getRequest(user,match[1]), employee=personById(db,request.employeeId);if(body.expectedStatus!==undefined&&body.expectedStatus!==request.status)fail(409,'stale_request','Статус заявки изменился. Проверьте обновлённое состояние перед следующим действием.');if(!activeStatuses.includes(request.status))fail(409,'final_status','Решение по заявке уже принято.');
         if(action==='cancel') {if(user.id!==employee.id)fail(403,'forbidden','Отменить заявку может только её автор.');db.prepare("UPDATE requests SET status='cancelled' WHERE id=?").run(request.id);history(request,user,'cancelled');notify(db,employee.id,'request_cancelled',L('Заявка отменена','Өтінім жойылды','Request cancelled'),L('Резерв дней освобождён.','Күндер резерві босатылды.','Reserved days have been released.'),'requests',request.id);notify(db,employee.managerId,'request_cancelled',L('Сотрудник отменил заявку','Қызметкер өтінімді жойды','Employee cancelled a request'),L(employee.name,employee.name,employee.name),'requests',request.id);if(request.status==='pending_hr')for(const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())if(h.id!==employee.id)notify(db,h.id,'request_cancelled',L('Заявка отменена автором','Өтінімді автор жойды','Request cancelled by author'),L(employee.name,employee.name,employee.name),'requests',request.id);
         } else {
           if(user.id===employee.id)fail(403,'self_approval','Нельзя согласовать собственную заявку.');
           const managerStage=request.status==='pending_manager'&&employee.managerId===user.id&&['manager','hr'].includes(user.role);
           const hrStage=request.status==='pending_hr'&&user.role==='hr';if(!managerStage&&!hrStage)fail(403,'forbidden','Заявка ожидает решения другого согласующего.');
-          if(action==='reject') {const comment=required(body.comment,2000,'Причина отказа');db.prepare("UPDATE requests SET status='rejected' WHERE id=?").run(request.id);history(request,user,'rejected',comment);notify(db,employee.id,'request_rejected',L('Заявка отклонена','Өтінім қабылданбады','Request declined'),L(comment,comment,comment),'requests',request.id);}
+          if(action==='reject') {const comment=required(body.comment,2000,'Причина отказа');db.prepare("UPDATE requests SET status='rejected' WHERE id=?").run(request.id);history(request,user,'rejected',comment);notify(db,employee.id,'request_rejected',L('Заявка отклонена','Өтінім қабылданбады','Request declined'),L(comment,comment,comment),'requests',request.id);if(hrStage&&employee.managerId!==user.id)notify(db,employee.managerId,'request_rejected',L('HR отклонил заявку','HR өтінімді қабылдамады','HR declined the request'),L(`${employee.name}: ${comment}`,`${employee.name}: ${comment}`,`${employee.name}: ${comment}`),'requests',request.id);}
           else if(managerStage) {db.prepare("UPDATE requests SET status='pending_hr' WHERE id=?").run(request.id);history(request,user,'manager_approved',typeof body.comment==='string'?body.comment.slice(0,2000):'');notify(db,employee.id,'request_approved',L('Руководитель согласовал отпуск','Басшы демалысты мақұлдады','Manager approved your leave'),L('Осталось подтверждение HR.','HR растауы қалды.','HR confirmation is next.'),'requests',request.id);for(const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())if(h.id!==employee.id)notify(db,h.id,'request_pending_hr',L('Отпуск ожидает HR','Демалыс HR растауын күтуде','Leave awaiting HR'),L(employee.name,employee.name,employee.name),'requests',request.id);}
           else {if(employee.leaveBalance<request.days)fail(409,'insufficient_balance','Остаток отпуска изменился. Обратитесь в HR.');db.prepare("UPDATE requests SET status='approved' WHERE id=?").run(request.id);db.prepare('UPDATE people SET leaveBalance=leaveBalance-? WHERE id=?').run(request.days,employee.id);history(request,user,'hr_approved',typeof body.comment==='string'?body.comment.slice(0,2000):'');notify(db,employee.id,'request_approved',L('Отпуск подтверждён','Демалыс расталды','Your leave is approved'),L('Оба этапа согласования завершены. Хорошего отдыха!','Келісудің екі кезеңі аяқталды. Жақсы демалыс!','Both approval steps are complete. Enjoy your time off!'),'requests',request.id);notify(db,employee.managerId,'request_approved',L('HR подтвердил отпуск','HR демалысты растады','HR confirmed leave'),L(employee.name,employee.name,employee.name),'requests',request.id);}
         }
@@ -138,9 +151,9 @@ export function createApplication(options={}) {
     }
     match=path.match(/^\/api\/requests\/([\w-]+)\/attachments$/);
     if(match&&req.method==='POST') {
-      const request=getRequest(user,match[1]);if(user.id!==request.employeeId&&user.role!=='hr')fail(403,'forbidden','Добавлять файлы может автор заявки или HR.');if(!activeStatuses.includes(request.status))fail(409,'final_status','В завершённую заявку нельзя добавить файл.');
-      let name;try{name=decodeURIComponent(String(req.headers['x-file-name']||''));}catch{fail(400,'invalid_file','Некорректное имя файла.');}name=required(name.replace(/[\x00-\x1f/\\]/g,'_'),200,'Имя файла');const bytes=await readBody(req,20*1024*1024);if(!bytes.length)fail(400,'empty_file','Файл пуст.');const id=uid('file'),file=join(dataDir,'uploads',id);writeFileSync(file,bytes,{mode:0o600,flag:'wx'});
-      try {transaction(()=>{const current=getRequest(user,request.id);if(!activeStatuses.includes(current.status))fail(409,'final_status','Статус заявки изменился.');db.prepare('INSERT INTO attachments VALUES (?,?,?,?,?,?,?)').run(id,request.id,name,bytes.length,'application/octet-stream',`uploads/${id}`,user.id);history(current,user,'attachment_added',name);});}catch(error){unlinkSync(file);throw error;}
+      const request=getRequest(user,match[1]);if(user.id!==request.employeeId&&user.role!=='hr')fail(403,'forbidden','Добавлять файлы может автор заявки или HR.');if(!activeStatuses.includes(request.status))fail(409,'final_status','В завершённую заявку нельзя добавить файл.');if(request.status!=='pending_manager')fail(409,'attachments_locked','После согласования руководителем вложения зафиксированы. Для изменения отмените заявку и подайте новую.');
+      let name;try{name=decodeURIComponent(String(req.headers['x-file-name']||''));}catch{fail(400,'invalid_file','Некорректное имя файла.');}name=required(name.replace(/[\x00-\x1f/\\]/g,'_'),200,'Имя файла');const bytes=await readBody(req,10*1024*1024);if(!bytes.length)fail(400,'empty_file','Файл пуст.');const id=uid('file'),file=join(dataDir,'uploads',id);writeFileSync(file,bytes,{mode:0o600,flag:'wx'});
+      try {transaction(()=>{const current=getRequest(user,request.id);if(current.status!=='pending_manager')fail(409,'attachments_locked','Статус заявки изменился: добавление вложений закрыто.');db.prepare('INSERT INTO attachments VALUES (?,?,?,?,?,?,?)').run(id,request.id,name,bytes.length,'application/octet-stream',`uploads/${id}`,user.id);history(current,user,'attachment_added',name);});}catch(error){unlinkSync(file);throw error;}
       return send(res,201,{id,name,size:bytes.length,mimeType:'application/octet-stream'});
     }
     match=path.match(/^\/api\/attachments\/([\w-]+)$/);

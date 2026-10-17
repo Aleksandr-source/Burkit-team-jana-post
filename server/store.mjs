@@ -20,6 +20,7 @@ export function openStore(dataDir, options = {}) {
     CREATE TABLE IF NOT EXISTS sessions (tokenHash TEXT PRIMARY KEY,userId TEXT NOT NULL REFERENCES people(id) ON DELETE CASCADE,expiresAt TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY,employeeId TEXT NOT NULL REFERENCES people(id),startDate TEXT NOT NULL,endDate TEXT NOT NULL,days INTEGER NOT NULL CHECK(days>0),reason TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('pending_manager','pending_hr','approved','rejected','cancelled')),createdAt TEXT NOT NULL,updatedAt TEXT NOT NULL,history TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS requests_employee ON requests(employeeId,status);
+    CREATE TABLE IF NOT EXISTS request_submissions (userId TEXT NOT NULL REFERENCES people(id),submissionKey TEXT NOT NULL,fingerprint TEXT NOT NULL,requestId TEXT NOT NULL REFERENCES requests(id),PRIMARY KEY(userId,submissionKey));
     CREATE TABLE IF NOT EXISTS courses (id TEXT PRIMARY KEY,data TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS enrollments (id TEXT PRIMARY KEY,userId TEXT NOT NULL REFERENCES people(id),courseId TEXT NOT NULL REFERENCES courses(id),completedLessonIds TEXT NOT NULL,score INTEGER,passed INTEGER NOT NULL DEFAULT 0,completedAt TEXT,assignedAt TEXT NOT NULL,UNIQUE(userId,courseId));
     CREATE TABLE IF NOT EXISTS notifications (id TEXT PRIMARY KEY,userId TEXT NOT NULL REFERENCES people(id),data TEXT NOT NULL);
