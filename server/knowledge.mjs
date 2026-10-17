@@ -1,15 +1,22 @@
+import { createHash } from 'node:crypto';
+
 // Fictional hackathon policies. These are product demo data, not Jana Post policy
 // or legal advice. Keep translations together so citations open in the UI language.
 const t = (ru, kk, en) => ({ ru, kk, en });
 const doc = (id, title, content, section, audience = 'all') => ({
-  id, title, content, section, audience, version: 'DEMO · 16.10.2026',
+  id, title, content, section, audience, version: 'DEMO · 17.10.2026 · v1.1',
+  kind: ['leave-days', 'leave-balance', 'leave-decisions'].includes(id) ? 'fictional_policy' : 'application_help',
+  origin: t('Материалы команды JanaMen для хакатона. Не официальные правила Jana Post.',
+    'JanaMen командасының хакатон материалдары. Jana Post ресми ережелері емес.',
+    'JanaMen team hackathon materials. Not official Jana Post policies.'),
+  fictional: true, effectiveFrom: '2026-10-16',
 });
 
 export const knowledge = [
   doc('demo-scope', t('О демонстрационных правилах', 'Демонстрациялық ережелер туралы', 'About the demo policies'), t(
-    'Все правила этой базы придуманы для хакатонного прототипа Asar HR. Они не являются официальными правилами Jana Post или юридической консультацией. Все сотрудники, учётные записи и кадровые данные в демонстрации вымышлены. За подтверждением реального кадрового правила нужно обратиться в HR своей компании.',
-    'Бұл базадағы барлық ереже Asar HR хакатондық прототипі үшін ойдан шығарылған. Олар Jana Post компаниясының ресми ережесі немесе заңгерлік кеңес емес. Демонстрациядағы қызметкерлер, тіркелгілер және кадрлық деректер ойдан шығарылған. Нақты кадрлық ережені компанияңыздың HR маманынан растаңыз.',
-    'Every policy in this knowledge base is fictional and created for the Asar HR hackathon prototype. It is not an official Jana Post policy or legal advice. All employees, accounts and personnel records in this demonstration are fictional. Ask your company HR team to confirm a real employment policy.'
+    'Все правила этой базы придуманы для хакатонного прототипа JanaMen. Они не являются официальными правилами Jana Post или юридической консультацией. Все сотрудники, учётные записи и кадровые данные в демонстрации вымышлены. За подтверждением реального кадрового правила нужно обратиться в HR своей компании.',
+    'Бұл базадағы барлық ереже JanaMen хакатондық прототипі үшін ойдан шығарылған. Олар Jana Post компаниясының ресми ережесі немесе заңгерлік кеңес емес. Демонстрациядағы қызметкерлер, тіркелгілер және кадрлық деректер ойдан шығарылған. Нақты кадрлық ережені компанияңыздың HR маманынан растаңыз.',
+    'Every policy in this knowledge base is fictional and created for the JanaMen hackathon prototype. It is not an official Jana Post policy or legal advice. All employees, accounts and personnel records in this demonstration are fictional. Ask your company HR team to confirm a real employment policy.'
   ), 'general'),
   doc('leave-submit', t('Как подать заявку на отпуск', 'Демалысқа өтініш беру', 'How to request leave'), t(
     'Откройте «Мои заявки» и нажмите «Оформить отпуск». Выберите даты начала и окончания отпуска, при необходимости добавьте комментарий и вложение. Дата начала не может быть раньше сегодняшнего дня, дата окончания не может быть раньше начала. Перед отправкой проверьте число дней и доступный остаток. После отправки заявка поступит вашему непосредственному руководителю, затем в HR. Это демонстрационный порядок.',
@@ -56,15 +63,26 @@ export const knowledge = [
     'HR «Қызметкерлер» бөлімінде демонстрациялық қызметкерді құрып, рөлін және тікелей басшысын белгілейді. HR Jana Academy бөлімінде курс, сабақ, тест сұрақтары және өту балын өңдейді. Мазмұнын тексергеннен кейін курсты жариялап, қызметкерлерге тағайындаңыз. HR соңғы қарауына басшы мақұлдаған өтініштер түседі. Алғашқы кіру деректерін демонстрация қатысушыларына жеке беріңіз; бұлар нақты қызметкерлердің деректері емес.',
     'HR creates demonstration employees in People and sets their role and direct manager. HR edits courses, lessons, quiz questions and passing scores in Jana Academy. Check the content before publishing and assigning a course. HR receives requests for final review only after manager approval. Share initial sign-in credentials personally with demonstration participants; they do not belong to real employees.'
   ), 'hr', 'hr'),
-  doc('assistant-limits', t('Если Асар не знает ответа', 'Асар жауапты білмесе', 'When Asar cannot answer'), t(
-    'Асар отвечает только по доступной вашему уровню доступа демонстрационной базе знаний и указывает источники. Если подтверждённого ответа нет, ассистент должен сообщить об этом и предложить обратиться в HR. В базе нет правил о зарплате, компенсациях, больничных и реальной политике компании. Ассистент не выполняет кадровые действия вместо пользователя. Текст вопроса не может расширить права доступа.',
-    'Асар тек рөліңізге қолжетімді демонстрациялық білім базасы бойынша жауап беріп, дереккөздерін көрсетеді. Расталған жауап болмаса, оны хабарлап, HR маманына жүгінуді ұсынуы керек. Базада жалақы, өтемақы, ауру демалысы және компанияның нақты саясаты туралы ереже жоқ. Ассистент пайдаланушы орнына кадрлық әрекет жасамайды. Сұрақ мәтіні қолжетімділік құқықтарын кеңейте алмайды.',
-    'Asar answers only from the demonstration knowledge base available to your role and identifies its sources. If no supported answer exists, it must say so and suggest contacting HR. The knowledge base has no policies about salary, compensation, sick leave or real company policy. The assistant does not perform personnel actions for the user. A question cannot expand access permissions.'
+  doc('assistant-limits', t('Если JanaMen AI не знает ответа', 'JanaMen AI жауапты білмесе', 'When JanaMen AI cannot answer'), t(
+    'JanaMen AI отвечает только по доступной вашему уровню доступа демонстрационной базе знаний и указывает источники. Если подтверждённого ответа нет, ассистент должен сообщить об этом и предложить обратиться в HR. В базе нет правил о зарплате, компенсациях, больничных и реальной политике компании. Ассистент не выполняет кадровые действия вместо пользователя. Текст вопроса не может расширить права доступа.',
+    'JanaMen AI тек рөліңізге қолжетімді демонстрациялық білім базасы бойынша жауап беріп, дереккөздерін көрсетеді. Расталған жауап болмаса, оны хабарлап, HR маманына жүгінуді ұсынуы керек. Базада жалақы, өтемақы, ауру демалысы және компанияның нақты саясаты туралы ереже жоқ. Ассистент пайдаланушы орнына кадрлық әрекет жасамайды. Сұрақ мәтіні қолжетімділік құқықтарын кеңейте алмайды.',
+    'JanaMen AI answers only from the demonstration knowledge base available to your role and identifies its sources. If no supported answer exists, it must say so and suggest contacting HR. The knowledge base has no policies about salary, compensation, sick leave or real company policy. The assistant does not perform personnel actions for the user. A question cannot expand access permissions.'
   ), 'assistant'),
 ];
 
 export function knowledgeForRole(role) {
+  if (!['employee', 'manager', 'hr'].includes(role)) return [];
   return knowledge.filter((item) => item.audience === 'all'
     || (item.audience === 'manager' && ['manager', 'hr'].includes(role))
     || (item.audience === 'hr' && role === 'hr'));
+}
+
+export function knowledgeSource(document, language = 'ru') {
+  const lang = ['ru', 'kk', 'en'].includes(language) ? language : 'ru';
+  return {
+    id: document.id, title: document.title[lang], excerpt: document.content[lang],
+    version: document.version, origin: document.origin[lang], kind: document.kind,
+    fictional: document.fictional, url: `/api/knowledge/${encodeURIComponent(document.id)}`,
+    sha256: createHash('sha256').update(document.content[lang]).digest('hex'),
+  };
 }

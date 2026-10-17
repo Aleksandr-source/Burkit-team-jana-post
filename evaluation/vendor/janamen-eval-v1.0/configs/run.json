@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "timeout_s": 30,
+  "max_requests": 1024,
+  "max_response_bytes": 1048576,
+  "retry_policy": "none: transport failures are counted, not silently retried",
+  "recommended_quality_repeats": 1,
+  "recommended_performance_repeats": 5,
+  "recommended_warmup_requests": 5,
+  "primary_concurrency": 1,
+  "optional_stress_concurrency": 4,
+  "response_cache": "disable and record actual server setting",
+  "prefix_cache": "record actual setting; benchmark disabled first, enabled separately",
+  "max_answer_characters_for_scoring": 1200,
+  "real_employee_data_allowed": false
+}

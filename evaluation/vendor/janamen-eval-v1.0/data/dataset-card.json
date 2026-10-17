@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "cases": 128,
+  "knowledge_fragments": 58,
+  "independent_lineages": 34,
+  "fixture_status": "FICTIONAL_NOT_PRODUCT_TRUTH",
+  "language_review": "pending_native_review",
+  "quality_status": "QUALITY_NOT_EVALUATED",
+  "schema_version": "1.0",
+  "prepared_date": "2026-10-17",
+  "counts_by_slice": {
+    "leave.ru": 32,
+    "leave.kk": 32,
+    "advance.ru": 32,
+    "advance.kk": 32
+  },
+  "counts_by_split": {
+    "dev": 74,
+    "verification": 54
+  },
+  "counts_by_suite": {
+    "supported": 32,
+    "missing": 12,
+    "evidence_removed": 4,
+    "out_of_scope": 4,
+    "clarification": 4,
+    "unavailable_action": 4,
+    "unauthorized": 8,
+    "user_injection": 4,
+    "source_injection": 4,
+    "version": 4,
+    "context_update": 4,
+    "boundary": 8,
+    "multi_hop": 4,
+    "cross_language": 4,
+    "noise": 4,
+    "irrelevant_evidence": 4,
+    "conflict": 4,
+    "revoked": 4,
+    "long_context": 4,
+    "authorized": 4,
+    "demo_vs_law": 4
+  },
+  "normative_source_status": "supplied_engineering_spec_only_original_customer_docx_unavailable",
+  "model_status": "not_run",
+  "gpu_status": "not_run",
+  "external_teacher_requests": 0,
+  "service_probes_status": "definitions_only_no_project_endpoint_available",
+  "supplied_spec": {
+    "name": "JanaMen_AI_Implementation_Spec_EN.md",
+    "sha256": "b14fb9d755fbfbb397478b6ae80b488c42b9c75176d148283d06281f9af1a2ce"
+  },
+  "dependency_policy": "Python standard library only",
+  "verification_status": "passed"
+}

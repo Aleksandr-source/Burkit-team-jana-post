@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "cases": 128,
+  "knowledge_fragments": 58,
+  "independent_lineages": 34,
+  "fixture_status": "FICTIONAL_NOT_PRODUCT_TRUTH",
+  "language_review": "pending_native_review",
+  "quality_status": "QUALITY_NOT_EVALUATED"
+}

@@ -69,7 +69,7 @@ async function visit(directory, prefix = '') {
 }
 await visit(destination);
 await writeFile(join(destination, 'SNAPSHOT.json'), JSON.stringify({
-  createdAt: new Date().toISOString(), product: 'Asar HR', purpose: 'Private local demo snapshot',
+  createdAt: new Date().toISOString(), product: 'JanaMen', purpose: 'Private local demo snapshot',
   platforms: ['Windows 10/11 x64', 'Linux x64 (system Node.js >=24.11)'],
   database: { integrity: 'ok', counts, sessions: 'cleared only in copy' },
   notes: 'Includes fictional demo data and private demo credentials. Keep this copy separate from a public Git repository. Checksums describe the initial state before first launch.',

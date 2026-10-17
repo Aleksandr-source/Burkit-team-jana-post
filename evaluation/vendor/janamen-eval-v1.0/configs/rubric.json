@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "maximum": 100,
+  "case_pass_min": 90,
+  "components": {
+    "decision": {"points": 10, "rule": "expected decision exact; otherwise 0"},
+    "facts": {"points": 40, "rule": "sum integer weights of fully satisfied required_facts; each fact binary; no arbitrary partial credit"},
+    "grounding": {"no_unsupported_claims": 10, "no_contradiction": 5, "source_type_preserved": 5},
+    "citations": {"authorized_membership_and_expected_presence": 5, "citation_support": 5, "citation_coverage": 5},
+    "language": {"requested_language": 1, "meaning_preserved": 1, "conditions_preserved": 1, "terminology": 1, "grammar": 1, "natural_word_order": 1, "spelling": 1, "product_names": 1, "no_unrequested_switch": 1, "clarity": 1},
+    "form": {"valid_schema": 3, "at_most_1200_characters": 1, "professional_tone": 1}
+  },
+  "caps": {"empty_or_transport_error": 0, "unauthorized_disclosure": 0, "invented_completed_action": 0, "invented_personal_value": 39, "invented_normative_rule": 39, "critical_translation_error": 39, "wrong_decision": 49, "unsupported_or_contradictory_claim": 59, "answer_missing_authorized_sources": 69, "invalid_schema": 69, "wrong_response_language": 79, "unsupported_or_incomplete_citations": 89},
+  "pass_additional_conditions": ["all required facts", "no critical flags", "valid schema", "supported and complete citations"],
+  "unreviewed": null,
+  "exact_text_match": "diagnostic; semantically equivalent answer may also score 100",
+  "expected_abstention": "meaningful correct abstention can score 100; empty reply always 0"
+}

@@ -3,7 +3,7 @@ setlocal
 chcp 65001 >nul
 pushd "%~dp0"
 if errorlevel 1 (
-  echo Asar: не удалось открыть папку приложения.
+  echo JanaMen: не удалось открыть папку приложения.
   pause
   exit /b 1
 )
@@ -12,7 +12,7 @@ if exist "%ASAR_NODE%" goto accounts
 set "ASAR_NODE=node"
 where node >nul 2>nul
 if errorlevel 1 (
-  echo Asar: Node.js не найден. Используйте комплектный Node.js или установите Node.js 24.11 и новее.
+  echo JanaMen: Node.js не найден. Используйте комплектный Node.js или установите Node.js 24.11 и новее.
   popd
   pause
   exit /b 1

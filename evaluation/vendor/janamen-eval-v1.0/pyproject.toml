@@ -1,0 +1,9 @@
+[project]
+name = "janamen-eval"
+version = "1.0.0"
+description = "Independent bilingual HR fixture benchmark and scoring harness"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.janamen-eval]
+execution = "python3 evaluate.py; no installation or model downloads required"

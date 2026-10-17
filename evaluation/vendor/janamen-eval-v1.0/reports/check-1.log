@@ -1,0 +1,61 @@
+/tmp/tmp5hfxqtl7/comparison.json
+{
+  "status": "dry_run",
+  "plan": {
+    "endpoint": "http://127.0.0.1/answer",
+    "mode": "oracle",
+    "cases": 32,
+    "measured_requests": 32,
+    "warmup_requests": 0,
+    "concurrency": 1,
+    "max_requests": 1024
+  }
+}
+Recorded 67 responses in /tmp/tmp0pxsow2q/run. Complete reviews.jsonl before scoring.
+{"status": "QUALITY_NOT_EVALUATED", "report": "/tmp/tmp9t44d5gt/summary/report.json"}
+test_comparison_rejects_different_fixture_versions (test_benchmark.BenchmarkTests.test_comparison_rejects_different_fixture_versions) ... ok
+test_comparison_selects_smallest_qualifying_candidate (test_benchmark.BenchmarkTests.test_comparison_selects_smallest_qualifying_candidate) ... ok
+test_correct_refusal_is_not_zero (test_benchmark.BenchmarkTests.test_correct_refusal_is_not_zero) ... ok
+test_critical_failure_in_later_repeat_not_hidden (test_benchmark.BenchmarkTests.test_critical_failure_in_later_repeat_not_hidden) ... ok
+test_data_integrity (test_benchmark.BenchmarkTests.test_data_integrity) ... ok
+test_dry_run_does_not_call_endpoint (test_benchmark.BenchmarkTests.test_dry_run_does_not_call_endpoint) ... ok
+test_duplicate_citations_fail_schema (test_benchmark.BenchmarkTests.test_duplicate_citations_fail_schema) ... ok
+test_each_reference_calibrates_100 (test_benchmark.BenchmarkTests.test_each_reference_calibrates_100) ... ok
+test_effective_date_half_open (test_benchmark.BenchmarkTests.test_effective_date_half_open) ... ok
+test_empty_reply_zero_even_with_review (test_benchmark.BenchmarkTests.test_empty_reply_zero_even_with_review) ... ok
+test_equivalent_wording_can_score_100 (test_benchmark.BenchmarkTests.test_equivalent_wording_can_score_100) ... ok
+test_fact_weights_are_not_fuzzy_text_similarity (test_benchmark.BenchmarkTests.test_fact_weights_are_not_fuzzy_text_similarity) ... ok
+test_http_runner_contract_with_fixture_transport (test_benchmark.BenchmarkTests.test_http_runner_contract_with_fixture_transport) ... ok
+test_incomplete_review_pending (test_benchmark.BenchmarkTests.test_incomplete_review_pending) ... ok
+test_integrated_body_cannot_grant_roles_or_provide_gold (test_benchmark.BenchmarkTests.test_integrated_body_cannot_grant_roles_or_provide_gold) ... ok
+test_invalid_http_limits_fail_before_requests (test_benchmark.BenchmarkTests.test_invalid_http_limits_fail_before_requests) ... ok
+test_invalid_source_capped_even_with_optimistic_reviewer (test_benchmark.BenchmarkTests.test_invalid_source_capped_even_with_optimistic_reviewer) ... ok
+test_invented_actions_zero (test_benchmark.BenchmarkTests.test_invented_actions_zero) ... ok
+test_irrelevant_existing_source_requires_support_review (test_benchmark.BenchmarkTests.test_irrelevant_existing_source_requires_support_review) ... ok
+test_language_and_scenario_denominators (test_benchmark.BenchmarkTests.test_language_and_scenario_denominators) ... ok
+test_long_context_keeps_exception_at_end (test_benchmark.BenchmarkTests.test_long_context_keeps_exception_at_end) ... ok
+test_missing_citation_capped (test_benchmark.BenchmarkTests.test_missing_citation_capped) ... ok
+test_missing_raw_telemetry_not_fabricated (test_benchmark.BenchmarkTests.test_missing_raw_telemetry_not_fabricated) ... ok
+test_no_gold_in_model_request (test_benchmark.BenchmarkTests.test_no_gold_in_model_request) ... ok
+test_no_remote_by_default_or_embedded_secret (test_benchmark.BenchmarkTests.test_no_remote_by_default_or_embedded_secret) ... ok
+test_percentile_and_null (test_benchmark.BenchmarkTests.test_percentile_and_null) ... ok
+test_personal_fabrication_capped (test_benchmark.BenchmarkTests.test_personal_fabrication_capped) ... ok
+test_reference_ids_are_request_local (test_benchmark.BenchmarkTests.test_reference_ids_are_request_local) ... ok
+test_refusals_do_not_improve_grounded_rate (test_benchmark.BenchmarkTests.test_refusals_do_not_improve_grounded_rate) ... ok
+test_repeats_not_independent_questions (test_benchmark.BenchmarkTests.test_repeats_not_independent_questions) ... ok
+test_report_keeps_calibration_unmeasured (test_benchmark.BenchmarkTests.test_report_keeps_calibration_unmeasured) ... ok
+test_review_claim_counts_consistency (test_benchmark.BenchmarkTests.test_review_claim_counts_consistency) ... ok
+test_review_template_does_not_overwrite_human_work (test_benchmark.BenchmarkTests.test_review_template_does_not_overwrite_human_work) ... ok
+test_revoked_source_not_in_prompt (test_benchmark.BenchmarkTests.test_revoked_source_not_in_prompt) ... ok
+test_service_probe_definitions_cover_cache_and_both_languages (test_benchmark.BenchmarkTests.test_service_probe_definitions_cover_cache_and_both_languages) ... ok
+test_source_access_filter_before_prompt (test_benchmark.BenchmarkTests.test_source_access_filter_before_prompt) ... ok
+test_transport_error_zero_even_with_valid_text (test_benchmark.BenchmarkTests.test_transport_error_zero_even_with_valid_text) ... ok
+test_unit_language_point_is_exact (test_benchmark.BenchmarkTests.test_unit_language_point_is_exact) ... ok
+test_unreviewed_not_assumed_correct (test_benchmark.BenchmarkTests.test_unreviewed_not_assumed_correct) ... ok
+test_wrong_decision_capped (test_benchmark.BenchmarkTests.test_wrong_decision_capped) ... ok
+test_wrong_language_capped (test_benchmark.BenchmarkTests.test_wrong_language_capped) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 0.184s
+
+OK

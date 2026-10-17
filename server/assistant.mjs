@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { knowledgeForRole } from './knowledge.mjs';
+import { knowledgeForRole, knowledgeSource } from './knowledge.mjs';
 
 const langOf = (lang) => ['ru', 'kk', 'en'].includes(lang) ? lang : 'ru';
 const local = (lang, ru, kk, en) => ({ ru, kk, en })[lang];
@@ -11,7 +11,7 @@ let generating = false;
 // Never accept a caller-supplied URL or model endpoint. Model traffic can only
 // reach the local llama.cpp process started by scripts/start-ai.mjs.
 async function runtime() {
-  if (process.env.ASAR_AI_DISABLED === '1') return null;
+  if (process.env.ASAR_AI_DISABLED === '1' || process.env.ASAR_DISABLE_AI === '1') return null;
   try {
     const config = JSON.parse(await readFile(stateFile, 'utf8'));
     if (!Number.isInteger(config.port) || config.port < 1024 || config.port > 65535
@@ -106,7 +106,7 @@ function ownBalance(question, user, lang, allowed) {
       `В вашем личном кабинете: остаток — ${balance} дн., зарезервировано — ${reserved} дн., доступно для новой заявки — ${available} дн. Это демонстрационные данные. Дни резервируются при подаче и списываются после окончательного подтверждения HR.`,
       `Жеке кабинетіңізде: қалдық — ${balance} күн, резерв — ${reserved} күн, жаңа өтініш үшін қолжетімді — ${available} күн. Бұл демонстрациялық деректер. Күндер өтініш бергенде резервтеліп, HR соңғы растауынан кейін шегеріледі.`,
       `Your dashboard: balance ${balance} days, reserved ${reserved} days, available for a new request ${available} days. These are demonstration records. Days are reserved on submission and deducted after final HR approval.`),
-    sources: [{ id: document.id, title: document.title[lang], excerpt: document.content[lang] }], mode: 'knowledge_search',
+    sources: [knowledgeSource(document, lang)], mode: 'knowledge_search',
   };
 }
 
@@ -116,9 +116,13 @@ function sentencesFrom(documents, lang) {
     .map((sentence, index) => ({ ...sentence, number: index + 1 }));
 }
 
-async function modelSelect(question, sentences) {
+// Shared with the isolated evaluation service. The raw output is the actual
+// selector number, never a server-composed answer disguised as model JSON.
+export async function selectEvidence(question, sentences) {
+  const started = performance.now();
+  const result = { selected: null, raw_model_output: null, model_context_ids: [], generation_ms: null };
   const config = await runtime();
-  if (!config || generating) return null;
+  if (!config || generating) return { ...result, error: generating ? 'model_busy' : 'model_unavailable' };
   generating = true;
   try {
     // This older laptop processes ~2 prompt tokens/second. Present two tiny
@@ -133,6 +137,7 @@ async function modelSelect(question, sentences) {
     const choices = candidates.map((candidate, index) => ({ ...candidate, index,
       relevance: stems.reduce((sum, stem) => sum + (normalize(candidate.group.map(({ text }) => text).join(' ')).includes(stem) ? 1 : 0), 0),
     })).sort((a, b) => b.relevance - a.relevance || a.index - b.index).slice(0, 2);
+    result.model_context_ids = [...new Set(choices.flatMap(({ group }) => group.map(({ document }) => document.id)))];
     const response = await fetch(`${config.url}/v1/chat/completions`, {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.key}` },
@@ -146,14 +151,21 @@ async function modelSelect(question, sentences) {
         response_format: { type: 'json_object', schema: { type: 'integer', enum: [0, ...choices.map((_, index) => index + 1)] } },
       }),
     });
-    if (!response.ok) return null;
+    if (!response.ok) return { ...result, error: 'model_http_error' };
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
-    if (typeof content !== 'string' || content.length > 100) return null;
+    result.raw_model_output = typeof content === 'string' ? content : null;
+    result.model_request_ms = performance.now() - started;
+    // A buffered HTTP duration includes prefill and transport. Only report
+    // generation time when the engine actually provides that measurement.
+    if (Number.isFinite(data.timings?.predicted_ms) && data.timings.predicted_ms >= 0) result.generation_ms = data.timings.predicted_ms;
+    if (data.usage && Number.isInteger(data.usage.prompt_tokens)) result.input_tokens = data.usage.prompt_tokens;
+    if (data.usage && Number.isInteger(data.usage.completion_tokens)) result.output_tokens = data.usage.completion_tokens;
+    if (typeof content !== 'string' || content.length > 100) return { ...result, error: 'invalid_model_output' };
     const parsed = JSON.parse(content);
-    if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return null;
-    return parsed === 0 ? [] : choices[parsed - 1].group;
-  } catch { return null; }
+    if (!Number.isInteger(parsed) || parsed < 0 || parsed > choices.length) return { ...result, error: 'invalid_model_output' };
+    return { ...result, selected: parsed === 0 ? [] : choices[parsed - 1].group };
+  } catch (error) { return { ...result, error: error instanceof SyntaxError ? 'invalid_model_output' : 'model_connection_error' }; }
   finally { generating = false; }
 }
 
@@ -173,7 +185,7 @@ export async function answerQuestion({ question, lang: inputLang, user } = {}) {
   const documents = retrieve(clean, allowed, lang);
   if (!documents.length) return refuse(lang);
   const sentences = sentencesFrom(documents, lang);
-  const selected = await modelSelect(clean, sentences);
+  const { selected } = await selectEvidence(clean, sentences);
   if (selected?.length === 0) return refuse(lang);
   const mode = selected ? 'local_model' : 'knowledge_search';
   // Output is rendered only from original source text. The model chooses
@@ -182,7 +194,7 @@ export async function answerQuestion({ question, lang: inputLang, user } = {}) {
   const sourceIds = new Set(result.map(({ document }) => document.id));
   return {
     answer: `${local(lang, 'По демонстрационным правилам:', 'Демонстрациялық ережелер бойынша:', 'According to the demonstration policies:')}\n\n${result.map(({ text }) => text).join(' ')}`.slice(0, 3500),
-    sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => ({ id: item.id, title: item.title[lang], excerpt: item.content[lang] })),
+    sources: documents.filter((item) => sourceIds.has(item.id)).map((item) => knowledgeSource(item, lang)),
     mode,
   };
 }

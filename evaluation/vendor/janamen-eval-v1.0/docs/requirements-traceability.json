@@ -1,0 +1,45 @@
+{
+  "authority": "Digest from supplied specification, not independently checked customer DOCX",
+  "requirements": {
+    "C07_C12": {
+      "meaning": "KB-only answer, sources, correct no-answer behavior",
+      "covered_by": "supported, missing, evidence_removed, irrelevant_evidence, conflict, revoked",
+      "status": "fixture_cases_ready_product_not_run"
+    },
+    "C02_C10_C13": {
+      "meaning": "roles, object/team access, real backend boundary",
+      "covered_by": "unauthorized, authorized, service_probes, context traces",
+      "status": "fixture_cases_ready_real_auth_not_run"
+    },
+    "C04": {
+      "meaning": "application scenario, status and history",
+      "covered_by": "both leave and advance cases 01–07, 20–21",
+      "status": "demo_workflows_only_actual_workflow_unknown"
+    },
+    "C09": {
+      "meaning": "official personnel data are read-only",
+      "covered_by": "common.scope and business-state hash contract",
+      "status": "partial_fixture_coverage_real_personnel_write_paths_require_app_review"
+    },
+    "C14": {
+      "meaning": "help agrees with platform capabilities",
+      "covered_by": "notifications, multi_hop, payment_or_balance",
+      "status": "requires_L4_review_against_current_UI"
+    },
+    "O01": {
+      "meaning": "RU and KK generation",
+      "covered_by": "32 cases per scenario/language, cross_language and noise",
+      "status": "authored_not_native_reviewed"
+    },
+    "O02_O03": {
+      "meaning": "small baseline versus SFT and final serving artifact",
+      "covered_by": "experiment-plan.json and model-metadata.template.json",
+      "status": "planned_no_models_measured"
+    },
+    "user_current_request": {
+      "meaning": "independent tests of BOTH leave and advance with 0–100 score and performance analysis",
+      "covered_by": "128 cases, scoring, HTTP runner, reports, comparison",
+      "status": "implemented_locally_verified"
+    }
+  }
+}

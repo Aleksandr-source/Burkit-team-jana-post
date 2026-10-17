@@ -3,11 +3,12 @@ import { randomBytes, createHash } from 'node:crypto';
 import { createReadStream, existsSync, statSync, writeFileSync, unlinkSync } from 'node:fs';
 import { join, resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openStore, iso, uid, passwordRecord, checkPassword, publicPerson, personById, visibleEmployee, requestById, courseById, publicCourse, enrollmentData, notify, audit } from './store.mjs';
-import { knowledge } from './knowledge.mjs';
+import { openStore, iso, uid, passwordRecord, checkPassword, publicPerson, personById, visibleEmployee, requestById, courseById, publicCourse, enrollmentData, notify, audit, normalizeDemoEmail } from './store.mjs';
+import { knowledge, knowledgeSource } from './knowledge.mjs';
 import { errorMessage } from './messages.mjs';
 import { answerQuestion, getAIStatus } from './assistant.mjs';
 import { resolveStaticPath } from './paths.mjs';
+import { captureLeaveDocument, renderLeaveDocument, documentCSP } from './leave-document.mjs';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const activeStatuses = ['pending_manager','pending_hr'];
 const hashToken = value => createHash('sha256').update(value).digest('hex');
@@ -52,7 +53,7 @@ export function createApplication(options={}) {
     if(path==='/api/health'&&req.method==='GET') return send(res,200,{ok:true,storage:'sqlite',ai:await getAIStatus()});
     if(path==='/api/auth/login'&&req.method==='POST') {
       const key=req.socket.remoteAddress||'local', now=Date.now(); let attempt=loginAttempts.get(key); if(!attempt||attempt.until<now){attempt={count:0,until:now+15*60*1000}; loginAttempts.set(key,attempt);} if(attempt.count>=30) fail(429,'rate_limited','Слишком много попыток. Попробуйте позже.');
-      const body=await jsonBody(req); const email=required(body.email,200,'Email').toLowerCase(); const password=required(body.password,256,'Пароль'); const user=db.prepare('SELECT * FROM people WHERE email=?').get(email);
+      const body=await jsonBody(req); const email=normalizeDemoEmail(required(body.email,200,'Email').toLowerCase()); const password=required(body.password,256,'Пароль'); const user=db.prepare('SELECT * FROM people WHERE email=?').get(email);
       const valid=user?checkPassword(password,user.passwordSalt,user.passwordHash):checkPassword(password,'not-a-user', '00'.repeat(64));
       if(!user||!valid){attempt.count++;fail(401,'invalid_credentials','Неверный email или пароль.');}attempt.count=0;
       const token=randomBytes(32).toString('hex'); db.prepare('DELETE FROM sessions WHERE expiresAt<?').run(iso()); db.prepare('INSERT INTO sessions VALUES (?,?,?)').run(hashToken(token),user.id,new Date(Date.now()+8*60*60*1000).toISOString());
@@ -69,6 +70,32 @@ export function createApplication(options={}) {
       const documents=knowledge.filter(k=>k.audience==='all'||user.role==='hr'||(user.role==='manager'&&k.audience==='manager'));
       return send(res,200,{user:publicPerson(db,user),people:people.map(p=>publicPerson(db,p)),requests,courses,enrollments,notifications,knowledge:documents,ai:await getAIStatus()});
     }
+    let profileMatch=path.match(/^\/api\/people\/([\w-]+)\/profile$/);
+    if(profileMatch&&req.method==='GET') {
+      const person=personById(db,profileMatch[1]);if(!person||!visibleEmployee(user,person))fail(404,'not_found','Профиль не найден или недоступен.');
+      return send(res,200,publicPerson(db,person));
+    }
+    if(profileMatch&&req.method==='POST') {
+      hr(user);const person=personById(db,profileMatch[1]);if(!person)fail(404,'not_found','Сотрудник не найден.');const body=await jsonBody(req);
+      const allowed=['name','company','department','position','managerId','hiredAt','phone','employeeNumber'];if(Object.keys(body).some(key=>!allowed.includes(key)))fail(400,'invalid_input','Через профиль нельзя менять роль, пароль, email или остаток отпуска.');
+      const name=required(body.name??person.name,120,'ФИО'),company=required(body.company??person.company,160,'Компания'),department=required(body.department??person.department,120,'Подразделение'),position=required(body.position??person.position,120,'Должность'),hiredAt=body.hiredAt??person.hiredAt;dateValue(hiredAt);
+      const managerId=Object.hasOwn(body,'managerId')?body.managerId:person.managerId;
+      if(managerId!==null&&(typeof managerId!=='string'||!managerId))fail(400,'invalid_manager','Выберите руководителя или оставьте поле пустым.');
+      if(managerId){let current=personById(db,managerId);if(!current||!['manager','hr'].includes(current.role))fail(400,'invalid_manager','Выберите руководителя с соответствующей ролью.');const seen=new Set([person.id]);while(current){if(seen.has(current.id))fail(400,'invalid_manager','В цепочке руководителей не должно быть циклов.');seen.add(current.id);current=current.managerId?personById(db,current.managerId):null;}}
+      const savedProfile=db.prepare('SELECT phone,employeeNumber FROM person_profiles WHERE personId=?').get(person.id)||{};
+      const optional=(key,max)=>{const value=body[key]??savedProfile[key]??'';if(typeof value!=='string'||value.length>max)fail(400,'invalid_input','Проверьте контактный телефон и табельный номер.');return value.trim();};const phone=optional('phone',40),employeeNumber=optional('employeeNumber',40);
+      transaction(()=>{
+        if(managerId!==person.managerId&&db.prepare("SELECT id FROM requests WHERE employeeId=? AND status IN ('pending_manager','pending_hr')").get(person.id))fail(409,'profile_pending_requests','Сначала завершите или отмените действующие заявки сотрудника, затем измените руководителя.');
+        if(employeeNumber&&db.prepare('SELECT p.id FROM people p JOIN person_profiles pp ON pp.personId=p.id WHERE lower(pp.employeeNumber)=lower(?) AND p.company=? AND p.id<>?').get(employeeNumber,company,person.id))fail(409,'employee_number_exists','Этот табельный номер уже занят в компании.');
+        db.prepare('UPDATE people SET name=?,company=?,department=?,position=?,managerId=?,hiredAt=? WHERE id=?').run(name,company,department,position,managerId,hiredAt,person.id);
+        db.prepare('INSERT INTO person_profiles (personId,phone,employeeNumber) VALUES (?,?,?) ON CONFLICT(personId) DO UPDATE SET phone=excluded.phone,employeeNumber=excluded.employeeNumber').run(person.id,phone,employeeNumber);audit(db,user.id,'profile_updated',person.id);
+      });return send(res,200,publicPerson(db,personById(db,person.id)));
+    }
+    const sourceMatch=path.match(/^\/api\/knowledge\/([\w-]+)$/);
+    if(sourceMatch&&req.method==='GET') {
+      const document=knowledge.find(item=>item.id===sourceMatch[1]);if(!document||!(document.audience==='all'||user.role==='hr'||(document.audience==='manager'&&user.role==='manager')))fail(404,'not_found','Источник не найден или недоступен.');
+      const language=['ru','kk','en'].includes(url.searchParams.get('lang'))?url.searchParams.get('lang'):String(req.headers['accept-language']||'ru').slice(0,2);const lang=['ru','kk','en'].includes(language)?language:'ru';return send(res,200,knowledgeSource(document,lang));
+    }
     if(path==='/api/requests'&&req.method==='POST') {
       const body=await jsonBody(req);const start=dateValue(body.startDate),end=dateValue(body.endDate);if(body.startDate<today())fail(400,'past_date','Начало отпуска не может быть в прошлом.');const days=Math.round((end-start)/86400000)+1;if(days<1||days>366)fail(400,'invalid_range','Проверьте даты начала и окончания отпуска.');const reason=body.reason == null ? '' : typeof body.reason==='string' && body.reason.length<=2000 ? body.reason.trim() : fail(400,'invalid_input','Комментарий должен быть текстом до 2000 символов.'); if(!user.managerId)fail(409,'missing_manager','Для подачи заявки HR должен назначить руководителя.');
       const value=transaction(()=>{
@@ -83,6 +110,13 @@ export function createApplication(options={}) {
     }
     let match=path.match(/^\/api\/requests\/([\w-]+)$/);
     if(match&&req.method==='GET') return send(res,200,getRequest(user,match[1]));
+    match=path.match(/^\/api\/requests\/([\w-]+)\/document$/);
+    if(match&&req.method==='GET') {
+      const request=getRequest(user,match[1]);if(request.status!=='approved')fail(409,'document_not_ready','Заявление доступно после согласования руководителем и HR.');
+      let row=db.prepare('SELECT data FROM request_documents WHERE requestId=?').get(request.id);
+      if(!row){const document=captureLeaveDocument(publicPerson(db,personById(db,request.employeeId)),request,iso(),false);db.prepare('INSERT OR IGNORE INTO request_documents VALUES (?,?)').run(request.id,JSON.stringify(document));row=db.prepare('SELECT data FROM request_documents WHERE requestId=?').get(request.id);}
+      const html=renderLeaveDocument(JSON.parse(row.data),url.searchParams.get('lang')||String(req.headers['accept-language']||'ru').slice(0,2));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'private, no-store','Content-Disposition':`inline; filename="janamen-leave-${request.id}.html"`,'Content-Security-Policy':documentCSP});return res.end(html);
+    }
     match=path.match(/^\/api\/requests\/([\w-]+)\/action$/);
     if(match&&req.method==='POST') {
       const body=await jsonBody(req);const action=body.action;if(!['approve','reject','cancel'].includes(action))fail(400,'invalid_action','Неизвестное действие.');
@@ -97,7 +131,9 @@ export function createApplication(options={}) {
           else if(managerStage) {db.prepare("UPDATE requests SET status='pending_hr' WHERE id=?").run(request.id);history(request,user,'manager_approved',typeof body.comment==='string'?body.comment.slice(0,2000):'');notify(db,employee.id,'request_approved',L('Руководитель согласовал отпуск','Басшы демалысты мақұлдады','Manager approved your leave'),L('Осталось подтверждение HR.','HR растауы қалды.','HR confirmation is next.'),'requests',request.id);for(const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())if(h.id!==employee.id)notify(db,h.id,'request_pending_hr',L('Отпуск ожидает HR','Демалыс HR растауын күтуде','Leave awaiting HR'),L(employee.name,employee.name,employee.name),'requests',request.id);}
           else {if(employee.leaveBalance<request.days)fail(409,'insufficient_balance','Остаток отпуска изменился. Обратитесь в HR.');db.prepare("UPDATE requests SET status='approved' WHERE id=?").run(request.id);db.prepare('UPDATE people SET leaveBalance=leaveBalance-? WHERE id=?').run(request.days,employee.id);history(request,user,'hr_approved',typeof body.comment==='string'?body.comment.slice(0,2000):'');notify(db,employee.id,'request_approved',L('Отпуск подтверждён','Демалыс расталды','Your leave is approved'),L('Оба этапа согласования завершены. Хорошего отдыха!','Келісудің екі кезеңі аяқталды. Жақсы демалыс!','Both approval steps are complete. Enjoy your time off!'),'requests',request.id);notify(db,employee.managerId,'request_approved',L('HR подтвердил отпуск','HR демалысты растады','HR confirmed leave'),L(employee.name,employee.name,employee.name),'requests',request.id);}
         }
-        return requestById(db,request.id);
+        const updated=requestById(db,request.id);
+        if(updated.status==='approved')db.prepare('INSERT OR IGNORE INTO request_documents VALUES (?,?)').run(updated.id,JSON.stringify(captureLeaveDocument(publicPerson(db,personById(db,updated.employeeId)),updated)));
+        return updated;
       });return send(res,200,result);
     }
     match=path.match(/^\/api\/requests\/([\w-]+)\/attachments$/);
@@ -117,7 +153,7 @@ export function createApplication(options={}) {
     if(match&&req.method==='POST') {await jsonBody(req);const course=courseById(db,match[1]);const enrollment=db.prepare('SELECT * FROM enrollments WHERE userId=? AND courseId=?').get(user.id,match[1]);if(!course||!course.published||!enrollment)fail(404,'not_found','Курс не назначен вашему аккаунту.');if(!course.lessons.some(l=>l.id===match[2]))fail(404,'not_found','Урок не найден.');const ids=[...new Set([...JSON.parse(enrollment.completedLessonIds),match[2]])];db.prepare('UPDATE enrollments SET completedLessonIds=? WHERE id=?').run(JSON.stringify(ids),enrollment.id);return send(res,200,{ok:true});}
     match=path.match(/^\/api\/courses\/([\w-]+)\/quiz$/);
     if(match&&req.method==='POST') {const body=await jsonBody(req);const course=courseById(db,match[1]);const enrollment=db.prepare('SELECT * FROM enrollments WHERE userId=? AND courseId=?').get(user.id,match[1]);if(!course||!course.published||!enrollment)fail(404,'not_found','Курс не назначен вашему аккаунту.');if(!course.lessons.every(l=>JSON.parse(enrollment.completedLessonIds).includes(l.id)))fail(409,'lessons_required','Сначала завершите все уроки.');if(!Array.isArray(body.answers)||body.answers.length!==course.quiz.length||body.answers.some((a,i)=>!Number.isInteger(a)||a<0||a>=course.quiz[i].options.length))fail(400,'invalid_answers','Ответьте на все вопросы теста.');const score=Math.round(course.quiz.filter((q,i)=>q.correctIndex===body.answers[i]).length/course.quiz.length*100);const bestScore=Math.max(enrollment.score||0,score);const passed=bestScore>=course.passScore;transaction(()=>{db.prepare('UPDATE enrollments SET score=?,passed=?,completedAt=? WHERE id=?').run(bestScore,passed?1:0,passed?(enrollment.completedAt||iso()):null,enrollment.id);if(passed&&!enrollment.passed){notify(db,user.id,'course_completed',L('Курс пройден!','Курс аяқталды!','Course completed!'),course.title,'academy',course.id);if(user.managerId)notify(db,user.managerId,'course_completed',L('Сотрудник завершил курс','Қызметкер курсты аяқтады','Employee completed a course'),L(`${user.name}: ${course.title.ru}`,`${user.name}: ${course.title.kk}`,`${user.name}: ${course.title.en}`),'academy',course.id);for(const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())if(h.id!==user.id&&h.id!==user.managerId)notify(db,h.id,'course_completed',L('Обучение завершено','Оқу аяқталды','Learning completed'),L(`${user.name}: ${course.title.ru}`,`${user.name}: ${course.title.kk}`,`${user.name}: ${course.title.en}`),'academy',course.id);audit(db,user.id,'course_completed',course.id);}});return send(res,200,{score,passed:score>=course.passScore,bestScore});}
-    if(path==='/api/people'&&req.method==='POST') {hr(user);const body=await jsonBody(req);const name=required(body.name,120,'ФИО'),email=required(body.email,200,'Email').toLowerCase(),password=required(body.password,256,'Пароль');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))fail(400,'invalid_email','Укажите корректный email.');if(password.length<10)fail(400,'weak_password','Используйте пароль не короче 10 символов.');if(!['employee','manager','hr'].includes(body.role))fail(400,'invalid_role','Выберите допустимую роль.');const manager=body.managerId?personById(db,body.managerId):null;if(body.managerId&&(!manager||!['manager','hr'].includes(manager.role)))fail(400,'invalid_manager','Назначьте руководителя с соответствующей ролью.');const hiredAt=body.hiredAt||today();dateValue(hiredAt);const balance=Number(body.leaveBalance??24);if(!Number.isInteger(balance)||balance<0||balance>365)fail(400,'invalid_balance','Остаток должен быть целым числом от 0 до 365.');if(db.prepare('SELECT id FROM people WHERE email=?').get(email))fail(409,'email_exists','Этот email уже зарегистрирован.');const id=uid('person'),{salt,hash}=passwordRecord(password);transaction(()=>{db.prepare('INSERT INTO people VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(id,email,name,body.role,'Jana Post · Demo',required(body.department,120,'Подразделение'),required(body.position,120,'Должность'),manager?.id||null,hiredAt,balance,salt,hash);audit(db,user.id,'person_created',id);});return send(res,201,publicPerson(db,personById(db,id)));}
+    if(path==='/api/people'&&req.method==='POST') {hr(user);const body=await jsonBody(req);const name=required(body.name,120,'ФИО'),email=normalizeDemoEmail(required(body.email,200,'Email').toLowerCase()),password=required(body.password,256,'Пароль');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))fail(400,'invalid_email','Укажите корректный email.');if(password.length<10)fail(400,'weak_password','Используйте пароль не короче 10 символов.');if(!['employee','manager','hr'].includes(body.role))fail(400,'invalid_role','Выберите допустимую роль.');const manager=body.managerId?personById(db,body.managerId):null;if(body.managerId&&(!manager||!['manager','hr'].includes(manager.role)))fail(400,'invalid_manager','Назначьте руководителя с соответствующей ролью.');const hiredAt=body.hiredAt||today();dateValue(hiredAt);const balance=Number(body.leaveBalance??24);if(!Number.isInteger(balance)||balance<0||balance>365)fail(400,'invalid_balance','Остаток должен быть целым числом от 0 до 365.');if(db.prepare('SELECT id FROM people WHERE email=?').get(email))fail(409,'email_exists','Этот email уже зарегистрирован.');const id=uid('person'),{salt,hash}=passwordRecord(password);transaction(()=>{db.prepare('INSERT INTO people VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(id,email,name,body.role,'Jana Post · Demo',required(body.department,120,'Подразделение'),required(body.position,120,'Должность'),manager?.id||null,hiredAt,balance,salt,hash);db.prepare('INSERT INTO person_profiles (personId,employeeNumber) VALUES (?,?)').run(id,`JM-${id.slice(-8).toUpperCase()}`);audit(db,user.id,'person_created',id);});return send(res,201,publicPerson(db,personById(db,id)));}
     if(path==='/api/assistant'&&req.method==='POST') {const body=await jsonBody(req);const question=required(body.question,2000,'Вопрос');const lang=['ru','kk','en'].includes(body.lang)?body.lang:'ru';return send(res,200,await answerQuestion({question,lang,user:publicPerson(db,personById(db,user.id))}));}
     fail(404,'not_found','Раздел API не найден.');
    }

@@ -442,3 +442,38 @@
 @media (prefers-reduced-motion: reduce) {
   .hr-app[data-theme] :is(.hr-theme-option, .hr-accent-option, .hr-wallpaper-option, .hr-font-option, .hr-settings-row, .hr-settings-back) { transition: none; transform: none !important; }
 }
+
+/* Opaque surfaces avoid full-window blur work on older integrated GPUs. */
+.hr-app[data-theme] :is(.hr-header, .hr-modal-header, .hr-modal-backdrop, .hr-sidebar-backdrop, .hr-art-card, .hr-float-card) { backdrop-filter: none; }
+.hr-sidebar .hr-brand { gap: 8px; }
+.hr-sidebar .hr-brand > span:last-child { font-size: 27px; letter-spacing: -1px; }
+.hr-sidebar .hr-brand-symbol { gap: 3px; }
+.hr-sidebar .hr-brand-symbol > span { width: 7px; }
+.hr-profile-card .hr-profile-identity { padding: 0 0 24px; flex-wrap: wrap; }
+.hr-profile-card .hr-profile-identity > .hr-button { margin-left: auto; }
+.hr-profile-card .hr-profile-fields { margin: 0 !important; padding: 24px 0; border-top: 1px solid var(--hr-line); }
+.hr-profile-card .hr-profile-fields dd { overflow-wrap: anywhere; }
+.hr-profile-card .hr-leave-summary { margin: 4px 0 0; }
+.hr-profile-card .hr-profile-note { margin: 18px 0 0 !important; padding: 16px 0 0; }
+.hr-profile-page { padding: 26px; }
+.hr-profile-documents { margin-top: 22px; padding: 0 26px 24px; }
+.hr-profile-documents .hr-panel-heading { padding: 22px 0 0; }
+.hr-profile-documents > p { color: var(--hr-text-secondary); line-height: 1.8; font-size: var(--hr-fs-label); max-width: 760px; }
+.hr-profile-documents .hr-form-actions { justify-content: flex-start; flex-wrap: wrap; }
+.hr-document-ready { display: flex; align-items: center; gap: 20px; justify-content: space-between; }
+.hr-document-ready h3 { margin-bottom: 6px; }
+.hr-document-ready .hr-section-caption { margin: 0; }
+.hr-knowledge-catalog { padding: 0 25px 16px; color: var(--hr-muted); font-size: var(--hr-fs-xs); }
+.hr-knowledge-catalog summary { cursor: pointer; display: flex; align-items: center; gap: 7px; width: fit-content; color: var(--hr-accent-ink); }
+.hr-knowledge-catalog > p { line-height: 1.7; max-width: 770px; }
+.hr-knowledge-catalog ul { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.hr-knowledge-catalog li { display: grid; gap: 4px; }
+.hr-knowledge-catalog li strong { color: var(--hr-text-secondary); font-weight: 600; }
+.hr-app[data-theme] .hr-chat-sources details > .hr-source-meta { color: var(--hr-muted); font-size: var(--hr-fs-xs); padding-bottom: 0; }
+@media (max-width: 580px) {
+  .hr-profile-page { padding: 20px; }
+  .hr-profile-card .hr-profile-identity > .hr-button { margin-left: 0; }
+  .hr-profile-documents { padding: 0 20px 20px; }
+  .hr-document-ready { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .hr-knowledge-catalog { padding-left: 15px; padding-right: 15px; }
+}
