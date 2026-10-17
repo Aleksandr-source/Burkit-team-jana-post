@@ -1,0 +1,160 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Represents a team workspace",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "invitationCode": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "ownerPhotoURL": { "type": "string" },
+        "goal": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "ownerId", "createdAt"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A single piece of work within a project",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedUserId": { "type": "string" },
+        "assignedUserName": { "type": "string" },
+        "assignedUserPhotoURL": { "type": "string" },
+        "status": { "type": "string", "enum": ["todo", "in-progress", "done"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "deadline": { "type": "number" },
+        "projectId": { "type": "string" },
+        "milestoneId": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" },
+        "position": { "type": "number" },
+        "deleted": { "type": "boolean" },
+        "deletedAt": { "type": "number" },
+        "attachments": { "type": "array", "items": { "type": "object" } }
+      },
+      "required": ["title", "status", "projectId", "createdAt", "position"]
+    },
+    "Member": {
+      "title": "Member",
+      "description": "A participant in a project",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["owner", "admin", "member"] },
+        "joinedAt": { "type": "number" }
+      },
+      "required": ["projectId", "userId", "name", "role", "joinedAt"]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Log of actions within a project",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "taskId": { "type": "string" },
+        "taskTitle": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["type", "userId", "timestamp"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a task",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhotoURL": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["text", "userId", "createdAt"]
+    },
+    "Invite": {
+      "title": "Invite",
+      "description": "Pending project invitation",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "inviterId": { "type": "string" },
+        "inviterName": { "type": "string" },
+        "role": { "type": "string" },
+        "code": { "type": "string" },
+        "maxUses": { "type": "number" },
+        "uses": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "expiresAt": { "type": "number" }
+      },
+      "required": ["projectId", "code", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public user information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "email", "updatedAt"]
+    },
+    "Presence": {
+      "title": "Presence",
+      "description": "User online status",
+      "type": "object",
+      "properties": {
+        "online": { "type": "boolean" },
+        "lastSeen": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Main project document"
+    },
+    "/projects/{projectId}/activityLog/{id}": {
+      "schema": "ActivityLog",
+      "description": "Project activity logs"
+    },
+    "/projects/{projectId}/tasks/{id}": {
+      "schema": "Task",
+      "description": "Tasks within a project"
+    },
+    "/projects/{projectId}/tasks/{taskId}/comments/{id}": {
+      "schema": "Comment",
+      "description": "Task comments"
+    },
+    "/members/{memberId}": {
+      "schema": "Member",
+      "description": "Project membership association"
+    },
+    "/invites/{inviteId}": {
+      "schema": "Invite",
+      "description": "Invitation links"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User private profile"
+    },
+    "/presence/{userId}": {
+      "schema": "Presence",
+      "description": "Real-time presence"
+    }
+  }
+}

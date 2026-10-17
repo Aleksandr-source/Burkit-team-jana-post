@@ -1,0 +1,45 @@
+// Error codes stay stable for clients; response text follows the UI language.
+const messages = {
+  unauthorized: ['Аккаунтқа кіріңіз.', 'Please sign in.'],
+  invalid_credentials: ['Email немесе құпиясөз қате.', 'Incorrect email or password.'],
+  forbidden: ['Бұл әрекетке қолжетімділік жоқ.', 'You do not have permission to perform this action.'],
+  not_found: ['Жазба табылмады немесе қолжетімсіз.', 'The record was not found or is not available to your account.'],
+  invalid_input: ['Енгізілген мәліметтерді тексеріңіз.', 'Please check the entered information.'],
+  invalid_date: ['Дұрыс күнді көрсетіңіз.', 'Enter a valid calendar date.'],
+  past_date: ['Демалыс өткен күннен бастала алмайды.', 'Leave cannot start in the past.'],
+  invalid_range: ['Демалыстың басталу және аяқталу күндерін тексеріңіз.', 'Check the leave start and end dates.'],
+  missing_manager: ['Өтініш беру үшін басшы тағайындалуы керек.', 'A manager must be assigned before you can request leave.'],
+  insufficient_balance: ['Демалыстың қолжетімді күндері жеткіліксіз.', 'There are not enough available leave days.'],
+  overlap: ['Бұл күндерге белсенді өтініш бар.', 'An active request already overlaps these dates.'],
+  final_status: ['Өтініш бойынша соңғы шешім қабылданды.', 'A final decision has already been made on this request.'],
+  self_approval: ['Өз өтінішіңізді мақұлдауға болмайды.', 'You cannot approve your own request.'],
+  invalid_action: ['Белгісіз әрекет.', 'Unknown action.'],
+  invalid_course: ['Курс сабақтары мен тест сұрақтарын тексеріңіз.', 'Check the course lessons, options and correct answers.'],
+  duplicate_id: ['Сабақтар мен сұрақтардың идентификаторлары бірегей болуы керек.', 'Lesson and question identifiers must be unique.'],
+  invalid_url: ['Сілтеме http:// немесе https:// арқылы басталуы керек.', 'Links must start with http:// or https://.'],
+  lessons_required: ['Алдымен барлық сабақты аяқтаңыз.', 'Complete all lessons before taking the quiz.'],
+  invalid_answers: ['Тесттің барлық сұрағына жауап беріңіз.', 'Answer every quiz question.'],
+  invalid_user: ['Қызметкер табылмады.', 'The employee was not found.'],
+  invalid_email: ['Дұрыс email енгізіңіз.', 'Enter a valid email address.'],
+  weak_password: ['Кемінде 10 таңбалы құпиясөз қолданыңыз.', 'Use a password with at least 10 characters.'],
+  invalid_role: ['Рұқсат етілген рөлді таңдаңыз.', 'Choose a valid role.'],
+  invalid_manager: ['Басшы рөлі бар қызметкерді таңдаңыз.', 'Choose a person with a manager or HR role.'],
+  invalid_balance: ['Демалыс қалдығы 0 мен 365 арасындағы бүтін сан болуы керек.', 'The leave balance must be an integer between 0 and 365.'],
+  email_exists: ['Бұл email тіркелген.', 'This email address is already registered.'],
+  too_large: ['Файл немесе сұрау рұқсат етілген көлемнен асады.', 'The file or request exceeds the size limit.'],
+  empty_file: ['Файл бос.', 'The file is empty.'],
+  invalid_file: ['Файл атауы дұрыс емес.', 'The filename is invalid.'],
+  rate_limited: ['Тым көп әрекет жасалды. Кейінірек қайталаңыз.', 'Too many attempts. Please try again later.'],
+  origin: ['Сұрау көзі рұқсат етілмеген.', 'This request origin is not allowed.'],
+  invalid_json: ['JSON сұрауы дұрыс емес.', 'The JSON request is invalid.'],
+  content_type: ['JSON сұрауы қажет.', 'A JSON request is required.'],
+  invalid_path: ['Сұрау мекенжайы дұрыс емес.', 'The request address is invalid.'],
+  method_not_allowed: ['Бұл әдіске қолдау көрсетілмейді.', 'This method is not supported.'],
+  build_required: ['Алдымен қолданбаны құрастырыңыз немесе dev режимін іске қосыңыз.', 'Build the application or start development mode first.'],
+  internal_error: ['Әрекет орындалмады. Қайталап көріңіз.', 'The action could not be completed. Please try again.'],
+};
+export function errorMessage(code, original, language) {
+  const lang=String(language||'ru').slice(0,2);
+  if(lang==='ru')return original;
+  return (messages[code]||messages.internal_error)[lang==='kk'?0:1];
+}

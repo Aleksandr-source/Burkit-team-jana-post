@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --bg-primary: #F6F8FB;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F9FAFB;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-header: rgba(246, 248, 251, 0.8);
+  
+  --text-primary: #1A1D23;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  
+  --border-color: #E6EAF0;
+  --border-muted: #EEF1F5;
+  
+  --accent-color: #4F7CFF;
+  --accent-foreground: #ffffff;
+
+  --surface-accent: #EEF1F5;
+  --surface-inverse: #111827;
+  --text-inverse: #FFFFFF;
+  
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+  --bg-primary: #0B0E14;
+  --bg-secondary: #141820;
+  --bg-tertiary: #1C222D;
+  --bg-sidebar: #11151D;
+  --bg-card: #141820;
+  --bg-header: rgba(11, 14, 20, 0.8);
+  
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+  
+  --border-color: #2D3441;
+  --border-muted: #1F2937;
+  
+  --accent-color: #638BFF;
+  --accent-foreground: #ffffff;
+
+  --surface-accent: #1F2937;
+  --surface-inverse: #F9FAFB;
+  --text-inverse: #111827;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-muted-foreground: var(--text-secondary);
+  --color-card: var(--bg-card);
+  --color-border: var(--border-color);
+
+  --color-brand-bg: var(--bg-primary);
+  --color-brand-sidebar: var(--bg-sidebar);
+  --color-brand-border: var(--border-color);
+  --color-brand-text-main: var(--text-primary);
+  --color-brand-text-muted: var(--text-secondary);
+  --color-brand-accent: var(--accent-color);
+  --color-brand-surface: var(--bg-secondary);
+  --color-brand-surface-hover: var(--bg-tertiary);
+  --color-brand-header: var(--bg-header);
+  --color-brand-card: var(--bg-card);
+  --color-brand-surface-accent: var(--surface-accent);
+  --color-brand-surface-inverse: var(--surface-inverse);
+  --color-brand-text-inverse: var(--text-inverse);
+  --brand-accent-rgb: 79, 124, 255;
+
+  --image-app-pattern: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23DADDE2' stroke-width='1.2' stroke-opacity='0.5'%3E%3Crect x='5' y='5' width='10' height='10' rx='2' /%3E%3Cpath d='M8 11l2 2l3-4' /%3E%3Cpath d='M40 10h8v12h-8z M42 13h4 M42 16h4 M42 19h4' /%3E%3Ccircle cx='80' cy='15' r='3' /%3E%3Cpath d='M75 23a5 5 0 0 1 10 0' /%3E%3Cpath d='M105 15h10 M112 12l3 3-3 3' /%3E%3Crect x='10' y='45' width='12' height='12' rx='2' /%3E%3Cpath d='M10 49h12 M13 43v4 M19 43v4' /%3E%3Ccircle cx='45' cy='55' r='6' /%3E%3Cpath d='M45 55v-3 M45 55l3 2' /%3E%3Crect x='80' y='50' width='20' height='14' rx='2' /%3E%3Cpath d='M84 55h12 M84 59h8' /%3E%3Cpath d='M15 85v10h10 M17 93l3-4 3 2 4-5' /%3E%3Cpath d='M45 90h8l3 3-3 3h-8v-6z' /%3E%3C/g%3E%3C/svg%3E");
+}
+
+@utility surface {
+  @apply bg-card border border-border shadow-xl;
+}
+
+@utility dropdown {
+  @apply bg-card text-foreground border border-border shadow-lg origin-top-right ring-1 ring-black/5 dark:ring-white/10 focus:outline-none;
+}
+
+@utility textPrimary {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+@utility textSecondary {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+@utility surface-backdrop {
+  @apply bg-black/40 backdrop-blur-sm;
+}
+
+@layer base {
+  html, body {
+    @apply min-h-screen overflow-x-hidden transition-colors duration-300;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+
+  /* For Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
+}
+
+@utility sidebar-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-muted);
+    border-radius: 10px;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+  }
+}
+
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility animate-breathe {
+  animation: breathe 12s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0% { opacity: 0.05; }
+  50% { opacity: 0.08; }
+  100% { opacity: 0.05; }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
+@keyframes spawn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Force Theme for Toast Components */
+[data-sonner-toast],
+.react-hot-toast,
+.toast,
+[role="status"],
+.fixed.bottom-4.right-4 > div {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+

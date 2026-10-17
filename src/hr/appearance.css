@@ -1,0 +1,444 @@
+/* Imported after styles.css. All appearance state belongs to the app container. */
+.hr-app[data-theme] {
+  --hr-accent: #6356dc;
+  --hr-accent-rgb: 99 86 220;
+  --hr-text-scale: 1;
+  --hr-on-accent: var(--hr-accent-foreground, #fff);
+  --hr-accent-ink: var(--hr-accent-text, #6150c8);
+  --hr-accent-soft: color-mix(in srgb, var(--hr-accent-ink) 9%, var(--hr-surface));
+  --hr-accent-tint: color-mix(in srgb, var(--hr-accent-ink) 16%, var(--hr-surface));
+  --hr-focus: rgb(var(--hr-accent-rgb) / .18);
+  --hr-bg: #f4f5f9;
+  --hr-surface: #fff;
+  --hr-surface-raised: #fff;
+  --hr-surface-soft: #f8f9fc;
+  --hr-surface-hover: #f0f2f8;
+  --hr-text: #273047;
+  --hr-text-secondary: #596781;
+  --hr-muted: #748198;
+  --hr-placeholder: #8a96aa;
+  --hr-border: #e2e6ef;
+  --hr-line: #e9ecf3;
+  --hr-shadow: 0 4px 14px #26314b08;
+  --hr-backdrop: #171e3666;
+  --hr-success-ink: #2f7955;
+  --hr-success-bg: #eaf5ee;
+  --hr-warning-ink: #8c661e;
+  --hr-warning-bg: #fff4dc;
+  --hr-danger-ink: #ae4b66;
+  --hr-danger-bg: #fbedf1;
+  --hr-danger-solid: #b7415d;
+  --hr-neutral-ink: #6b788e;
+  --hr-neutral-bg: #f0f2f7;
+  --hr-chat-base: #f4f5fb;
+  --hr-blue: var(--hr-accent);
+  --hr-blue-dark: var(--hr-accent-hover, color-mix(in srgb, var(--hr-accent) 88%, #172033));
+  --hr-violet: var(--hr-accent);
+  --hr-fs-xs: calc(10px * var(--hr-text-scale));
+  --hr-fs-sm: calc(11px * var(--hr-text-scale));
+  --hr-fs-body: calc(13px * var(--hr-text-scale));
+  --hr-fs-label: calc(12px * var(--hr-text-scale));
+  --hr-fs-md: calc(14px * var(--hr-text-scale));
+  --hr-fs-lg: calc(16px * var(--hr-text-scale));
+  color-scheme: light;
+  background: var(--hr-bg);
+  color: var(--hr-text);
+  font-size: var(--hr-fs-md);
+}
+.hr-app[data-theme=dark] {
+  --hr-accent-ink: var(--hr-accent-text, #b5aaff);
+  --hr-bg: #141923;
+  --hr-surface: #1d2532;
+  --hr-surface-raised: #242e3e;
+  --hr-surface-soft: #19212e;
+  --hr-surface-hover: #2b374a;
+  --hr-text: #e9edf6;
+  --hr-text-secondary: #bac6da;
+  --hr-muted: #95a4bc;
+  --hr-placeholder: #8797b0;
+  --hr-border: #364258;
+  --hr-line: #2c384c;
+  --hr-shadow: 0 4px 18px #070c151c;
+  --hr-backdrop: #050a14b8;
+  --hr-success-ink: #8ed3ae;
+  --hr-success-bg: #213a31;
+  --hr-warning-ink: #dfc17e;
+  --hr-warning-bg: #3b3426;
+  --hr-danger-ink: #e6a0b2;
+  --hr-danger-bg: #3e2936;
+  --hr-danger-solid: #b64b65;
+  --hr-neutral-ink: #b0bfd5;
+  --hr-neutral-bg: #293446;
+  --hr-chat-base: #161e2b;
+  color-scheme: dark;
+}
+.hr-app[data-theme] ::selection { background: var(--hr-accent-tint); color: var(--hr-text); }
+.hr-app[data-theme] :focus-visible { outline-color: var(--hr-accent-ink); }
+.hr-app[data-theme] a, .hr-app[data-theme] .hr-text-link { color: var(--hr-accent-ink) !important; }
+.hr-app[data-theme] :is(.hr-sidebar, .hr-header, .hr-panel, .hr-stat, .hr-chat-panel, .hr-modal, .hr-login-form-side, .hr-search-results, .hr-toast) {
+  background: var(--hr-surface);
+  color: var(--hr-text);
+  border-color: var(--hr-border);
+}
+.hr-app[data-theme] :is(.hr-panel, .hr-stat, .hr-chat-panel) { box-shadow: var(--hr-shadow); }
+.hr-app[data-theme] :is(.hr-page-intro h1, .hr-panel-heading h2, .hr-panel-heading h3, .hr-profile-identity h3, .hr-course-body h2, .hr-lesson-main > h3, .hr-detail-section h3, .hr-modal-header h2, .hr-team-person h3, .hr-login-form h2, .hr-chat-top strong) { color: var(--hr-text); }
+.hr-app[data-theme] :is(.hr-page-intro p, .hr-profile-identity p, .hr-profile-fields dd, .hr-detail-fields dd, .hr-course-body > p, .hr-lesson-content p, .hr-comment > p, .hr-history strong, .hr-attachment strong, .hr-quiz-form legend, .hr-notification-copy > span, .hr-notification-copy > strong, .hr-team-person p, .hr-assignment-person strong) { color: var(--hr-text-secondary); }
+.hr-app[data-theme] :is(.hr-eyebrow, .hr-breadcrumb, .hr-nav-eyebrow, .hr-secure-label, .hr-count-label, .hr-profile-fields dt, .hr-detail-fields dt, .hr-profile-note, .hr-profile-identity div > span, .hr-stat p, .hr-stat div > span, .hr-stat strong small, .hr-progress-label, .hr-progress-label strong, .hr-table-subdate, .hr-request-identity > div > span, .hr-section-caption, .hr-subtle-text, .hr-history p, .hr-history p > span, .hr-attachment div > span, .hr-comment > span, .hr-optional, .hr-detail-id, .hr-modal-header p, .hr-notification-copy > small, .hr-team-person div > span, .hr-course-meta, .hr-learning-content .hr-eyebrow, .hr-course-admin button, .hr-lesson-progress > span, .hr-assignment-person small, .hr-chat-top div > span, .hr-chat-bottom > p, .hr-answer-mode, .hr-login-form > p, .hr-login-footer, .hr-page-footer) { color: var(--hr-muted); }
+.hr-app[data-theme] :is(.hr-muted-icon, .hr-notification-item > svg, .hr-search-results > button > svg, .hr-workspace-label > svg) { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-breadcrumb strong { color: var(--hr-text-secondary); }
+.hr-app[data-theme] :is(.hr-workspace-label, .hr-sidebar-demo, .hr-tiny-tag, .hr-role-tag, .hr-tag) { background: var(--hr-surface-soft); border-color: var(--hr-border); color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-workspace-label strong, .hr-app[data-theme] .hr-sidebar-user strong { color: var(--hr-text); }
+.hr-app[data-theme] .hr-workspace-label div > span, .hr-app[data-theme] .hr-sidebar-user div > span { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-sidebar-user { border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-avatar, .hr-app[data-theme] .hr-profile-button .hr-avatar { background: var(--hr-accent-soft); color: var(--hr-accent-ink); box-shadow: none; }
+.hr-app[data-theme] .hr-profile-button:hover { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-brand > span:last-child { color: var(--hr-text); }
+.hr-app[data-theme] .hr-brand small { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-brand-dot { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-brand-symbol > span { background: var(--hr-accent); }
+.hr-app[data-theme] .hr-brand-symbol > span:first-child { background: color-mix(in srgb, var(--hr-accent) 72%, #a6b7e4); }
+.hr-app[data-theme] .hr-brand-symbol > span:last-child { background: color-mix(in srgb, var(--hr-accent) 62%, #c2a8e7); }
+.hr-app[data-theme] .hr-brand-home:hover { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-brand-home:focus-visible { border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-company-mark { color: var(--hr-accent-ink); background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-nav-item { color: var(--hr-text-secondary) !important; }
+.hr-app[data-theme] .hr-nav-item > svg { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-nav-item:hover { background: var(--hr-surface-hover); }
+.hr-app[data-theme] .hr-nav-item.active { background: var(--hr-accent-soft); color: var(--hr-accent-ink) !important; }
+.hr-app[data-theme] .hr-nav-item.active > svg { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-nav-item.active::before { background: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-nav-item.active:hover { background: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-nav-item :is(b, small) { color: var(--hr-accent-ink); background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-button.primary { background: var(--hr-accent); border-color: color-mix(in srgb, var(--hr-accent) 75%, var(--hr-border)); color: var(--hr-on-accent); box-shadow: 0 3px 9px rgb(var(--hr-accent-rgb) / .19); }
+.hr-app[data-theme] .hr-button.primary:hover:not(:disabled) { background: var(--hr-blue-dark); box-shadow: 0 5px 13px rgb(var(--hr-accent-rgb) / .24); }
+.hr-app[data-theme] .hr-button.primary:focus-visible { box-shadow: 0 0 0 4px var(--hr-focus); }
+.hr-app[data-theme] .hr-button.secondary { background: var(--hr-surface); color: var(--hr-text-secondary); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-button.secondary:hover:not(:disabled) { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-button.danger { background: var(--hr-danger-solid); color: #fff; border-color: var(--hr-danger-solid); }
+.hr-app[data-theme] .hr-button.danger-ghost { background: var(--hr-danger-bg); color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-icon-button { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-icon-button:hover { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-language { border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-language :is(select, svg) { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-global-search { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-global-search:focus-within { background: var(--hr-accent-soft); box-shadow: 0 0 0 3px var(--hr-focus); }
+.hr-app[data-theme] .hr-global-search > input { color: var(--hr-text); }
+.hr-app[data-theme] .hr-global-search > input::placeholder { color: var(--hr-placeholder); }
+.hr-app[data-theme] .hr-search-results { box-shadow: 0 12px 40px #0000002b; }
+.hr-app[data-theme] .hr-search-results > button:hover { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-search-results strong { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-search-results :is(small, p) { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-header-bell i { border-color: var(--hr-surface); box-shadow: 0 0 0 2px var(--hr-surface); }
+.hr-app[data-theme] .hr-welcome-banner, .hr-app[data-theme] .hr-login-story { background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-banner-copy :is(h2, p, .hr-eyebrow), .hr-app[data-theme] .hr-login-copy :is(h1, p, .hr-eyebrow), .hr-app[data-theme] .hr-login-security { color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-banner-copy p, .hr-app[data-theme] .hr-login-copy > p { opacity: .87; }
+.hr-app[data-theme] .hr-button.white { background: var(--hr-surface); color: var(--hr-accent-ink); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-button.banner-ghost { background: transparent; color: var(--hr-on-accent); border-color: currentColor; }
+.hr-app[data-theme] .hr-button.banner-ghost:hover { background: rgb(255 255 255 / .1); }
+.hr-app[data-theme] .hr-art-circle { border-color: color-mix(in srgb, var(--hr-on-accent) 12%, transparent); }
+.hr-app[data-theme] .hr-art-card { background: color-mix(in srgb, var(--hr-on-accent) 10%, transparent); border-color: color-mix(in srgb, var(--hr-on-accent) 30%, transparent); }
+.hr-app[data-theme] .hr-art-avatar { background: color-mix(in srgb, var(--hr-on-accent) 13%, transparent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-art-line { background: color-mix(in srgb, var(--hr-on-accent) 60%, transparent); }
+.hr-app[data-theme] .hr-art-line.short { background: color-mix(in srgb, var(--hr-on-accent) 30%, transparent); }
+.hr-app[data-theme] .hr-art-check { background: var(--hr-surface); color: var(--hr-accent-ink); }
+.hr-app[data-theme] :is(.hr-art-star, .hr-art-spark) { color: color-mix(in srgb, var(--hr-on-accent) 80%, transparent); }
+.hr-app[data-theme] .hr-float-card, .hr-app[data-theme] .hr-float-card.second { background: color-mix(in srgb, var(--hr-on-accent) 10%, transparent); border-color: color-mix(in srgb, var(--hr-on-accent) 25%, transparent); }
+.hr-app[data-theme] :is(.hr-float-card > svg, .hr-float-card strong, .hr-check-round) { color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-float-card > span:not(.hr-check-round), .hr-app[data-theme] .hr-float-card strong small { color: color-mix(in srgb, var(--hr-on-accent) 82%, transparent); }
+.hr-app[data-theme] .hr-check-round { border-color: color-mix(in srgb, var(--hr-on-accent) 35%, transparent); }
+.hr-app[data-theme] .hr-mini-bars i { background: color-mix(in srgb, var(--hr-on-accent) 65%, transparent); }
+.hr-app[data-theme] .hr-mini-bars i:nth-child(2) { background: color-mix(in srgb, var(--hr-on-accent) 75%, transparent); }
+.hr-app[data-theme] .hr-mini-bars i:nth-child(3) { background: color-mix(in srgb, var(--hr-on-accent) 87%, transparent); }
+.hr-app[data-theme] .hr-mini-bars i:nth-child(4) { background: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-brand.is-light > span:last-child, .hr-app[data-theme] .hr-brand.is-light .hr-brand-dot, .hr-app[data-theme] .hr-brand.is-light small { color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-brand.is-light .hr-brand-symbol > span { background: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-table :is(th, td) { border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-table th { background: var(--hr-surface-soft); color: var(--hr-muted); }
+.hr-app[data-theme] .hr-table td { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-table-title { color: var(--hr-text) !important; }
+.hr-app[data-theme] .hr-table tbody tr:hover, .hr-app[data-theme] .hr-table tbody tr:focus-within { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .status-pending_manager { background: var(--hr-warning-bg); color: var(--hr-warning-ink); border-color: color-mix(in srgb, var(--hr-warning-ink) 15%, transparent); }
+.hr-app[data-theme] .status-pending_hr { background: var(--hr-accent-soft); color: var(--hr-accent-ink); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .status-approved { background: var(--hr-success-bg); color: var(--hr-success-ink); border-color: color-mix(in srgb, var(--hr-success-ink) 15%, transparent); }
+.hr-app[data-theme] .status-rejected { background: var(--hr-danger-bg); color: var(--hr-danger-ink); border-color: color-mix(in srgb, var(--hr-danger-ink) 15%, transparent); }
+.hr-app[data-theme] .status-cancelled { background: var(--hr-neutral-bg); color: var(--hr-neutral-ink); border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-role-tag.role-manager { color: var(--hr-accent-ink); background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-role-tag.role-hr { color: var(--hr-success-ink); background: var(--hr-success-bg); }
+.hr-app[data-theme] .hr-progress { background: var(--hr-neutral-bg); }
+.hr-app[data-theme] .hr-progress > i { background: var(--hr-accent); }
+.hr-app[data-theme] :is(.hr-profile-fields, .hr-profile-note, .hr-detail-section, .hr-form-actions, .hr-notification-tabs, .hr-academy-tabs, .hr-course-admin, .hr-lesson-list, .hr-editor-heading, .hr-editor-lang, .hr-notification-item, .hr-assignment-person, .hr-modal-header) { border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-tabs > button { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-tabs > button.active, .hr-app[data-theme] .hr-tabs > button:hover { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-tabs > button.active { border-color: var(--hr-accent); }
+.hr-app[data-theme] .hr-tabs > button > span { background: var(--hr-neutral-bg); color: var(--hr-muted); }
+.hr-app[data-theme] .hr-tabs > button.active > span { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] :is(.hr-form input:not([type=checkbox]):not([type=radio]), .hr-form textarea, .hr-form select, .hr-reject-box textarea, .hr-login-form input, .hr-filter, .hr-inline-search) { background: var(--hr-surface-soft); border-color: var(--hr-border); color: var(--hr-text); }
+.hr-app[data-theme] :is(.hr-form input:not([type=checkbox]):not([type=radio]), .hr-form textarea, .hr-form select, .hr-reject-box textarea, .hr-login-form input):focus { background: var(--hr-surface); border-color: var(--hr-accent-ink); box-shadow: 0 0 0 3px var(--hr-focus); }
+.hr-app[data-theme] :is(.hr-form input, .hr-form textarea, .hr-reject-box textarea, .hr-login-form input, .hr-inline-search input)::placeholder { color: var(--hr-placeholder); }
+.hr-app[data-theme] :is(.hr-form label, .hr-reject-box, .hr-login-form label) { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-form label > small { color: var(--hr-muted); }
+.hr-app[data-theme] input:is([type=checkbox], [type=radio]) { accent-color: var(--hr-accent); }
+.hr-app[data-theme] .hr-inline-search { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-inline-search input { color: var(--hr-text); }
+.hr-app[data-theme] .hr-inline-search:focus-within { border-color: var(--hr-accent-ink); box-shadow: 0 0 0 3px var(--hr-focus); }
+.hr-app[data-theme] .hr-info-note { background: var(--hr-surface-soft); color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-info-note > svg { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-form-error { background: var(--hr-danger-bg); border-color: color-mix(in srgb, var(--hr-danger-ink) 20%, transparent); color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-leave-summary, .hr-app[data-theme] .hr-request-dates { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-leave-summary strong, .hr-app[data-theme] .hr-request-dates strong, .hr-app[data-theme] .hr-day-count { color: var(--hr-accent-ink); }
+.hr-app[data-theme] :is(.hr-leave-summary div > span, .hr-leave-summary > span, .hr-request-dates div > span, .hr-day-count small) { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-date-summary { background: var(--hr-surface-soft); color: var(--hr-text-secondary); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-date-summary strong { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-date-summary.over-limit { background: var(--hr-danger-bg); color: var(--hr-danger-ink); border-color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-approval-track > div > span { background: var(--hr-neutral-bg); color: var(--hr-muted); border-color: var(--hr-surface); }
+.hr-app[data-theme] .hr-approval-track > div strong { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-approval-track > div > i { background: var(--hr-border); }
+.hr-app[data-theme] .hr-approval-track > div.complete > span { background: var(--hr-success-bg); color: var(--hr-success-ink); }
+.hr-app[data-theme] .hr-approval-track > div.complete > strong { color: var(--hr-success-ink); }
+.hr-app[data-theme] .hr-approval-track > div.complete > i { background: color-mix(in srgb, var(--hr-success-ink) 35%, var(--hr-surface)); }
+.hr-app[data-theme] .hr-approval-track > div.current > span { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-approval-track > div.current > strong { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-history-dot { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-history > li:not(:last-child)::before { background: var(--hr-line); }
+.hr-app[data-theme] .hr-history blockquote { background: var(--hr-surface-soft); color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-comment { border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-attachment { background: var(--hr-surface); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-attachment:hover { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-attachment > svg { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-modal-backdrop { background: var(--hr-backdrop); }
+.hr-app[data-theme] .hr-modal { box-shadow: 0 24px 85px #00000038, 0 4px 18px #00000014; }
+.hr-app[data-theme] .hr-modal-header { background: var(--hr-surface); }
+.hr-app[data-theme] .hr-toast { color: var(--hr-success-ink); border-color: color-mix(in srgb, var(--hr-success-ink) 35%, var(--hr-surface)); box-shadow: 0 7px 28px #00000026; }
+.hr-app[data-theme] .hr-toast.error { color: var(--hr-danger-ink); border-color: color-mix(in srgb, var(--hr-danger-ink) 35%, var(--hr-surface)); }
+.hr-app[data-theme] .hr-toast .hr-icon-button { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-profile-modal .hr-avatar.avatar-large { box-shadow: 0 5px 20px rgb(var(--hr-accent-rgb) / .09); }
+.hr-app[data-theme] .hr-empty-icon { background: var(--hr-surface-soft); color: var(--hr-muted); }
+.hr-app[data-theme] .hr-empty h3 { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-empty p { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-academy-banner, .hr-app[data-theme] .hr-learning-cover { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-academy-banner h2 { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-academy-banner p { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-academy-banner p > strong { color: var(--hr-text); }
+.hr-app[data-theme] .hr-academy-icon { color: var(--hr-accent-ink); background: var(--hr-surface); }
+.hr-app[data-theme] .hr-academy-decoration { color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-cover-dots { border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-course-category { background: var(--hr-surface); color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-course-admin button:hover { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-lesson-list > button { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-lesson-list > button:hover { background: var(--hr-surface-hover); color: var(--hr-text); }
+.hr-app[data-theme] .hr-lesson-list > button.active { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-lesson-list > button > span:first-child { background: var(--hr-neutral-bg); color: var(--hr-muted); }
+.hr-app[data-theme] .hr-lesson-list > button > span:first-child.done { background: var(--hr-success-bg); color: var(--hr-success-ink); }
+.hr-app[data-theme] .hr-quiz-option { background: var(--hr-surface); color: var(--hr-text-secondary); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-quiz-option:hover { background: var(--hr-surface-hover); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-quiz-option.selected { background: var(--hr-accent-soft); color: var(--hr-text); border-color: var(--hr-accent-ink); box-shadow: none; }
+.hr-app[data-theme] .hr-quiz-result.passed { background: var(--hr-success-bg); color: var(--hr-success-ink); }
+.hr-app[data-theme] .hr-quiz-result.failed { background: var(--hr-warning-bg); color: var(--hr-warning-ink); }
+.hr-app[data-theme] .hr-editor-block { background: var(--hr-surface-soft); border-color: var(--hr-border); }
+.hr-app[data-theme] :is(.hr-editor-heading h3, .hr-editor-block-head) { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-editor-lang p { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-assignment-list { border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-assignment-person:hover { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-notification-item { background: var(--hr-surface); }
+.hr-app[data-theme] .hr-notification-item.unread { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-notification-item:hover { background: var(--hr-surface-hover); }
+.hr-app[data-theme] .hr-notification-copy strong > i { background: var(--hr-accent); }
+.hr-app[data-theme] .hr-chat-messages { background: var(--hr-chat-wallpaper, var(--hr-chat-base)); background-attachment: local; }
+.hr-app[data-theme] .hr-chat-top { background: var(--hr-surface); border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-chat-bottom { background: var(--hr-surface); border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-chat-bubble { background: var(--hr-surface); border-color: var(--hr-border); box-shadow: 0 1px 3px #0000000a; }
+.hr-app[data-theme] .hr-chat-bubble > p { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-chat-message.user .hr-chat-bubble { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); box-shadow: none; }
+.hr-app[data-theme] .hr-chat-message.user .hr-chat-bubble > p { color: var(--hr-text); }
+.hr-app[data-theme] .hr-chat-user, .hr-app[data-theme] .hr-jana-orb { background: var(--hr-accent-soft); color: var(--hr-accent-ink); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-chat-input { background: var(--hr-surface-soft); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-chat-input:focus-within { background: var(--hr-surface); border-color: var(--hr-accent-ink); box-shadow: 0 0 0 3px var(--hr-focus); }
+.hr-app[data-theme] .hr-chat-input textarea { color: var(--hr-text); }
+.hr-app[data-theme] .hr-chat-input textarea::placeholder { color: var(--hr-placeholder); }
+.hr-app[data-theme] .hr-chat-input .hr-button.primary { background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-chat-input .hr-button.primary:hover:not(:disabled) { background: var(--hr-blue-dark); }
+.hr-app[data-theme] .hr-chat-sources { border-color: var(--hr-line); }
+.hr-app[data-theme] .hr-chat-sources > strong, .hr-app[data-theme] .hr-chat-sources summary { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-chat-sources details, .hr-app[data-theme] .hr-chat-sources details[open] { background: var(--hr-surface-soft); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-chat-sources details[open] { border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-chat-sources details > p { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-chat-sources summary > span { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-chat-action { border-color: var(--hr-line); color: var(--hr-accent-ink) !important; }
+.hr-app[data-theme] .hr-ai-welcome h2 { color: var(--hr-text); }
+.hr-app[data-theme] .hr-ai-welcome > p { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-ai-welcome-orb { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); color: var(--hr-accent-ink); box-shadow: 0 5px 22px rgb(var(--hr-accent-rgb) / .08); }
+.hr-app[data-theme] .hr-prompt-list button { background: var(--hr-surface); color: var(--hr-text-secondary); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-prompt-list button:hover { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+.hr-app[data-theme] .hr-prompt-list button > svg:last-child { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-thinking { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-typing-dots i { background: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-ai-title-tag { background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-ai-fallback { background: var(--hr-warning-bg); color: var(--hr-warning-ink); border-color: color-mix(in srgb, var(--hr-warning-ink) 15%, transparent); }
+.hr-app[data-theme] .hr-answer-mode.mode-refusal { color: var(--hr-warning-ink); }
+.hr-app[data-theme] .hr-login-form-side { background: var(--hr-bg); }
+.hr-app[data-theme] .hr-login-form .login-submit { background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-demo-accounts { border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-demo-accounts :is(summary, p) { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-demo-roles button { background: var(--hr-surface); border-color: var(--hr-border); }
+.hr-app[data-theme] .hr-demo-roles button:hover { background: var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-demo-roles span { color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-demo-roles code { color: var(--hr-accent-ink); }
+.hr-app.hr-starting[data-theme] :is(h2, p) { color: var(--hr-text-secondary); }
+.hr-app.hr-starting[data-theme] > svg { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-skip-link { background: var(--hr-surface); color: var(--hr-text); }
+.hr-app[data-theme] :is(.hr-stat, .hr-course-card, .hr-team-person):hover { border-color: var(--hr-accent-tint); box-shadow: var(--hr-shadow); }
+.hr-app[data-theme=dark] .blue, .hr-app[data-theme=dark] .hr-file-icon { color: #a0b5eb; background: #28374f; }
+.hr-app[data-theme=dark] .violet { color: #c3acec; background: #352f4b; }
+.hr-app[data-theme=dark] .amber { color: #e0be89; background: #3e362b; }
+.hr-app[data-theme=dark] .hr-course-cover { background: #29344e; color: #9eafdf; }
+.hr-app[data-theme=dark] .hr-course-cover.cover-1 { background: #233d3d; color: #9acbbf; }
+.hr-app[data-theme=dark] .hr-course-cover.cover-2 { background: #3b2e4b; color: #c4a4de; }
+.hr-app[data-theme=dark] .hr-cover-circle { border-color: #ffffff0a; }
+.hr-app[data-theme=dark] .hr-cover-word { color: #b1bdd3; }
+.hr-app[data-theme=dark] .hr-jana-logo { color: #c7d4c3; }
+.hr-app[data-theme=dark] .hr-jana-logo > span { color: #a4c18e; }
+.hr-app[data-theme=dark] .hr-modal-header { box-shadow: 0 2px 8px #00000008; }
+.hr-app[data-theme] :is(.hr-modal, .hr-chat-messages, .hr-assignment-list, .hr-search-results, .hr-table-wrap) { scrollbar-color: var(--hr-border) transparent; }
+.hr-app[data-theme] :is(.hr-modal, .hr-chat-messages, .hr-assignment-list, .hr-search-results, .hr-table-wrap)::-webkit-scrollbar-thumb { background-color: var(--hr-border); }
+
+/* Appearance settings: compact controls with a live, theme-aware preview. */
+.hr-app[data-theme] .hr-appearance-settings { display: grid; grid-template-columns: minmax(0, 1fr) 245px; align-items: start; gap: 25px; }
+.hr-app[data-theme] .hr-appearance-settings > :first-child { min-width: 0; }
+.hr-app[data-theme] .hr-setting-section { min-width: 0; padding: 0 0 23px; margin: 0 0 23px; border: 0; border-bottom: 1px solid var(--hr-line); }
+.hr-app[data-theme] .hr-setting-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+.hr-app[data-theme] .hr-setting-heading { color: var(--hr-text); font-weight: 650; font-size: var(--hr-fs-body); margin: 0 0 11px; padding: 0; }
+.hr-app[data-theme] .hr-setting-description { color: var(--hr-muted); font-size: var(--hr-fs-sm); line-height: 1.7; margin: 6px 0 13px; }
+.hr-app[data-theme] .hr-theme-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hr-app[data-theme] .hr-theme-option { position: relative; min-width: 0; padding: 9px; border: 1px solid var(--hr-border); border-radius: 10px; background: var(--hr-surface); color: var(--hr-text-secondary); text-align: left; font-size: var(--hr-fs-sm); transition: border-color 160ms, background 160ms, box-shadow 160ms, transform 180ms var(--hr-spring); }
+.hr-app[data-theme] .hr-theme-option[aria-pressed=true] { border-color: var(--hr-accent-ink); background: var(--hr-accent-soft); color: var(--hr-accent-ink); box-shadow: 0 0 0 1px var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-theme-mini { display: flex; gap: 5px; height: 43px; border-radius: 5px; margin-bottom: 9px; padding: 5px; overflow: hidden; border: 1px solid #e1e5ed; background: #f6f7fb; }
+.hr-app[data-theme] .hr-theme-mini .mini-sidebar { width: 18px; flex-shrink: 0; border-radius: 3px; background: #d8dce9; }
+.hr-app[data-theme] .hr-theme-mini .mini-lines { flex: 1; min-width: 0; border-radius: 3px; background: linear-gradient(#dce1ed 0 0) 0 2px / 75% 4px no-repeat, linear-gradient(#e4e8f1 0 0) 0 12px / 95% 4px no-repeat, linear-gradient(#e4e8f1 0 0) 0 22px / 62% 4px no-repeat; }
+.hr-app[data-theme] .theme-dark .hr-theme-mini { background: #1c2534; border-color: #354157; }
+.hr-app[data-theme] .theme-dark .mini-sidebar { background: #3b4963; }
+.hr-app[data-theme] .theme-dark .mini-lines { background-image: linear-gradient(#63738f 0 0), linear-gradient(#485873 0 0), linear-gradient(#485873 0 0); }
+.hr-app[data-theme] .theme-system .hr-theme-mini { background: linear-gradient(90deg, #f6f7fb 50%, #1c2534 50%); border-color: #9ca6b8; }
+.hr-app[data-theme] .hr-theme-option > :is(span, div):last-child { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.hr-app[data-theme] .hr-accent-options { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.hr-app[data-theme] .hr-accent-option { position: relative; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 3px solid var(--hr-surface); outline: 1px solid var(--hr-border); border-radius: 50%; color: #fff; background: var(--hr-swatch); transition: transform 180ms var(--hr-spring), box-shadow 160ms, outline-color 160ms; }
+.hr-app[data-theme] .hr-accent-option[aria-pressed=true] { outline: 2px solid var(--hr-accent-ink); box-shadow: 0 0 0 3px var(--hr-accent-soft); }
+.hr-app[data-theme] .hr-accent-option > svg { width: 14px; height: 14px; filter: drop-shadow(0 1px 2px #0000004d); }
+.hr-app[data-theme] .hr-custom-accent { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 13px; color: var(--hr-text-secondary); font-size: var(--hr-fs-sm); }
+.hr-app[data-theme] .hr-custom-accent input[type=color], .hr-app[data-theme] .hr-gradient-controls input[type=color] { width: 35px; height: 30px; min-height: 0; padding: 3px; border: 1px solid var(--hr-border); border-radius: 7px; background: var(--hr-surface); cursor: pointer; }
+.hr-app[data-theme] .hr-custom-accent input:not([type=color]) { width: 95px; min-height: 31px; padding: 6px 8px; font-family: ui-monospace, monospace; font-size: var(--hr-fs-sm); border: 1px solid var(--hr-border); border-radius: 7px; background: var(--hr-surface-soft); color: var(--hr-text-secondary); }
+.hr-app[data-theme] .hr-wallpaper-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hr-app[data-theme] .hr-wallpaper-option { position: relative; min-height: 65px; display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; padding: 7px; border: 1px solid var(--hr-border); border-radius: 9px; overflow: hidden; color: var(--hr-text-secondary); font-size: var(--hr-fs-xs); transition: border-color 160ms, box-shadow 160ms, transform 180ms var(--hr-spring); }
+.hr-app[data-theme] .hr-wallpaper-option[aria-pressed=true] { border-color: var(--hr-accent-ink); box-shadow: 0 0 0 1px var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-wallpaper-option > span { position: relative; padding: 2px 5px; background: var(--hr-surface); color: var(--hr-text-secondary); border-radius: 4px; }
+.hr-app[data-theme] .hr-wallpaper-option > svg { padding: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-gradient-controls { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 15px; padding: 13px; background: var(--hr-surface-soft); border: 1px solid var(--hr-border); border-radius: 9px; }
+.hr-app[data-theme] .hr-gradient-controls label { display: flex; flex-direction: column; gap: 6px; color: var(--hr-text-secondary); font-size: var(--hr-fs-xs); }
+.hr-app[data-theme] .hr-gradient-controls label:last-child { flex: 1; min-width: 115px; }
+.hr-app[data-theme] .hr-gradient-controls input[type=range] { width: 100%; accent-color: var(--hr-accent); min-height: 28px; cursor: pointer; }
+.hr-app[data-theme] .hr-font-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.hr-app[data-theme] .hr-font-option { min-height: 41px; padding: 8px 6px; border: 1px solid var(--hr-border); border-radius: 8px; background: var(--hr-surface); color: var(--hr-text-secondary); font-size: var(--hr-fs-label); transition: border-color 160ms, background 160ms, transform 180ms var(--hr-spring); }
+.hr-app[data-theme] .hr-font-option[aria-pressed=true] { background: var(--hr-accent-soft); border-color: var(--hr-accent-ink); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-appearance-preview { position: sticky; top: calc(84px * var(--hr-text-scale)); min-width: 0; }
+.hr-app[data-theme] .hr-appearance-preview > .hr-setting-heading { display: block; margin-bottom: 11px; }
+.hr-app[data-theme] .hr-preview-window { overflow: hidden; border: 1px solid var(--hr-border); border-radius: 13px; background: var(--hr-surface); box-shadow: var(--hr-shadow); }
+.hr-app[data-theme] .hr-preview-top { display: flex; align-items: center; gap: 9px; padding: 13px; color: var(--hr-text); font-size: var(--hr-fs-label); border-bottom: 1px solid var(--hr-line); }
+.hr-app[data-theme] .hr-preview-top > svg { color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-preview-top strong { font-weight: 650; }
+.hr-app[data-theme] .hr-preview-top small { display: block; color: var(--hr-muted); font-size: var(--hr-fs-xs); margin-top: 2px; }
+.hr-app[data-theme] .hr-preview-top > div { min-width: 0; }
+.hr-app[data-theme] .hr-preview-top > div > span { display: block; color: var(--hr-muted); font-size: var(--hr-fs-xs); line-height: 1.5; margin-top: 3px; }
+.hr-app[data-theme] .hr-preview-messages { display: flex; flex-direction: column; gap: 11px; min-height: 220px; padding: 15px 12px; background: var(--hr-chat-wallpaper, var(--hr-chat-base)); }
+.hr-app[data-theme] .hr-preview-bubble { max-width: 93%; padding: 11px; border: 1px solid var(--hr-border); border-radius: 3px 11px 11px; background: var(--hr-surface); color: var(--hr-text-secondary); font-size: var(--hr-fs-sm); line-height: 1.65; }
+.hr-app[data-theme] .hr-preview-bubble.user { align-self: flex-end; border-color: var(--hr-accent-tint); border-radius: 11px 3px 11px 11px; background: var(--hr-accent-soft); color: var(--hr-text); }
+.hr-app[data-theme] .hr-preview-bubble > span { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 5px; color: var(--hr-muted); font-size: calc(9px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-preview-composer { display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 11px; border-top: 1px solid var(--hr-line); background: var(--hr-surface); color: var(--hr-placeholder); font-size: var(--hr-fs-xs); }
+.hr-app[data-theme] .hr-preview-composer > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hr-app[data-theme] .hr-preview-composer > span:last-child, .hr-app[data-theme] .hr-preview-composer > svg:last-child { padding: 7px; width: 28px; height: 28px; border-radius: 7px; background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-app[data-theme] .hr-preview-send { display: grid; place-items: center; flex-shrink: 0; }
+.hr-app[data-theme] .hr-preview-send > svg { width: 14px; height: 14px; }
+.hr-app[data-theme] .hr-wallpaper-option { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 6px; background: var(--hr-surface); }
+.hr-app[data-theme] .hr-wallpaper-option > span { background: transparent; padding: 0; }
+.hr-app[data-theme] .hr-wallpaper-option > .hr-wallpaper-swatch { display: flex; align-items: flex-start; justify-content: flex-end; width: 100%; height: 43px; flex-shrink: 0; padding: 5px; border: 1px solid var(--hr-line); border-radius: 5px; }
+.hr-app[data-theme] .hr-wallpaper-swatch > svg { background: var(--hr-accent); color: var(--hr-on-accent); padding: 2px; border-radius: 50%; }
+.hr-app[data-theme] .hr-custom-accent code { color: var(--hr-text-secondary); font-size: var(--hr-fs-sm); }
+.hr-app[data-theme] .hr-custom-accent input.hr-accent-hex { width: 90px; padding: 6px 8px; }
+.hr-app[data-theme] .hr-custom-accent input[type=color] { margin-left: auto; width: 38px; }
+.hr-app[data-theme] .hr-font-option { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 58px; }
+.hr-app[data-theme] .hr-font-option > span:last-child { font-size: var(--hr-fs-xs); }
+.hr-app[data-theme] .hr-gradient-angle > span { display: flex; justify-content: space-between; gap: 7px; }
+.hr-app[data-theme] .hr-gradient-angle strong { font-weight: 600; }
+.hr-app[data-theme] .hr-appearance-save { margin-bottom: 0; }
+.hr-app[data-theme] .hr-appearance-save.save-error { color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-sidebar-brand, .hr-app[data-theme] .hr-workspace-label, .hr-app[data-theme] .hr-nav-eyebrow { flex-shrink: 0; }
+.hr-app[data-theme] .hr-sidebar nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 2px 0 5px; scrollbar-width: thin; scrollbar-color: var(--hr-border) transparent; }
+.hr-app[data-theme] .hr-sidebar nav > .hr-nav-item { flex-shrink: 0; }
+.hr-app[data-theme] .hr-sidebar-bottom { flex-shrink: 0; padding-top: 12px; }
+.hr-app[data-theme] .hr-sidebar-settings { margin-bottom: 11px; }
+.hr-app[data-theme] .hr-sidebar-user { padding-top: 14px; padding-bottom: 14px; }
+
+/* Account settings keep appearance and sign-out in one small menu. */
+.hr-app[data-theme] .hr-settings-account { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 13px; row-gap: 2px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--hr-border); border-radius: 12px; background: var(--hr-surface-soft); }
+.hr-app[data-theme] .hr-settings-account > .hr-avatar { grid-column: 1; grid-row: 1 / 3; }
+.hr-app[data-theme] .hr-settings-account > div { grid-column: 2; grid-row: 1 / 3; min-width: 0; }
+.hr-app[data-theme] .hr-settings-account strong { display: block; color: var(--hr-text); font-size: var(--hr-fs-body); font-weight: 650; }
+.hr-app[data-theme] .hr-settings-account small { display: block; color: var(--hr-muted); font-size: var(--hr-fs-sm); overflow-wrap: anywhere; }
+.hr-app[data-theme] .hr-settings-menu { display: flex; flex-direction: column; gap: 10px; }
+.hr-app[data-theme] .hr-settings-row { display: flex; align-items: center; gap: 13px; width: 100%; padding: 16px; border: 1px solid var(--hr-border); border-radius: 11px; background: var(--hr-surface); color: var(--hr-text); text-align: left; transition: background 160ms, border-color 160ms, transform 180ms var(--hr-spring); }
+.hr-app[data-theme] .hr-settings-icon { display: grid; place-items: center; width: 39px; height: 39px; flex-shrink: 0; border-radius: 11px; background: var(--hr-accent-soft); color: var(--hr-accent-ink); }
+.hr-app[data-theme] .hr-settings-copy { flex: 1; min-width: 0; }
+.hr-app[data-theme] .hr-settings-copy strong { display: block; font-size: var(--hr-fs-body); font-weight: 600; }
+.hr-app[data-theme] .hr-settings-copy small { display: block; margin-top: 4px; color: var(--hr-muted); font-size: var(--hr-fs-sm); line-height: 1.65; }
+.hr-app[data-theme] .hr-settings-row > svg { color: var(--hr-muted); }
+.hr-app[data-theme] .hr-settings-row.is-danger .hr-settings-icon { background: var(--hr-danger-bg); color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-settings-row.is-danger .hr-settings-copy strong { color: var(--hr-danger-ink); }
+.hr-app[data-theme] .hr-settings-back { display: inline-flex; align-items: center; gap: 7px; padding: 5px 7px; margin: -3px 0 8px -7px; border: 0; border-radius: 7px; background: transparent; color: var(--hr-accent-ink); font-size: var(--hr-fs-sm); font-weight: 550; transition: background 160ms, transform 180ms var(--hr-spring); }
+@media (hover: hover) {
+  .hr-app[data-theme] .hr-settings-row:hover:not(:disabled) { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+  .hr-app[data-theme] .hr-settings-row.is-danger:hover:not(:disabled) { background: var(--hr-danger-bg); border-color: color-mix(in srgb, var(--hr-danger-ink) 25%, var(--hr-surface)); }
+  .hr-app[data-theme] .hr-settings-back:hover { background: var(--hr-accent-soft); }
+}
+.hr-app[data-theme] .hr-settings-row:active:not(:disabled), .hr-app[data-theme] .hr-settings-back:active { transform: scale(.985); }
+@media (hover: hover) {
+  .hr-app[data-theme] :is(.hr-theme-option, .hr-font-option):hover { background: var(--hr-accent-soft); border-color: var(--hr-accent-tint); }
+  .hr-app[data-theme] .hr-accent-option:hover { transform: scale(1.08); }
+  .hr-app[data-theme] .hr-wallpaper-option:hover { transform: translateY(-1px); border-color: var(--hr-accent-ink); }
+}
+.hr-app[data-theme] :is(.hr-theme-option, .hr-accent-option, .hr-wallpaper-option, .hr-font-option):active { transform: scale(.97); }
+
+/* Scale the actual interface text, not just inherited body text. */
+.hr-app[data-theme] :is(.hr-page-intro h1) { font-size: calc(25px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-banner-copy h2 { font-size: calc(26px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-login-copy h1 { font-size: calc(42px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-login-form h2 { font-size: calc(27px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-modal-header h2, .hr-app[data-theme] .hr-lesson-main > h3 { font-size: calc(20px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-ai-welcome h2 { font-size: calc(25px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-stat strong { font-size: calc(26px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-leave-summary strong { font-size: calc(20px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-day-count { font-size: calc(25px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-profile-identity h3 { font-size: calc(17px * var(--hr-text-scale)); }
+.hr-app[data-theme] :is(.hr-course-body h2, .hr-academy-banner h2) { font-size: var(--hr-fs-lg); }
+.hr-app[data-theme] :is(.hr-panel-heading h2, .hr-learning-content h3) { font-size: calc(15px * var(--hr-text-scale)); }
+.hr-app[data-theme] :is(.hr-empty h3, .hr-editor-heading h3, .hr-team-person h3) { font-size: var(--hr-fs-md); }
+.hr-app[data-theme] :is(.hr-panel-heading h3, .hr-detail-section h3, .hr-chat-top strong, .hr-notification-copy > strong, .hr-quiz-result strong) { font-size: var(--hr-fs-body); }
+.hr-app[data-theme] :is(.hr-button, .hr-chat-bubble > p, .hr-chat-input textarea, .hr-lesson-content p, .hr-form input:not([type=checkbox]):not([type=radio]), .hr-form textarea, .hr-form select, .hr-reject-box textarea, .hr-login-form input) { font-size: var(--hr-fs-body); }
+.hr-app[data-theme] :is(.hr-nav-item, .hr-page-intro p, .hr-banner-copy p, .hr-profile-identity p, .hr-profile-fields dd, .hr-detail-fields dd, .hr-stat p, .hr-table td, .hr-table-title, .hr-tabs > button, .hr-course-body > p, .hr-quiz-form legend, .hr-quiz-option, .hr-form label, .hr-reject-box, .hr-form-actions .hr-button, .hr-prompt-list button, .hr-ai-welcome > p, .hr-text-link, .hr-toast, .hr-notification-copy > span, .hr-login-form > p, .hr-login-form label, .hr-history strong, .hr-attachment strong, .hr-assignment-person strong, .hr-comment > p, .hr-request-dates div > strong) { font-size: var(--hr-fs-label); }
+.hr-app[data-theme] :is(.hr-workspace-label strong, .hr-sidebar-user strong, .hr-sidebar-user .hr-profile-button strong, .hr-profile-button strong) { font-size: var(--hr-fs-label); }
+.hr-app[data-theme] :is(.hr-filter, .hr-global-search > input, .hr-inline-search input, .hr-language select, .hr-profile-identity div > span, .hr-stat div > span, .hr-stat strong small, .hr-profile-fields dt, .hr-progress-label, .hr-progress-label strong, .hr-status, .hr-notification-copy > small, .hr-course-meta, .hr-course-admin button, .hr-lesson-list > button, .hr-history p, .hr-history p > span, .hr-chat-top div > span, .hr-chat-sources details > p, .hr-thinking, .hr-modal-header p, .hr-empty p, .hr-info-note, .hr-form-error, .hr-date-summary, .hr-editor-lang p, .hr-editor-block-head, .hr-academy-banner p, .hr-section-caption, .hr-subtle-text) { font-size: var(--hr-fs-sm); }
+.hr-app[data-theme] :is(.hr-eyebrow, .hr-nav-eyebrow, .hr-breadcrumb, .hr-workspace-label div > span, .hr-sidebar-user div > span, .hr-request-identity > div > span, .hr-table-subdate, .hr-table th, .hr-profile-note, .hr-count-label, .hr-tiny-tag, .hr-role-tag, .hr-form label > small, .hr-chat-sources > strong, .hr-chat-sources summary, .hr-chat-action, .hr-answer-mode, .hr-detail-fields dt, .hr-comment > span, .hr-attachment div > span, .hr-request-dates div > span, .hr-approval-track > div strong, .hr-assignment-person small, .hr-lesson-progress > span, .hr-quiz-result p, .hr-day-count small, .hr-leave-summary div > span, .hr-leave-summary > span, .hr-team-person p, .hr-team-person div > span, .hr-secure-label, .hr-learning-content .hr-eyebrow, .hr-chat-bottom > p, .hr-ai-fallback, .hr-demo-accounts summary, .hr-demo-accounts > p, .hr-demo-roles span, .hr-demo-roles code, .hr-login-footer, .hr-page-footer, .hr-tag) { font-size: var(--hr-fs-xs); }
+.hr-app[data-theme] .hr-avatar { font-size: var(--hr-fs-label); }
+.hr-app[data-theme] .hr-avatar.avatar-small { font-size: var(--hr-fs-xs); }
+.hr-app[data-theme] .hr-avatar.avatar-large { font-size: calc(20px * var(--hr-text-scale)); }
+.hr-app[data-theme] .hr-chat-user { font-size: var(--hr-fs-xs); }
+@media (min-width: 981px) and (max-height: 700px) {
+  .hr-app[data-theme] .hr-view-enter[data-view=assistant]:not([hidden]) .hr-ai-welcome h2 { font-size: calc(20px * var(--hr-text-scale)); }
+  .hr-app[data-theme] .hr-view-enter[data-view=assistant]:not([hidden]) .hr-ai-welcome > p, .hr-app[data-theme] .hr-view-enter[data-view=assistant]:not([hidden]) .hr-prompt-list button { font-size: var(--hr-fs-sm); }
+}
+@media (max-width: 760px) {
+  .hr-app[data-theme] .hr-appearance-settings { grid-template-columns: minmax(0, 1fr); }
+  .hr-app[data-theme] .hr-appearance-preview { position: static; }
+  .hr-app[data-theme] .hr-login-form-side { background: var(--hr-bg); }
+  .hr-app[data-theme] .hr-sidebar-backdrop { background: var(--hr-backdrop); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-app[data-theme] :is(.hr-theme-option, .hr-accent-option, .hr-wallpaper-option, .hr-font-option, .hr-settings-row, .hr-settings-back) { transition: none; transform: none !important; }
+}

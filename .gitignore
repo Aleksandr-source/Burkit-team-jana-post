@@ -1,0 +1,16 @@
+node_modules/
+build/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Local HR data, generated credentials, uploads and model weights
+.data/
+.local-ai/
+.runtime/
+dist/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

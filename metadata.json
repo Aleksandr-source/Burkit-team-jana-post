@@ -1,0 +1,8 @@
+{
+  "name": "Asar",
+  "description": "Minimalist Kanban task manager for agile teams with project-based isolation and invitation-only access.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

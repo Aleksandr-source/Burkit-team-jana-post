@@ -1,0 +1,13 @@
+[
+  {
+    "origin": [
+      "http://localhost:3000",
+      "https://*.run.app",
+      "https://*.app",
+      "*"
+    ],
+    "method": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization", "Content-Length", "User-Agent", "x-goog-resumable"]
+  }
+]

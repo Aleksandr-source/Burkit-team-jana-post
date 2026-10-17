@@ -1,0 +1,15 @@
+services:
+  asar:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - asar-data:/app/.data
+    restart: unless-stopped
+
+volumes:
+  asar-data:
