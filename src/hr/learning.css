@@ -1,0 +1,17 @@
+.hr-quiz-criteria, .hr-quiz-draft-note, .hr-quiz-submit > span { font-size: 12px; line-height: 1.7; color: var(--hr-text-secondary, #6c7891); }
+.hr-quiz-criteria { margin: -12px 0 20px; }
+.hr-quiz-draft-note { margin: 0; }
+.hr-quiz-submit { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.hr-question-feedback { font-size: 12px; line-height: 1.6; margin: 8px 0 0; }
+.hr-question-correct .hr-question-feedback { color: var(--hr-success-ink, #317453); }
+.hr-question-review .hr-question-feedback { color: var(--hr-warning-ink, #94601e); }
+.hr-question-review { border-left: 3px solid var(--hr-warning-ink, #94601e) !important; padding-left: 12px !important; }
+.hr-lesson-main > h3:focus { outline: none; }
+@media (max-width: 760px) {
+  .hr-course-detail > .hr-lesson-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hr-course-detail > .hr-lesson-list > button { flex: 1 1 calc(50% - 6px); width: auto; min-width: 0; font-size: 11px; margin: 0; padding: 8px 4px; }
+  .hr-course-detail .hr-lesson-progress { display: block; flex: 1 1 100%; margin-top: 8px; }
+  .hr-course-detail .hr-lesson-progress > span { font-size: 11px; }
+  .hr-course-detail .hr-quiz-option { min-height: 44px; font-size: 12px; }
+  .hr-course-detail .hr-quiz-option input { flex-shrink: 0; }
+}

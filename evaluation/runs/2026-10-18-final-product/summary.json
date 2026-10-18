@@ -1,0 +1,103 @@
+{
+  "createdAt": "2026-10-18T05:43:00.406Z",
+  "model": {
+    "modelInstalled": true,
+    "runtimeInstalled": true,
+    "model": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "modelPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\models\\Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "serverPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\runtime-b8936-win-x64\\llama-server.exe",
+    "verified": true,
+    "modelVerified": true,
+    "runtimeVerified": true,
+    "runtimeCommit": "2dd84169d1225c2a56ddd1902d718f4514d7536a",
+    "runtimeMode": "official-prebuilt",
+    "runtimePlatform": "win32-x64"
+  },
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz",
+    "ramBytes": 16905936896
+  },
+  "plan": {
+    "profile": "standard",
+    "aiAllowed": true,
+    "disabled": false,
+    "memory": {
+      "totalBytes": 16905936896,
+      "availableBytes": 5517078528,
+      "hostTotalBytes": 16905936896,
+      "hostAvailableBytes": 5517078528,
+      "cgroupLimitBytes": null,
+      "cgroupAvailableBytes": null
+    },
+    "minimumAvailableBytes": 2147483648,
+    "minimumCgroupAvailableBytes": 1073741824,
+    "reason": "ready",
+    "threads": 2,
+    "context": 2048,
+    "batch": 128,
+    "microBatch": 64,
+    "predictions": 96,
+    "startupMs": 90000,
+    "stopBelowBytes": 805306368,
+    "stopCgroupBelowBytes": 67108864,
+    "nodeHeapMiB": 256
+  },
+  "startupMs": 4151.5219,
+  "datasetSha256": "0f0685854a59fd60aa9cf3794751c699980b0be8a28874d01e7a5ad2957a5c5a",
+  "productSha256": {
+    "server/assistant.mjs": "ffd816a0729305c90e838898cfb274cd5d9cca6cc7d1c0a5b2faf23e97ecdd3a",
+    "server/knowledge.mjs": "d075e367f6e96701a0dc435f02407395c25e35b0ffa8315b4a803ca26c45d6d2",
+    "server/knowledge-support.mjs": "691336300585fe4a10317872074cc4cae9353d7761f89c9ce9a7b780e3ea9731",
+    "server/ai/local-model-provider.mjs": "39f82e595135bcfc5091e110f587a1e3de7515f6eba556e5252128788e1fdfc4",
+    "scripts/check-demo-ai.mjs": "d4afcea756087caa0892d7a507f2be747f879e88a4152ab77cb663edd15bf4b2"
+  },
+  "calls": 108,
+  "correct": 108,
+  "byLanguage": {
+    "ru": {
+      "calls": 36,
+      "correct": 36,
+      "supported": 20,
+      "supportedCorrect": 20,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 2203.392
+    },
+    "kk": {
+      "calls": 36,
+      "correct": 36,
+      "supported": 20,
+      "supportedCorrect": 20,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 4513.229100000004
+    },
+    "en": {
+      "calls": 36,
+      "correct": 36,
+      "supported": 20,
+      "supportedCorrect": 20,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 1211.7367999999988
+    }
+  },
+  "maxMs": 4867.763299999999,
+  "over5s": 0,
+  "over10s": 0,
+  "demoQuoteAnswers": 0,
+  "localModelAnswers": 60,
+  "citationsValid": true,
+  "accessChecks": 288,
+  "accessPassed": 288,
+  "offline": {
+    "mode": "knowledge_search",
+    "ms": 8.501700000007986,
+    "status": 200
+  },
+  "simulatedTimeout": {
+    "mode": "knowledge_search",
+    "ms": 8009.261999999988,
+    "status": 200
+  }
+}

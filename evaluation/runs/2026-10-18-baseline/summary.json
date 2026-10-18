@@ -1,0 +1,67 @@
+{
+  "createdAt": "2026-10-18T05:30:27.988Z",
+  "model": {
+    "modelInstalled": true,
+    "runtimeInstalled": true,
+    "model": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "modelPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\models\\Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "serverPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\runtime-b8936-win-x64\\llama-server.exe",
+    "verified": true,
+    "modelVerified": true,
+    "runtimeVerified": true,
+    "runtimeCommit": "2dd84169d1225c2a56ddd1902d718f4514d7536a",
+    "runtimeMode": "official-prebuilt",
+    "runtimePlatform": "win32-x64"
+  },
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz",
+    "ramBytes": 16905936896
+  },
+  "plan": {
+    "profile": "standard",
+    "aiAllowed": true,
+    "disabled": false,
+    "memory": {
+      "totalBytes": 16905936896,
+      "availableBytes": 5325242368,
+      "hostTotalBytes": 16905936896,
+      "hostAvailableBytes": 5325242368,
+      "cgroupLimitBytes": null,
+      "cgroupAvailableBytes": null
+    },
+    "minimumAvailableBytes": 2147483648,
+    "minimumCgroupAvailableBytes": 1073741824,
+    "reason": "ready",
+    "threads": 2,
+    "context": 2048,
+    "batch": 128,
+    "microBatch": 64,
+    "predictions": 96,
+    "startupMs": 90000,
+    "stopBelowBytes": 805306368,
+    "stopCgroupBelowBytes": 67108864,
+    "nodeHeapMiB": 256
+  },
+  "startupMs": 3147.5373,
+  "datasetSha256": "6a49559ce65038e0ef5e3ebca5736f4926094adca5d4c89ecf2a6a709be048c8",
+  "calls": 32,
+  "correct": 32,
+  "maxMs": 2604.267,
+  "over5s": 0,
+  "over10s": 0,
+  "demoQuoteAnswers": 0,
+  "localModelAnswers": 18,
+  "citationsValid": true,
+  "accessChecks": 96,
+  "accessPassed": 96,
+  "offline": {
+    "mode": "knowledge_search",
+    "ms": 9.791700000001583,
+    "status": 200
+  },
+  "simulatedTimeout": {
+    "mode": "knowledge_search",
+    "ms": 8021.565900000001,
+    "status": 200
+  }
+}

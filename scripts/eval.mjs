@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const command = process.argv[2] || 'validate';
 const root = fileURLToPath(new URL('../evaluation/vendor/janamen-eval-v1.0/', import.meta.url));
 const run = (args) => new Promise((resolve) => {
-  const child = spawn(process.env.PYTHON || 'python3', args, { cwd: root, stdio: 'inherit',
+  const child = spawn(process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3'), args, { cwd: root, stdio: 'inherit',
     env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
   child.once('error', (error) => { console.error(`Python 3 is required: ${error.message}`); resolve(1); });
   child.once('exit', (code) => resolve(code ?? 1));

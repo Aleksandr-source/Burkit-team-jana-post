@@ -1,0 +1,96 @@
+{
+  "createdAt": "2026-10-18T05:31:38.233Z",
+  "model": {
+    "modelInstalled": true,
+    "runtimeInstalled": true,
+    "model": "Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "modelPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\models\\Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+    "serverPath": "C:\\Users\\berku\\Burkit-team-jana-post\\.local-ai\\runtime-b8936-win-x64\\llama-server.exe",
+    "verified": true,
+    "modelVerified": true,
+    "runtimeVerified": true,
+    "runtimeCommit": "2dd84169d1225c2a56ddd1902d718f4514d7536a",
+    "runtimeMode": "official-prebuilt",
+    "runtimePlatform": "win32-x64"
+  },
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz",
+    "ramBytes": 16905936896
+  },
+  "plan": {
+    "profile": "standard",
+    "aiAllowed": true,
+    "disabled": false,
+    "memory": {
+      "totalBytes": 16905936896,
+      "availableBytes": 5021810688,
+      "hostTotalBytes": 16905936896,
+      "hostAvailableBytes": 5021810688,
+      "cgroupLimitBytes": null,
+      "cgroupAvailableBytes": null
+    },
+    "minimumAvailableBytes": 2147483648,
+    "minimumCgroupAvailableBytes": 1073741824,
+    "reason": "ready",
+    "threads": 2,
+    "context": 2048,
+    "batch": 128,
+    "microBatch": 64,
+    "predictions": 96,
+    "startupMs": 90000,
+    "stopBelowBytes": 805306368,
+    "stopCgroupBelowBytes": 67108864,
+    "nodeHeapMiB": 256
+  },
+  "startupMs": 4167.5160000000005,
+  "datasetSha256": "d69df24ec7de8c1e66dfd01b3853d86a46f9953e536e5157cf6cb3b4a04651b0",
+  "calls": 108,
+  "correct": 48,
+  "byLanguage": {
+    "ru": {
+      "calls": 36,
+      "correct": 16,
+      "supported": 20,
+      "supportedCorrect": 0,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 12.468699999999444
+    },
+    "kk": {
+      "calls": 36,
+      "correct": 16,
+      "supported": 20,
+      "supportedCorrect": 0,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 4.9000999999998385
+    },
+    "en": {
+      "calls": 36,
+      "correct": 16,
+      "supported": 20,
+      "supportedCorrect": 0,
+      "refusals": 16,
+      "refusalsCorrect": 16,
+      "p95Ms": 5.684600000000501
+    }
+  },
+  "maxMs": 28.317799999999806,
+  "over5s": 0,
+  "over10s": 0,
+  "demoQuoteAnswers": 0,
+  "localModelAnswers": 0,
+  "citationsValid": true,
+  "accessChecks": 96,
+  "accessPassed": 96,
+  "offline": {
+    "mode": "refusal",
+    "ms": 4.582499999999527,
+    "status": 200
+  },
+  "simulatedTimeout": {
+    "mode": "refusal",
+    "ms": 2.9314000000003944,
+    "status": 200
+  }
+}

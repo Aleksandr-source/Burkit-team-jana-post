@@ -2,13 +2,12 @@
   {
     "id": "leave",
     "question": "Как оформить отпуск?",
-    "source": "demo-leave-walkthrough",
+    "source": "leave-submit",
     "facts": [
       "Мои заявки",
       "Оформить отпуск",
       "даты"
-    ],
-    "mode": "demo_quote"
+    ]
   },
   {
     "id": "approval",

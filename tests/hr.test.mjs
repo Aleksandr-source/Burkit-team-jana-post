@@ -128,7 +128,7 @@ test('profiles are scoped to own records, the direct team and HR; only HR can ed
   assert.equal((await request('/people/employee/profile', { cookie: manager })).status, 200);
   assert.equal((await request('/people/employee/profile', { cookie: outsider })).status, 404);
   assert.equal((await request('/people/employee/profile')).status, 401);
-  const body = { name: 'Демо Алиса', company: 'Учебная компания', department: 'Доставка', position: 'Координатор', managerId: 'manager', hiredAt: '2024-03-11', employeeNumber: 'JM-017', phone: '+7 000 000 00 00' };
+  const body = { name: 'Демо Алиса', company: 'Jana Post · демо', department: 'Доставка', position: 'Координатор', managerId: 'manager', hiredAt: '2024-03-11', employeeNumber: 'JM-017', phone: '+7 000 000 00 00' };
   assert.equal((await request('/people/employee/profile', { cookie: employee, method: 'POST', body })).status, 403);
   assert.equal((await request('/people/employee/profile', { cookie: manager, method: 'POST', body })).status, 403);
   const edited = await request('/people/employee/profile', { cookie: hr, method: 'POST', body });
@@ -498,10 +498,17 @@ test('Academy keeps answers on the server, requires lessons and records a real q
   const failed = await request('/courses/onboarding/quiz', { cookie: employee, method: 'POST', body: { answers: [0, 1, 0, 0] } });
   assert.equal(failed.status, 200);
   assert.equal(failed.body.passed, false);
+  assert.equal(failed.body.feedback.length, course.quiz.length);
+  assert.ok(failed.body.feedback.every(item => item.correct === false));
+  assert.ok(failed.body.feedback.every(item => !('correctIndex' in item)), 'feedback does not expose answer keys');
   const passed = await request('/courses/onboarding/quiz', { cookie: employee, method: 'POST', body: { answers: [1, 0, 2, 1] } });
   assert.equal(passed.status, 200);
   assert.equal(passed.body.score, 100);
   assert.equal(passed.body.passed, true);
+  assert.ok(passed.body.feedback.every(item => item.correct === true));
+  const repeat = await request('/courses/onboarding/quiz', { cookie: employee, method: 'POST', body: { answers: [0, 1, 0, 0] } });
+  assert.equal(repeat.body.score, 0);
+  assert.equal(repeat.body.bestScore, 100, 'a later attempt does not undo course completion');
   const result = (await request('/bootstrap', { cookie: employee })).body.enrollments.find((item) => item.courseId === course.id);
   assert.equal(result.completedLessonIds.length, 3);
   assert.equal(result.passed, true);

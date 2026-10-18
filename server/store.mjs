@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'n
 import { join } from 'node:path';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { demoPeople, demoCourses, demoRequests, demoEnrollments } from './seed.mjs';
+export { visibleEmployee } from './access.mjs';
 export const iso = () => new Date().toISOString();
 export const uid = (prefix = 'id') => `${prefix}_${randomBytes(12).toString('hex')}`;
 const legacyEmails = Object.fromEntries(['employee', 'manager', 'hr', 'outsider', 'secondmanager'].map(name => [`${name}@asar.demo`, `${name}@janamen.demo`]));
@@ -94,7 +95,6 @@ export function publicPerson(db, person) {
   return safe;
 }
 export function personById(db, id) { return db.prepare('SELECT * FROM people WHERE id=?').get(id); }
-export function visibleEmployee(user, employee) { return user.role === 'hr' || user.id === employee.id || (user.role === 'manager' && employee.managerId === user.id); }
 export function requestById(db, id) {
   const row = db.prepare('SELECT r.*,p.name AS employeeName,p.department FROM requests r JOIN people p ON p.id=r.employeeId WHERE r.id=?').get(id);
   if (!row) return null;
