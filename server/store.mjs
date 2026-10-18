@@ -103,7 +103,7 @@ export function requestById(db, id) {
 export function courseById(db,id) { const row=db.prepare('SELECT data FROM courses WHERE id=?').get(id); return row ? JSON.parse(row.data) : null; }
 export function publicCourse(course,user) { return user.role==='hr' ? course : {...course, quiz:course.quiz.map(({correctIndex:_correct,...question})=>question)}; }
 export function enrollmentData(row,db) { return {...row,passed:!!row.passed,completedLessonIds:JSON.parse(row.completedLessonIds),userName:personById(db,row.userId)?.name || ''}; }
-export function notify(db,userId,type,title,body,view,entityId) {
- const item={id:uid('n'),type,title,body,view,entityId,createdAt:iso(),readAt:null}; db.prepare('INSERT INTO notifications VALUES (?,?,?)').run(item.id,userId,JSON.stringify(item)); return item;
+export function notify(db,userId,type,title,body,view,entityId,documentProcessing) {
+ const item={id:uid('n'),type,title,body,view,entityId,createdAt:iso(),readAt:null,...(documentProcessing?{documentProcessing}:{})}; db.prepare('INSERT INTO notifications VALUES (?,?,?)').run(item.id,userId,JSON.stringify(item)); return item;
 }
 export function audit(db,actorId,action,entityId) { db.prepare('INSERT INTO audit VALUES (?,?,?,?,?)').run(uid('audit'),actorId,action,entityId,iso()); }

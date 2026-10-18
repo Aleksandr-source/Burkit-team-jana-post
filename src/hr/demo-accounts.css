@@ -1,0 +1,22 @@
+.hr-demo-switcher { margin: 25px 0 0; padding: 16px; border: 1px solid var(--hr-border); border-radius: 12px; background: var(--hr-surface-soft); }
+.hr-demo-switcher-title { display: flex; align-items: center; gap: 8px; color: var(--hr-text); font-size: var(--hr-fs-sm, 12px); }
+.hr-demo-switcher > p { color: var(--hr-muted); font-size: var(--hr-fs-sm, 12px); line-height: 1.6; margin: 8px 0 12px; }
+.hr-demo-switcher-buttons { display: grid; gap: 8px; margin-top: 12px; }
+.hr-demo-switcher-buttons > button { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; border: 1px solid var(--hr-border); border-radius: 8px; background: var(--hr-surface); color: var(--hr-text); padding: 10px 12px; text-align: left; font-size: var(--hr-fs-label, 13px); }
+.hr-demo-switcher-buttons > button:hover:not(:disabled) { background: var(--hr-accent-soft); border-color: var(--hr-accent-ink); }
+.hr-demo-switcher-buttons small { color: var(--hr-accent-ink); font-size: var(--hr-fs-sm, 12px); }
+.hr-demo-switcher-buttons > button[aria-pressed=true] { background: var(--hr-accent-soft); color: var(--hr-accent-ink); opacity: 1; }
+.hr-password-login { margin-top: 18px; }
+.hr-password-login > summary { cursor: pointer; color: var(--hr-muted); font-size: var(--hr-fs-sm, 12px); padding: 8px 0; }
+.hr-password-login > form { margin-top: 14px; }
+.hr-demo-switcher.is-compact { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 22px; padding: 12px; }
+.hr-demo-switcher.is-compact .hr-demo-switcher-title { font-size: var(--hr-fs-xs, 11px); }
+.hr-demo-switcher.is-compact .hr-demo-switcher-buttons { display: flex; flex-wrap: wrap; flex: 1; gap: 6px; margin: 0; }
+.hr-demo-switcher.is-compact .hr-demo-switcher-buttons > button { min-height: 36px; padding: 7px 10px; font-size: var(--hr-fs-sm, 12px); }
+.hr-app[data-theme] .hr-sidebar-logout { color: var(--hr-danger-ink) !important; margin: 3px 0 12px; }
+.hr-app[data-theme] .hr-sidebar-logout:hover:not(:disabled) { background: var(--hr-danger-bg); }
+@media (max-width: 760px) {
+  .hr-demo-switcher.is-compact { gap: 8px; }
+  .hr-demo-switcher.is-compact .hr-demo-switcher-buttons { flex-basis: 100%; }
+  .hr-demo-switcher.is-compact .hr-demo-switcher-buttons > button { min-height: 44px; flex: 1 1 80px; }
+}

@@ -1,4 +1,4 @@
-import type { Bootstrap, Lang, AssistantAnswer } from './types';
+import type { Bootstrap, Lang, AssistantAnswer, DemoAccess, Role } from './types';
 import { makeT, readLanguage } from './i18n';
 export class ApiError extends Error { constructor(message: string, public status: number) { super(message); } }
 export async function api<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
@@ -18,4 +18,6 @@ export async function api<T = unknown>(path: string, options: RequestInit = {}):
 export const bootstrap = () => api<Bootstrap>('/bootstrap');
 export const login = (email: string, password: string) => api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
 export const logout = () => api('/auth/logout', { method: 'POST' });
+export const getDemoAccess = () => api<DemoAccess>('/auth/demo');
+export const demoLogin = (role: Role) => api('/auth/demo-login', { method: 'POST', body: JSON.stringify({ role }) });
 export const askAssistant = (question: string, lang: Lang) => api<AssistantAnswer>('/assistant', { method: 'POST', body: JSON.stringify({ question, lang }) });

@@ -1,6 +1,7 @@
 export type Lang = 'ru' | 'kk' | 'en';
 export type Localized = Record<Lang, string>;
 export type Role = 'employee' | 'manager' | 'hr';
+export interface DemoAccess { enabled: boolean; roles: Role[]; }
 export type View = 'profile' | 'home' | 'requests' | 'team' | 'academy' | 'assistant' | 'notifications' | 'people' | 'integrations' | 'hrInquiries';
 export interface Person { id: string; name: string; email: string; role: Role; company: string; department: string; position: string; managerId: string | null; managerName?: string | null; phone?: string; employeeNumber?: string; hiredAt: string; leaveBalance: number; leaveReserved: number; }
 export interface HistoryEntry { id: string; actorName: string; action: string; comment: string; at: string; }
@@ -11,7 +12,10 @@ export interface Lesson { id: string; title: Localized; content: Localized; reso
 export interface QuizQuestion { id: string; prompt: Localized; options: Localized[]; correctIndex?: number; }
 export interface Course { id: string; title: Localized; description: Localized; category: string; durationMinutes: number; published: boolean; lessons: Lesson[]; quiz: QuizQuestion[]; passScore: number; createdAt: string; updatedAt: string; cover: string; }
 export interface Enrollment { id: string; userId: string; userName: string; courseId: string; completedLessonIds: string[]; score: number | null; passed: boolean; completedAt: string | null; assignedAt: string; }
-export interface Notification { id: string; type: string; title: Localized; body: Localized; readAt: string | null; createdAt: string; view: View; entityId?: string; }
+export type DocumentProcessingStatus = 'registered' | 'in_review' | 'completed' | 'rejected';
+export interface DocumentProcessing { id: string; requestId: string; status: DocumentProcessingStatus; createdAt: string; updatedAt: string; signed: boolean; legallySignificant: boolean; history: { status: DocumentProcessingStatus; at: string }[]; }
+export interface DocumentProcessingResponse { provider: 'documentolog'; mode: 'mock'; externalRequestSent: false; document: DocumentProcessing | null; }
+export interface Notification { id: string; type: string; title: Localized; body: Localized; readAt: string | null; createdAt: string; view: View; entityId?: string; documentProcessing?: { id: string; status: DocumentProcessingStatus }; }
 export interface KnowledgeDocument { id: string; title: Localized; content: Localized; section: string; version: string; origin?: Localized; kind?: string; url?: string; sha256?: string; audience: 'all' | 'manager' | 'hr'; }
 export interface AIStatus { ready: boolean; engine: string; model: string; }
 export interface HrInquiry { id: string; authorId: string; authorName: string; question: string; language: Lang; status: 'open' | 'answered'; createdAt: string; updatedAt: string; answer: string | null; answeredBy: string | null; answeredByName: string | null; answeredAt: string | null; }

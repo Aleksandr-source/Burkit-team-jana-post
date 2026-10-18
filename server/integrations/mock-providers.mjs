@@ -54,6 +54,18 @@ export function createMockIntegrations({ db, transaction, mode, fail }) {
     requireEnabled() { if (mode !== 'mock') fail(503, 'integration_disabled', 'Демонстрационные интеграции отключены.'); },
     personnel,
     document(id) { return envelope('documentolog', { document: get(id) }); },
+    processing(requestId) {
+      const row = db.prepare('SELECT data FROM integration_documents WHERE requestId=?').get(requestId);
+      if (!row) return envelope('documentolog', { document: null });
+      const value = JSON.parse(row.data);
+      // Participants may read processing status, never the HR adapter payload or actor IDs.
+      return envelope('documentolog', { document: {
+        id: value.id, requestId: value.requestId, status: value.status,
+        createdAt: value.createdAt, updatedAt: value.updatedAt,
+        signed: value.signed, legallySignificant: value.legallySignificant,
+        history: value.history.map(({ status, at }) => ({ status, at })),
+      } });
+    },
     register(document, actorId) {
       return transaction(() => {
         const existing = db.prepare('SELECT data FROM integration_documents WHERE requestId=?').get(document.request.id);
@@ -65,7 +77,7 @@ export function createMockIntegrations({ db, transaction, mode, fail }) {
           history: [{ status: 'registered', at, actorId, simulated: true }] };
         db.prepare('INSERT INTO integration_documents VALUES (?,?,?)').run(value.id, value.requestId, JSON.stringify(value));
         audit(db, actorId, 'documentolog_mock_registered', value.id);
-        notify(db, document.employee.id, 'document_registered', documentEvents.registered, documentEventBody, 'requests', value.requestId);
+        notify(db, document.employee.id, 'document_registered', documentEvents.registered, documentEventBody, 'requests', value.requestId, { id: value.id, status: value.status });
         return { created: true, ...envelope('documentolog', { document: value }) };
       });
     },
@@ -80,7 +92,7 @@ export function createMockIntegrations({ db, transaction, mode, fail }) {
         value.history.push({ status, at: value.updatedAt, actorId, simulated: true });
         db.prepare('UPDATE integration_documents SET data=? WHERE id=?').run(JSON.stringify(value), id);
         audit(db, actorId, `documentolog_mock_${status}`, id);
-        notify(db, value.payload.employee.id, 'document_status', documentEvents[status], documentEventBody, 'requests', value.requestId);
+        notify(db, value.payload.employee.id, 'document_status', documentEvents[status], documentEventBody, 'requests', value.requestId, { id: value.id, status: value.status });
         return envelope('documentolog', { document: value });
       });
     },

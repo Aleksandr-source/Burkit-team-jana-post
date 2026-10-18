@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 import type { Translator } from './i18n';
 
-export default function Modal({ title, subtitle, children, close, back, wide = false, t }: { title: string; subtitle?: string; children: ReactNode; close: () => void; back?: () => void; wide?: boolean; t: Translator }) {
+export default function Modal({ title, subtitle, children, footer, close, back, wide = false, className = '', t }: { title: string; subtitle?: string; children: ReactNode; footer?: ReactNode; close: () => void; back?: () => void; wide?: boolean; className?: string; t: Translator }) {
   const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -23,6 +23,6 @@ export default function Modal({ title, subtitle, children, close, back, wide = f
     document.addEventListener('keydown', onKey);
     return () => { document.body.style.overflow = overflow; document.removeEventListener('keydown', onKey); previous?.focus(); };
   }, [close]);
-  return <div className="hr-modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}><div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="hr-modal-title" className={`hr-modal ${wide ? 'hr-modal-wide' : ''}`}><header className="hr-modal-header">{back && <button className="hr-icon-button hr-settings-back" onClick={back} aria-label={t('backToSettings')}><ArrowLeft size={20} /></button>}<div><h2 id="hr-modal-title">{title}</h2>{subtitle && <p>{subtitle}</p>}</div><button className="hr-icon-button" onClick={close} aria-label={t('close')}><X size={21} /></button></header><div className="hr-modal-body">{children}</div></div></div>;
+  return <div className="hr-modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}><div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="hr-modal-title" className={`hr-modal ${wide ? 'hr-modal-wide' : ''} ${className}`}><header className="hr-modal-header">{back && <button className="hr-icon-button hr-settings-back" onClick={back} aria-label={t('backToSettings')}><ArrowLeft size={20} /></button>}<div><h2 id="hr-modal-title">{title}</h2>{subtitle && <p>{subtitle}</p>}</div><button className="hr-icon-button" onClick={close} aria-label={t('close')}><X size={21} /></button></header><div className="hr-modal-body">{children}</div>{footer && <footer className="hr-modal-footer">{footer}</footer>}</div></div>;
 }
 

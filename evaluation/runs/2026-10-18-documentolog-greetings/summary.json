@@ -1,0 +1,29 @@
+{
+  "createdAt": "2026-10-18T08:39:35.152Z",
+  "independentAcceptance": false,
+  "method": "In-process product pipeline with the running local model; fixed regression corpus, synthetic account state. No independent human or native-language review.",
+  "status": {
+    "ready": true,
+    "engine": "llama.cpp · CPU · local",
+    "model": "Qwen3-0.6B · Q4_K_M"
+  },
+  "sourceHashes": {
+    "server/assistant.mjs": "ffd816a0729305c90e838898cfb274cd5d9cca6cc7d1c0a5b2faf23e97ecdd3a",
+    "server/knowledge.mjs": "d075e367f6e96701a0dc435f02407395c25e35b0ffa8315b4a803ca26c45d6d2",
+    "server/knowledge-support.mjs": "3d133b1f29d6cba1ff8b5972b0adbfc9e2c4a3bef763646060435c8d7392affd",
+    "server/ai/local-model-provider.mjs": "39f82e595135bcfc5091e110f587a1e3de7515f6eba556e5252128788e1fdfc4"
+  },
+  "datasetSha256": "0f0685854a59fd60aa9cf3794751c699980b0be8a28874d01e7a5ad2957a5c5a",
+  "calls": 108,
+  "correct": 108,
+  "modes": {
+    "local_model": 60,
+    "knowledge_search": 0,
+    "refusal": 48
+  },
+  "greetings": {
+    "calls": 12,
+    "correct": 12
+  },
+  "maxMs": 5206
+}

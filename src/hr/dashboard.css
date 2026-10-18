@@ -1,0 +1,15 @@
+.hr-dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 2px 0 24px; min-height: 58px; }
+.hr-app .hr-dashboard-heading h1 { margin: 0; font-size: calc(26px * var(--hr-text-scale, 1)); line-height: 1.4; font-weight: 600; color: var(--hr-text); }
+.hr-dashboard-date { display: flex; align-items: center; gap: 12px; flex-shrink: 0; color: var(--hr-muted); }
+.hr-dashboard-date > div { display: grid; gap: 3px; }
+.hr-dashboard-date span { font-size: calc(12px * var(--hr-text-scale, 1)); }
+.hr-dashboard-date time { font-size: calc(14px * var(--hr-text-scale, 1)); color: var(--hr-text-secondary); }
+.hr-app .hr-personal-notifications { margin-bottom: 24px; }
+@media (max-width: 760px) {
+  .hr-dashboard-heading { align-items: flex-start; flex-wrap: wrap; gap: 12px; margin: 0 0 20px; }
+  .hr-app .hr-dashboard-heading h1 { font-size: 23px; }
+  .hr-dashboard-date { gap: 9px; }
+  .hr-dashboard-date > div { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .hr-dashboard-date time { font-size: 13px; }
+}
+.hr-app .hr-main:not(.is-assistant) { display: flow-root; padding-bottom: 20px; }

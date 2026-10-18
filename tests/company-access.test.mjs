@@ -93,6 +93,7 @@ test('foreign HR cannot read, mutate, approve or receive another company personn
   const docPath = `/integrations/documentolog/documents/${registered.data.document.id}`;
   assert.equal((await call(docPath, fh)).status, 404);
   assert.equal((await call(`${docPath}/mock-transition`, fh, { status: 'in_review' })).status, 404);
+  assert.equal((await call(`/requests/${id}/document-processing`, fh)).status, 404);
   assert.equal((await call(docPath, h)).data.document.status, 'registered');
   assert.equal((await call('/bootstrap', fh)).data.notifications.length, 0, 'foreign HR receives no leave or course notifications');
 });

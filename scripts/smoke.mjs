@@ -44,6 +44,20 @@ try {
   assert.equal((await call(`/requests/${id}/action`, manager, { action: 'approve', expectedStatus: 'pending_manager' })).data.status, 'pending_hr');
   assert.equal((await call(`/requests/${id}/action`, hr, { action: 'approve', expectedStatus: 'pending_hr' })).data.status, 'approved');
   assert.equal((await call(`/requests/${id}/document`, employee)).response.status, 200);
+  const documentPath = '/integrations/documentolog/documents';
+  const registered = await call(documentPath, hr, { requestId: id });
+  assert.equal(registered.response.status, 201);
+  const processingPath = `/requests/${id}/document-processing`;
+  assert.equal((await call(processingPath, employee)).data.document.status, 'registered');
+  const documentUpdate = `${documentPath}/${registered.data.document.id}/mock-transition`;
+  assert.equal((await call(documentUpdate, employee, { status: 'rejected' })).response.status, 403);
+  assert.equal((await call(documentUpdate, hr, { status: 'in_review' })).response.status, 200);
+  assert.equal((await call(documentUpdate, hr, { status: 'rejected' })).response.status, 200);
+  const processing = (await call(processingPath, employee)).data.document;
+  assert.equal(processing.status, 'rejected');
+  assert.deepEqual(processing.history.map(event => event.status), ['registered', 'in_review', 'rejected']);
+  assert.equal(processing.payload, undefined);
+  assert.equal((await call(`/requests/${id}`, employee)).data.status, 'approved');
   const unsupported = await call('/assistant', employee, { question: 'Можно ли перенести отпуск на следующий год?', lang: 'ru' });
   assert.equal(unsupported.data.mode, 'refusal');
   const inquiry = await call('/hr-inquiries', employee, { question: 'Можно ли перенести отпуск на следующий год?', language: 'ru', clientRequestId: randomUUID() });
@@ -64,10 +78,11 @@ try {
   assert.ok(refreshed.enrollments.find(item => item.courseId === course.id).passed);
   for (const type of ['request_approved', 'course_completed', 'hr_inquiry_answered'])
     assert.ok(refreshed.notifications.some(item => item.type === type), type);
+  assert.ok(refreshed.notifications.some(item => item.type === 'document_status' && item.documentProcessing?.status === 'rejected'));
   await call('/auth/logout', employee, {});
   const relogged = (await call('/bootstrap', await login('employee'))).data;
   assert.ok(relogged.enrollments.find(item => item.courseId === course.id).passed, 'learning survives a new session');
-  console.log('Portable smoke passed: fresh storage/assets, three roles, leave/document, safe refusal, HR inquiry/answer, lesson gate, quiz feedback/retry, notifications and learning across sessions. No node_modules or model required.');
+  console.log('Portable smoke passed: fresh storage/assets, three roles, leave/document, separate Documentolog status/history and read-only access, safe refusal, HR inquiry/answer, lesson gate, quiz feedback/retry, notifications and learning across sessions. No node_modules or model required.');
 } finally {
   if (app) { if (app.server.listening) await new Promise(resolve => app.server.close(resolve)); app.close(); }
   if (!directory.startsWith(join(tmpdir(), 'janamen-smoke-'))) throw Error('Unexpected temporary directory');

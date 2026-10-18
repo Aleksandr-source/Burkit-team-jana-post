@@ -16,6 +16,7 @@ import { createHRInquiryService } from './hr-inquiries.mjs';
 import { createMockIntegrations, integrationMode } from './integrations/mock-providers.mjs';
 import { renderKnowledgeSource, knowledgeCSP } from './knowledge-page.mjs';
 import { sameCompany, visibleCourse } from './access.mjs';
+import { createDemoAccess } from './demo-access.mjs';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const hashToken = value => createHash('sha256').update(value).digest('hex');
 const L=(ru,kk,en)=>({ru,kk,en});
@@ -40,10 +41,22 @@ export function createApplication(options={}) {
  const mode=integrationMode(options.integrationsMode??process.env.JANAMEN_INTEGRATIONS_MODE??'mock');
  const dataDir=resolve(options.dataDir||process.env.ASAR_DATA_DIR||join(root,'.data'));
  const {db,transaction,close}=openStore(dataDir,options);
+ const demoAccess=createDemoAccess({db,dataDir,enabled:options.demoLogin??process.env.JANAMEN_DEMO_LOGIN==='1'});
  const integrations=createMockIntegrations({db,transaction,mode,fail});
  const loginAttempts=new Map();
  const getUser=req=>{ const cookie=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('asar_session=')); if(!cookie) return null; const token=cookie.slice('asar_session='.length); if(!/^[a-f0-9]{64}$/.test(token)) return null; const session=db.prepare('SELECT userId FROM sessions WHERE tokenHash=? AND expiresAt>?').get(hashToken(token),iso()); return session?personById(db,session.userId):null; };
  const requireUser=req=>getUser(req)||fail(401,'unauthorized','Войдите в аккаунт.');
+ const issueSession=(req,res,user)=>{
+   const token=randomBytes(32).toString('hex');
+   const previous=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('asar_session='))?.slice(13);
+   transaction(()=>{
+     if(previous)db.prepare('DELETE FROM sessions WHERE tokenHash=?').run(hashToken(previous));
+     db.prepare('DELETE FROM sessions WHERE expiresAt<?').run(iso());
+     db.prepare('INSERT INTO sessions VALUES (?,?,?)').run(hashToken(token),user.id,new Date(Date.now()+8*60*60*1000).toISOString());
+   });
+   res.setHeader('Set-Cookie',`asar_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${process.env.COOKIE_SECURE==='true'?'; Secure':''}`);
+   return send(res,200,{user:publicPerson(db,user)});
+ };
  const hr=user=>{ if(user.role!=='hr') fail(403,'forbidden','Это действие доступно только HR.'); };
  const leave = createLeaveService({ db, transaction });
  const hrInquiries = createHRInquiryService({ db, transaction });
@@ -56,13 +69,19 @@ export function createApplication(options={}) {
    if(path.startsWith('/api/')) {
     if(!['GET','HEAD'].includes(req.method)&&req.headers.origin) { let origin;try{origin=new URL(req.headers.origin);}catch{fail(403,'origin','Недопустимый источник запроса.');} const allowed=[`http://${req.headers.host}`,`https://${req.headers.host}`,...(process.env.ASAR_ALLOWED_ORIGINS||'http://localhost:3000,http://127.0.0.1:3000').split(',')]; if(!allowed.includes(origin.origin)) fail(403,'origin','Недопустимый источник запроса.'); }
     if(path==='/api/health'&&req.method==='GET') return send(res,200,{ok:true,storage:'sqlite',ai:await getAIStatus()});
+    if(path==='/api/auth/demo'&&req.method==='GET') return send(res,200,demoAccess.catalog(req));
+    if(path==='/api/auth/demo-login'&&req.method==='POST') {
+      const accounts=demoAccess.accounts(req);if(!accounts.length)fail(404,'not_found','Демонстрационный вход недоступен.');
+      const body=await jsonBody(req);if(Object.keys(body).length!==1||typeof body.role!=='string')fail(400,'invalid_input','Выберите демонстрационную роль.');
+      const person=accounts.find(item=>item.role===body.role);if(!person)fail(400,'invalid_input','Выберите демонстрационную роль.');
+      audit(db,person.id,'demo_login',person.id);return issueSession(req,res,person);
+    }
     if(path==='/api/auth/login'&&req.method==='POST') {
       const key=req.socket.remoteAddress||'local', now=Date.now(); let attempt=loginAttempts.get(key); if(!attempt||attempt.until<now){attempt={count:0,until:now+15*60*1000}; loginAttempts.set(key,attempt);} if(attempt.count>=30) fail(429,'rate_limited','Слишком много попыток. Попробуйте позже.');
       const body=await jsonBody(req); const email=normalizeDemoEmail(required(body.email,200,'Email').toLowerCase()); const password=required(body.password,256,'Пароль'); const user=db.prepare('SELECT * FROM people WHERE email=?').get(email);
       const valid=user?checkPassword(password,user.passwordSalt,user.passwordHash):checkPassword(password,'not-a-user', '00'.repeat(64));
       if(!user||!valid){attempt.count++;fail(401,'invalid_credentials','Неверный email или пароль.');}attempt.count=0;
-      const token=randomBytes(32).toString('hex'); db.prepare('DELETE FROM sessions WHERE expiresAt<?').run(iso()); db.prepare('INSERT INTO sessions VALUES (?,?,?)').run(hashToken(token),user.id,new Date(Date.now()+8*60*60*1000).toISOString());
-      res.setHeader('Set-Cookie',`asar_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${process.env.COOKIE_SECURE==='true'?'; Secure':''}`);return send(res,200,{user:publicPerson(db,user)});
+      return issueSession(req,res,user);
     }
     const user=requireUser(req);
     if(path==='/api/integrations'||path.startsWith('/api/integrations/')) {
@@ -147,6 +166,11 @@ export function createApplication(options={}) {
     }
     let match=path.match(/^\/api\/requests\/([\w-]+)$/);
     if(match&&req.method==='GET') return send(res,200,getRequest(user,match[1]));
+    match=path.match(/^\/api\/requests\/([\w-]+)\/document-processing$/);
+    if(match&&req.method==='GET') {
+      getRequest(user,match[1]);
+      return send(res,200,integrations.processing(match[1]));
+    }
     match=path.match(/^\/api\/requests\/([\w-]+)\/document$/);
     if(match&&req.method==='GET') {
       const document = leave.document(user, match[1]);
@@ -165,7 +189,20 @@ export function createApplication(options={}) {
     }
     match=path.match(/^\/api\/attachments\/([\w-]+)$/);
     if(match&&req.method==='GET') {const file=db.prepare('SELECT * FROM attachments WHERE id=?').get(match[1]);if(!file)fail(404,'not_found','Файл не найден.');getRequest(user,file.requestId);const storedFile=join(dataDir,'uploads',file.id);if(!existsSync(storedFile))fail(404,'not_found','Файл отсутствует в хранилище.');res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Length':file.size,'Content-Disposition':`attachment; filename="attachment"; filename*=UTF-8''${encodeURIComponent(file.name).replace(/'/g,'%27')}`,'Cache-Control':'private, no-store'});createReadStream(storedFile).on('error',()=>res.destroy()).pipe(res);return;}
-    if(path==='/api/notifications/read'&&req.method==='POST') {const body=await jsonBody(req);transaction(()=>{for(const row of db.prepare('SELECT id,data FROM notifications WHERE userId=?').all(user.id)){if(body.id&&row.id!==body.id)continue;const item=JSON.parse(row.data);if(!item.readAt){item.readAt=iso();db.prepare('UPDATE notifications SET data=? WHERE id=?').run(JSON.stringify(item),row.id);}}});return send(res,200,{ok:true});}
+    if(path==='/api/notifications/read'&&req.method==='POST') {
+      const body=await jsonBody(req);
+      const hasId=Object.hasOwn(body,'id'),hasIds=Object.hasOwn(body,'ids');
+      const validId=id=>typeof id==='string'&&id.trim().length>0&&id.length<=100;
+      if(Object.keys(body).some(key=>!['id','ids'].includes(key))||(hasId&&hasIds)||(hasId&&!validId(body.id))
+        ||(hasIds&&(!Array.isArray(body.ids)||!body.ids.length||body.ids.length>500||!body.ids.every(validId))))fail(400,'invalid_input','Выберите уведомления для прочтения.');
+      const targets=hasIds?new Set(body.ids):hasId?new Set([body.id]):null;
+      const readAt=iso();
+      transaction(()=>{for(const row of db.prepare('SELECT id,data FROM notifications WHERE userId=?').all(user.id)){
+        if(targets&&!targets.has(row.id))continue;
+        const item=JSON.parse(row.data);if(!item.readAt){item.readAt=readAt;db.prepare('UPDATE notifications SET data=? WHERE id=?').run(JSON.stringify(item),row.id);}
+      }});
+      return send(res,200,{ok:true});
+    }
     if(path==='/api/courses'&&req.method==='POST') {hr(user);const body=await jsonBody(req);const old=body.id?courseById(db,body.id):null;if(body.id&&!visibleCourse(user,old))fail(404,'not_found','Курс не найден.');const course={...validateCourse(body,old),company:old?.company??user.company};transaction(()=>{db.prepare('INSERT INTO courses VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data').run(course.id,JSON.stringify(course));if(old&&(JSON.stringify(old.lessons)!==JSON.stringify(course.lessons)||JSON.stringify(old.quiz)!==JSON.stringify(course.quiz)||old.passScore!==course.passScore)){db.prepare("UPDATE enrollments SET completedLessonIds='[]',score=NULL,passed=0,completedAt=NULL WHERE courseId=?").run(course.id);for(const e of db.prepare('SELECT userId FROM enrollments WHERE courseId=?').all(course.id))notify(db,e.userId,'course_updated',L('Курс обновлён','Курс жаңартылды','Course updated'),L('Материалы изменились. Пройдите курс заново.','Материалдар өзгерді. Курсты қайта өтіңіз.','Materials changed. Please complete the updated course.'),'academy',course.id);}audit(db,user.id,'course_saved',course.id);});return send(res,old?200:201,course);}
     match=path.match(/^\/api\/courses\/([\w-]+)\/assign$/);
     if(match&&req.method==='POST') {hr(user);const body=await jsonBody(req);const course=courseById(db,match[1]);if(!visibleCourse(user,course)||!course.published)fail(404,'not_found','Опубликованный курс не найден.');if(!Array.isArray(body.userIds)||!body.userIds.length||body.userIds.length>100)fail(400,'invalid_input','Выберите сотрудников.');const ids=[...new Set(body.userIds)];for(const id of ids)if(typeof id!=='string'||!sameCompany(user,personById(db,id)))fail(400,'invalid_user','Сотрудник не найден.');transaction(()=>{for(const id of ids){const exists=db.prepare('SELECT id FROM enrollments WHERE userId=? AND courseId=?').get(id,course.id);if(exists)continue;db.prepare('INSERT INTO enrollments VALUES (?,?,?,?,?,?,?,?)').run(uid('enroll'),id,course.id,'[]',null,0,null,iso());notify(db,id,'course_assigned',L('Вам назначен курс','Сізге курс тағайындалды','New course assigned'),course.title,'academy',course.id);}audit(db,user.id,'course_assigned',course.id);});return send(res,200,{ok:true});}

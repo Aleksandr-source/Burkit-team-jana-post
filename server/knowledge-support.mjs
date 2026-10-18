@@ -1,7 +1,10 @@
 // Explicit coverage of the small product KB. Topic similarity alone is not
 // evidence that a document contains the requested fact. Unrecognised aspects
 // fail closed, including when inference is unavailable or chooses a source.
-const normalize = value => value.toLowerCase().normalize('NFKC').replace(/ё/g, 'е');
+// Strip only a leading social greeting; never remove a policy condition or instruction.
+const greeting = /^(?:\s*(?:здравствуйте|привет|добрый\s+(?:день|вечер)|доброе\s+утро|сәлеметсіз\s+бе|сәлем|қайырлы\s+(?:күн|таң|кеш)|hello|hi|good\s+(?:morning|afternoon|evening))(?:[\s!,.?:;—-]+|$))+/u;
+const normalize = value => value.toLowerCase().normalize('NFKC').replace(/ё/g, 'е').replace(greeting, '');
+const courtesy = /^(?:explain|tell)$/u;
 const common = /^(?:как|что|где|кто|когда|какой|какие|делать|если|может|своей|собственную|собственный|собственное|уже|ли|можно|могу|мне|мой|мои|мою|моей|меня|мы|нам|наш|наши|это|эти|этот|эта|нужно|надо|нужен|нужна|нужны|в|во|на|по|за|до|от|из|для|при|после|перед|и|или|а|но|не|нет|да|о|об|с|со|к|у|же|только|все|всех|свой|свои|свою|своего|его|ее|их|он|она|я|расскажите|пожалуйста|подскажите|объясните|порядок|jana|janamen|academy|hr|ai|the|a|an|how|what|where|who|when|can|could|do|does|is|are|i|my|me|we|our|your|you|to|of|for|in|on|at|by|with|and|or|it|its|this|that|all|before|after|not|please|about|need|should|will|be|have|only|қалай|қайда|кім|қашан|не|мен|менің|маған|мені|өз|өзімнің|бола|болады|болмайды|ма|ме|ба|бе|па|пе|үшін|және|немесе|керек|қажет|бұл|осы|оны|туралы|кейін|дейін|ғана|бар|жоқ)$/u;
 const leave = /отпуск|демалыс|leave|vacation|time off/u;
 const course = /курс|обуч|урок|тест|прогрес|сабақ|оқу|оқыт|academy|learn|course|lesson|quiz|progress/u;
@@ -100,7 +103,7 @@ export function supportedKnowledge(question, allowed) {
   // condition. Prefer a useful refusal over silently dropping that condition.
   const terms = matches.map(card => new RegExp(`^(?:${card.terms})`, 'u'));
   const words = q.match(/[\p{L}\p{N}]+/gu) || [];
-  if (!matches.length || words.some(word => !common.test(word) && !discourse.test(word) && !terms.some(pattern => pattern.test(word)))) return [];
+  if (!matches.length || words.some(word => !common.test(word) && !courtesy.test(word) && !discourse.test(word) && !terms.some(pattern => pattern.test(word)))) return [];
   const result = new Map();
   for (const card of matches) {
     const document = allowed.find(item => item.id === card.id && item.kind !== 'demo_script');

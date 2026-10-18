@@ -1,0 +1,23 @@
+.hr-app[data-theme] .hr-settings-dialog { width: 520px; }
+.hr-settings-dialog .hr-modal-header { padding: 22px 24px; }
+.hr-settings-dialog .hr-modal-body { padding: 0 24px 22px; }
+.hr-preferences { display: grid; gap: 18px; padding: 22px 0; }
+.hr-preferences fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.hr-preferences legend { font-size: var(--hr-fs-label, 13px); color: var(--hr-text-secondary); margin-bottom: 10px; }
+.hr-preference-themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hr-preference-themes > button { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 45px; padding: 9px 6px; border: 1px solid var(--hr-border); border-radius: 9px; background: var(--hr-surface); color: var(--hr-text-secondary); font-size: var(--hr-fs-sm, 12px); }
+.hr-preference-themes > button[aria-pressed=true] { border-color: var(--hr-accent-ink); color: var(--hr-accent-ink); background: var(--hr-accent-soft); }
+.hr-preference-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: var(--hr-fs-label, 13px); color: var(--hr-text-secondary); }
+.hr-preference-more { display: flex; gap: 9px; align-items: center; padding: 12px 0 0; border: 0; border-top: 1px solid var(--hr-line); background: transparent; color: var(--hr-text-secondary); text-align: left; font-size: var(--hr-fs-label, 13px); }
+.hr-preference-more > span { flex: 1; }
+.hr-preference-more:hover { color: var(--hr-accent-ink); }
+.hr-preference-footer { display: flex; gap: 14px; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--hr-line); }
+.hr-preference-footer > p { margin: 0; color: var(--hr-muted); font-size: var(--hr-fs-xs, 11px); line-height: 1.6; }
+.hr-preference-footer > p.is-error { color: var(--hr-danger-ink); }
+.hr-preference-footer > button { flex-shrink: 0; }
+@media (max-width: 580px) {
+  .hr-settings-dialog .hr-modal-header { padding: 18px; }
+  .hr-settings-dialog .hr-modal-body { padding: 0 18px 18px; }
+  .hr-preference-themes > button { flex-direction: column; font-size: 11px; }
+  .hr-preference-row { gap: 10px; }
+}
