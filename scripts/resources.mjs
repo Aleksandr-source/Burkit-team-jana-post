@@ -2,7 +2,7 @@
 // not an OS-enforced memory limit for the native inference process.
 import { readFileSync } from 'node:fs';
 import { availableParallelism, freemem, totalmem } from 'node:os';
-import { dirname, join } from 'node:path';
+import { posix } from 'node:path';
 
 const MiB = 1024 * 1024;
 const GiB = 1024 * MiB;
@@ -34,13 +34,13 @@ export function memorySnapshot({ platform = process.platform, read = (file) => r
         const unified = match[1] === '';
         if (!unified && !match[1].split(',').includes('memory')) continue;
         const base = unified ? '/sys/fs/cgroup' : '/sys/fs/cgroup/memory';
-        let directory = join(base, match[2]);
+        let directory = posix.join(base, match[2]);
         // A systemd unit's real limit is usually below the cgroup mount root.
         // Parent units may impose an additional shared limit.
         while (directory !== base && directory.startsWith(`${base}/`)) {
-          candidates.push([join(directory, unified ? 'memory.max' : 'memory.limit_in_bytes'),
-            join(directory, unified ? 'memory.current' : 'memory.usage_in_bytes')]);
-          directory = dirname(directory);
+          candidates.push([posix.join(directory, unified ? 'memory.max' : 'memory.limit_in_bytes'),
+            posix.join(directory, unified ? 'memory.current' : 'memory.usage_in_bytes')]);
+          directory = posix.dirname(directory);
         }
       }
     } catch { /* A restricted /proc still permits the mount-root checks. */ }

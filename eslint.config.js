@@ -13,5 +13,11 @@ export default tseslint.config(
       globals: globals.browser,
     },
   },
+  {
+    ...js.configs.recommended,
+    files: ['server/**/*.mjs', 'scripts/**/*.mjs', 'evaluation/catalog.mjs'],
+    languageOptions: { ecmaVersion: 'latest', globals: globals.node },
+    rules: { 'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }] },
+  },
   firebaseRulesPlugin.configs['flat/recommended']
 );

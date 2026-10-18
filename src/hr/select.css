@@ -1,0 +1,17 @@
+.hr-app .hr-select { display: inline-block; min-width: 0; width: 100%; position: relative; vertical-align: middle; }
+.hr-app .hr-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--hr-border); border-radius: 10px; background: var(--hr-surface-soft); color: var(--hr-text); text-align: left; font: inherit; font-size: calc(14px * var(--hr-text-scale, 1)); line-height: 1.5; cursor: pointer; }
+.hr-select-trigger > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hr-select-trigger > svg { flex: 0 0 auto; color: var(--hr-muted); }
+.hr-app .hr-select-trigger:hover:not(:disabled) { border-color: var(--hr-accent-ink); }
+.hr-app .hr-select-trigger:focus-visible, .hr-app .hr-select-trigger[aria-expanded=true] { outline: 2px solid var(--hr-accent-ink); outline-offset: 2px; }
+.hr-select-trigger:disabled { opacity: .5; cursor: not-allowed; }
+.hr-app .hr-select-menu { z-index: 1000; overflow-y: auto; overscroll-behavior: contain; padding: 5px; border: 1px solid var(--hr-border); border-radius: 12px; background: var(--hr-surface); color: var(--hr-text); box-shadow: 0 12px 36px #0003; }
+.hr-select-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px; border-radius: 7px; font-size: calc(14px * var(--hr-text-scale, 1)); line-height: 1.5; cursor: pointer; overflow-wrap: anywhere; }
+.hr-select-option > svg { flex: 0 0 auto; color: var(--hr-accent-ink); }
+.hr-select-option.is-active { background: var(--hr-surface-hover); }
+.hr-select-option[aria-selected=true] { color: var(--hr-accent-ink); background: var(--hr-accent-soft); font-weight: 600; }
+.hr-select-option[aria-disabled=true] { opacity: .5; cursor: not-allowed; }
+.hr-language .hr-select { width: 88px; }
+.hr-language .hr-select-trigger { border-color: transparent; background: transparent; }
+.hr-app .hr-filter.hr-select { width: auto; min-width: 170px; padding: 0; border: 0; }
+.hr-app .hr-preference-row > .hr-select { width: 180px; max-width: 55%; }

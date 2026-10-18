@@ -1,0 +1,52 @@
+/* Shared navigation and account controls, using the selected application theme. */
+.hr-app .hr-sidebar-brand { padding: 0 8px; margin-bottom: 30px; min-height: 44px; }
+.hr-app .hr-sidebar .hr-brand { gap: 10px; }
+.hr-app .hr-sidebar .hr-brand > span:last-child { font-size: 32px; line-height: 1; letter-spacing: -1.3px; }
+.hr-app .hr-sidebar .hr-brand-symbol { height: 34px; }
+.hr-app .hr-sidebar-bottom { padding-top: 12px; }
+.hr-app .hr-sidebar-user { gap: 6px; padding: 14px 12px; }
+.hr-app .hr-sidebar-account { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 6px 4px; border: 0; border-radius: 10px; background: transparent; text-align: left; }
+.hr-app .hr-sidebar-account:hover { background: var(--hr-surface-hover); }
+.hr-sidebar-account > span:last-child { min-width: 0; }
+.hr-app[data-theme] .hr-sidebar-account strong { display: block; font-size: calc(12px * var(--hr-text-scale)); color: var(--hr-text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hr-sidebar-account small { display: block; margin-top: 3px; color: var(--hr-muted); font-size: calc(11px * var(--hr-text-scale)); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hr-app[data-theme] .hr-sidebar-signout { flex: 0 0 40px; width: 40px; height: 40px; color: var(--hr-muted); border: 1px solid transparent; }
+.hr-app[data-theme] .hr-sidebar-signout:hover:not(:disabled) { color: var(--hr-danger-ink); background: var(--hr-danger-bg); border-color: color-mix(in srgb, var(--hr-danger-ink) 25%, transparent); }
+.hr-app[data-theme] .hr-header { height: 72px; padding: 0 26px; display: grid; grid-template-columns: minmax(140px, 1fr) minmax(200px, 440px) minmax(140px, 1fr); gap: 20px; background: var(--hr-surface); border-bottom: 1px solid var(--hr-line); }
+.hr-app .hr-header-left { display: flex; min-width: 0; gap: 12px; }
+.hr-app .hr-menu-toggle { display: inline-flex; flex: 0 0 40px; width: 40px; height: 40px; border: 1px solid var(--hr-border); border-radius: 10px; color: var(--hr-text-secondary); }
+.hr-header-page-title { color: var(--hr-text); font-size: calc(16px * var(--hr-text-scale)); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hr-app .hr-header-actions { min-width: 0; gap: 10px; justify-content: flex-end; }
+.hr-app .hr-header .hr-global-search { gap: 10px; margin: 0; padding: 0 14px; width: 100%; min-width: 0; height: 44px; border: 1px solid var(--hr-border); border-radius: 12px; background: var(--hr-surface-soft); color: var(--hr-muted); transition: border-color .15s, box-shadow .15s; }
+.hr-app .hr-header .hr-global-search:focus-within { border-color: var(--hr-accent-ink); box-shadow: 0 0 0 3px var(--hr-focus); }
+.hr-app .hr-header .hr-global-search > input { width: 100%; min-width: 0; max-width: none; padding: 10px 0; font-size: calc(13px * var(--hr-text-scale)); color: var(--hr-text); outline: none; }
+.hr-app .hr-header .hr-global-search > input::placeholder { color: var(--hr-muted); }
+.hr-app .hr-header .hr-language { padding-left: 0; border: 0; }
+.hr-app .hr-header .hr-language .hr-select-trigger { min-height: 42px; padding: 9px 10px; border: 1px solid var(--hr-border); background: transparent; font-size: calc(12px * var(--hr-text-scale)); }
+.hr-app .hr-header .hr-language svg { position: static; }
+.hr-app .hr-header-actions > .hr-icon-button { flex: 0 0 42px; width: 42px; height: 42px; border: 1px solid var(--hr-border); border-radius: 10px; padding: 0; color: var(--hr-text-secondary); background: transparent; }
+.hr-app .hr-header-actions > .hr-icon-button:hover { background: var(--hr-surface-hover); }
+.hr-app .hr-header .hr-search-results { top: 51px; right: 0; width: 100%; min-width: 300px; }
+@media (min-width: 761px) {
+  .hr-app .hr-sidebar { transition: transform .2s ease, visibility .2s; }
+  .hr-app .hr-main-layout { transition: margin-left .2s ease; }
+  .hr-app.is-sidebar-collapsed .hr-sidebar { transform: translateX(-100%); visibility: hidden; pointer-events: none; }
+  .hr-app.is-sidebar-collapsed .hr-main-layout { margin-left: 0; }
+}
+@media (max-width: 980px) {
+  .hr-app[data-theme] .hr-header { gap: 14px; padding: 0 18px; }
+  .hr-header-page-title { font-size: 14px; }
+}
+@media (max-width: 760px) {
+  .hr-app[data-theme] .hr-header { height: 64px; padding: 0 12px; gap: 8px; grid-template-columns: 40px minmax(0, 1fr) 118px; }
+  .hr-header-page-title { display: none; }
+  .hr-app .hr-header-actions { gap: 6px; }
+  .hr-app .hr-header .hr-global-search { margin: 0; padding: 0 10px; gap: 6px; }
+  .hr-app .hr-header .hr-global-search > input { font-size: 12px; }
+  .hr-app .hr-header .hr-language .hr-select { width: 70px; }
+  .hr-app .hr-header .hr-language .hr-select-trigger { padding: 9px 7px; gap: 4px; }
+  .hr-app .hr-header .hr-search-results { top: 63px; left: 12px; right: 12px; width: auto; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-app .hr-sidebar, .hr-app .hr-main-layout { transition: none; }
+}

@@ -1,6 +1,101 @@
 import type { Lang, Localized } from './types';
 
 const messages: Record<string, [string, string, string]> = {
+  documentProcessingTitle: ["Статус документа","Құжат мәртебесі","Document status"],
+  documentStatusLabel: ["Документ Documentolog","Documentolog құжаты","Documentolog document"],
+  documentDemoNotice: ["Демонстрационный документооборот. Документ не отправлен во внешнюю систему и не подписан ЭЦП.","Демонстрациялық құжат айналымы. Құжат сыртқы жүйеге жіберілмеген және ЭЦҚ қойылмаған.","Demonstration workflow. The document has not been sent externally or electronically signed."],
+  documentLeaveIndependent: ["Обработка документа не меняет решение по отпуску и остаток дней.","Құжатты өңдеу демалыс шешімі мен күндер қалдығын өзгертпейді.","Document processing does not change the leave decision or remaining days."],
+  documentNotRegistered: ["Ещё не зарегистрирован","Әлі тіркелмеген","Not registered yet"],
+  documentRegistrationHint: ["Документ ещё не зарегистрирован. Регистрацию в демонстрационном Documentolog выполняет HR.","Құжат әлі тіркелмеген. Демонстрациялық Documentolog жүйесінде HR тіркейді.","HR has not yet registered the document in the demonstration Documentolog workflow."],
+  documentUnavailable: ["Не удалось получить статус документа. Повторите попытку или обратитесь в HR.","Құжат мәртебесін алу мүмкін болмады. Қайталаңыз немесе HR бөліміне хабарласыңыз.","Document status is unavailable. Try again or contact HR."],
+  documentRefreshFailed: ["Не удалось обновить статус. Показаны ранее полученные данные.","Мәртебе жаңартылмады. Бұрын алынған деректер көрсетілген.","Could not refresh status. Previously retrieved information is shown."],
+  documentHistory: ["История обработки документа","Құжатты өңдеу тарихы","Document processing history"],
+  documentNumber: ["Номер демодокумента","Демо құжат нөмірі","Demo document number"],
+  documentRefresh: ["Обновить","Жаңарту","Refresh"],
+  documentStatus_registered: ["Зарегистрирован","Тіркелді","Registered"],
+  documentStatus_in_review: ["На рассмотрении","Қаралуда","Under review"],
+  documentStatus_completed: ["Обработка завершена","Өңдеу аяқталды","Processing completed"],
+  documentStatus_rejected: ["Отклонён","Қабылданбады","Rejected"],
+  noticeViewDocument: ["Посмотреть документ","Құжатты қарау","View document"],
+  noticeViewProfile: ["Посмотреть профиль","Профильді қарау","View profile"],
+  noticeDocument_registered: ["Documentolog: документ зарегистрирован","Documentolog: құжат тіркелді","Documentolog: document registered"],
+  noticeDocument_in_review: ["Documentolog: документ на рассмотрении","Documentolog: құжат қаралуда","Documentolog: document under review"],
+  noticeDocument_completed: ["Documentolog: обработка документа завершена","Documentolog: құжатты өңдеу аяқталды","Documentolog: document processing completed"],
+  noticeDocument_rejected: ["Documentolog: документ отклонён","Documentolog: құжат қабылданбады","Documentolog: document rejected"],
+  allNotifications: ['Все уведомления', 'Барлық хабарламалар', 'All notifications'],
+  noticeListHelp: ['Новые сообщения — в начале списка.', 'Жаңа хабарламалар тізімнің басында.', 'New messages appear first.'],
+  collapseMenu: ['Свернуть меню', 'Мәзірді жинау', 'Collapse menu'],
+  closeMenu: ['Закрыть меню', 'Мәзірді жабу', 'Close menu'],
+  noticeDashboardNew: ['Есть новости о ваших заявках и обучении.', 'Өтініштеріңіз бен оқуыңыз туралы жаңалықтар бар.', 'There are updates about your requests and learning.'],
+  noticeViewNotifications: ['Посмотреть уведомления', 'Хабарламаларды қарау', 'View notifications'],
+  profileContacts: ["Контакты","Байланыс деректері","Contact details"],
+  profileWork: ["Работа","Жұмыс","Work details"],
+  profileNotProvided: ["Не указан","Көрсетілмеген","Not provided"],
+  profileCorrection: ["Если данные неверны, обратитесь в отдел кадров.","Деректер қате болса, кадр бөліміне хабарласыңыз.","Contact HR if any of these details are incorrect."],
+  noticeSimpleHelp: ["Нажмите кнопку под сообщением, чтобы узнать подробности.","Толығырақ білу үшін хабарлама астындағы батырманы басыңыз.","Use the button below a message to see details."],
+  noticeNewSingular: ["Новое","Жаңа","New"],
+  noticeViewed: ["Просмотрено","Қаралды","Viewed"],
+  noticeViewLeave: ["Посмотреть отпуск","Демалысты қарау","View leave request"],
+  noticeLeave_approved: ["Отпуск подтверждён","Демалыс мақұлданды","Leave approved"],
+  noticeLeave_pending_manager: ["Заявка на отпуск у руководителя","Демалыс өтініші басшыда","Leave request sent to your manager"],
+  noticeLeave_pending_hr: ["Руководитель согласовал отпуск. Ждём HR","Басшы мақұлдады. HR шешімін күтеміз","Manager approved. Waiting for HR"],
+  noticeLeave_rejected: ["Заявку на отпуск отклонили","Демалыс өтініші қабылданбады","Leave request declined"],
+  noticeLeave_cancelled: ["Заявка на отпуск отменена","Демалыс өтініші тоқтатылды","Leave request cancelled"],
+  noticeLearning: ["Ваше обучение","Сіздің оқуыңыз","Your learning"],
+  noticeViewLearning: ["Открыть обучение","Оқуды ашу","Open learning"],
+  noticeHrAnswered: ["HR ответил на ваш вопрос","HR сұрағыңызға жауап берді","HR answered your question"],
+  noticeHrWaiting: ["Ваш вопрос передан HR","Сұрағыңыз HR бөліміне жіберілді","Your question was sent to HR"],
+  noticeReadAnswer: ["Прочитать ответ","Жауапты оқу","Read answer"],
+  noticeViewQuestion: ["Посмотреть вопрос","Сұрақты қарау","View question"],
+  noticeViewHome: ["Открыть мой кабинет","Жеке кабинетті ашу","Open my dashboard"],
+  noticeNothingYet: ["Уведомлений пока нет","Әзірге хабарламалар жоқ","No notifications yet"],
+  noticeEmptyHelp: ["Когда изменится статус заявки или появится обучение, мы сообщим здесь.","Өтініш күйі өзгерсе немесе оқу тағайындалса, осында хабарлаймыз.","Updates will appear here when a request changes or learning is assigned."],
+  themeSystemShort: ['Системная', 'Жүйелік', 'System'],
+  colorsAndBackground: ['Цвета и фон чата', 'Түстер мен чат фоны', 'Colors and chat background'],
+  settingsSaved: ['Изменения сохраняются автоматически', 'Өзгерістер автоматты түрде сақталады', 'Changes are saved automatically'],
+  noticeNew: ['Новые', 'Жаңа', 'New'],
+  noticeNewEvents: ['Новых событий', 'Жаңа оқиғалар', 'New events'],
+  markAllRead: ['Отметить всё прочитанным', 'Барлығын оқылған деп белгілеу', 'Mark all as read'],
+  noticeRead: ['Убрать из новых', 'Жаңалардан алып тастау', 'Mark as read'],
+  noticeHistory: ['История событий', 'Оқиғалар тарихы', 'Event history'],
+  noticeOpenRequest: ['Открыть заявку', 'Өтінішті ашу', 'Open request'],
+  noticeOpenCourse: ['Открыть курс', 'Курсты ашу', 'Open course'],
+  noticeOpenInquiry: ['Открыть обращение', 'Өтінішті ашу', 'Open inquiry'],
+  noticeOpenHome: ['В кабинет', 'Кабинетке', 'Go to dashboard'],
+  noticeShowAll: ['Показать все уведомления', 'Барлық хабарламаларды көрсету', 'Show all notifications'],
+  chatWelcome: ['Чем могу помочь?', 'Қалай көмектесе аламын?', 'How can I help?'],
+  demoOneClick: ['Войти в демо одним кликом', 'Демоға бір басумен кіру', 'Enter demo with one click'],
+  demoOneClickHint: ['Выберите роль — пароль вводить не нужно.', 'Рөлді таңдаңыз — құпиясөз енгізу қажет емес.', 'Choose a role — no password needed.'],
+  demoSwitchRole: ['Сменить демороль', 'Демо рөлін ауыстыру', 'Switch demo role'],
+  demoEnter: ['Войти', 'Кіру', 'Enter'],
+  passwordSignIn: ['Войти по почте и паролю', 'Пошта және құпиясөз арқылы кіру', 'Sign in with email and password'],
+  switchingAccount: ['Переключаем аккаунт…', 'Тіркелгіні ауыстыру…', 'Switching account…'],
+  queueRequests: ['Заявки', 'Өтініштер', 'Requests'],
+  workday: ['Рабочий день', 'Жұмыс күні', 'Your workday'],
+  actionQueue: ['Требуют внимания', 'Назар аударуды қажет етеді', 'Needs attention'],
+  actionQueueHint: ['Заявки и вопросы — от самых ранних. Обучение — по назначенным курсам.', 'Өтініштер мен сұрақтар — ең ертесінен бастап. Оқу — тағайындалған курстар бойынша.', 'Oldest requests and questions first. Learning grouped by assigned course.'],
+  actionFilter: ['Показать задачи по типу', 'Тапсырма түрін таңдау', 'Filter work by type'],
+  enteredQueue: ['Поступило', 'Келіп түсті', 'Received'],
+  reviewRequest: ['Рассмотреть', 'Қарау', 'Review'],
+  answerInquiry: ['Ответить', 'Жауап беру', 'Reply'],
+  learningCompleted: ['Завершили обучение', 'Оқуды аяқтады', 'Completed learning'],
+  learningPeople: ['Прогресс сотрудников', 'Қызметкерлер прогресі', 'Employee progress'],
+  assignedAt: ['Назначено', 'Тағайындалды', 'Assigned'],
+  queueClear: ['Всё под контролем', 'Бәрі бақылауда', 'You are all caught up'],
+  queueFilterEmpty: ['Здесь пока нет задач', 'Әзірге тапсырма жоқ', 'No items in this category'],
+  queueClearHint: ['Новые задачи появятся здесь автоматически.', 'Жаңа тапсырмалар осында автоматты түрде пайда болады.', 'New items will appear here automatically.'],
+  waitingManager: ['Следующий шаг — решение руководителя', 'Келесі қадам — басшының шешімі', 'Next step: manager review'],
+  waitingHr: ['Следующий шаг — окончательное решение HR', 'Келесі қадам — HR соңғы шешімі', 'Next step: final HR review'],
+  waitingReviewer: ['Рассматривает', 'Қарайды', 'Reviewer'],
+  waitingCompanyHr: ['HR вашей компании', 'Компанияңыздың HR маманы', 'Your company HR team'],
+  trackingHint: ['Статус и решение появятся здесь и в уведомлениях.', 'Мәртебе мен шешім осында және хабарламаларда көрсетіледі.', 'The status and decision will appear here and in notifications.'],
+  companyManaged: ['Компания закреплена за учётной записью. Перевод между компаниями недоступен.', 'Компания тіркелгіге бекітілген. Компаниялар арасында ауыстыру қолжетімсіз.', 'The company is fixed for this account. Transfers between companies are unavailable.'],
+  peopleWorkspace: ['Пространство сотрудника', 'Қызметкер кеңістігі', 'People workspace'],
+  hrServices: ['Кадровые сервисы', 'Кадрлық сервистер', 'HR services'],
+  peopleTeam: ['Работа команды', 'Команда жұмысы', 'People and team'],
+  learningEyebrow: ['Обучение и развитие', 'Оқу және даму', 'Learning and growth'],
+  assistantEyebrow: ['Помощь по кадровым вопросам', 'Кадрлық сұрақтар бойынша көмек', 'Your HR guide'],
+  peopleEyebrow: ['Управление сотрудниками', 'Қызметкерлерді басқару', 'People operations'],
   hrSupport: ['Поддержка сотрудников', 'Қызметкерлерді қолдау', 'Employee support'],
   hrInquiries: ['Вопросы HR', 'HR-ға сұрақтар', 'Questions for HR'],
   hrInbox: ['Обращения HR', 'HR өтініштері', 'HR inbox'],
@@ -252,6 +347,15 @@ const messages: Record<string, [string, string, string]> = {
   material: ['Дополнительный материал', 'Қосымша материал', 'Additional resource'],
   quiz: ['Проверка знаний', 'Білімді тексеру', 'Knowledge check'],
   quizIntro: ['Изучите все уроки, затем пройдите короткий тест.', 'Барлық сабақты оқып, содан кейін қысқа тесттен өтіңіз.', 'Complete all lessons, then take a short quiz.'],
+  courseContents: ['Содержание курса', 'Курс мазмұны', 'Course contents'],
+  questionsCount: ['Вопросов', 'Сұрақ саны', 'Questions'],
+  requiredScore: ['Проходной балл', 'Өту балы', 'Passing score'],
+  answeredQuestions: ['Отвечено', 'Жауап берілді', 'Answered'],
+  bestScore: ['Лучший результат', 'Үздік нәтиже', 'Best score'],
+  reviewLessons: ['Повторить материалы', 'Материалдарды қайталау', 'Review lessons'],
+  answerCorrect: ['Верно', 'Дұрыс', 'Correct'],
+  answerReview: ['Повторите материал по этому вопросу и попробуйте снова.', 'Осы сұрақ бойынша материалды қайталап, қайта көріңіз.', 'Review the material for this question and try again.'],
+  quizDraftHint: ['Выбранные ответы сохраняются в этой вкладке до отправки теста.', 'Таңдалған жауаптар тест жіберілгенге дейін осы қойындыда сақталады.', 'Your choices are saved in this tab until you submit the quiz.'],
   submitQuiz: ['Проверить ответы', 'Жауаптарды тексеру', 'Check answers'],
   quizPassed: ['Отлично! Курс завершён', 'Керемет! Курс аяқталды', 'Well done! Course completed'],
   quizRetry: ['Попробуйте ещё раз', 'Қайта көріңіз', 'Give it another try'],
@@ -348,9 +452,26 @@ export const makeT = (lang: Lang) => (key: string): string => messages[key]?.[la
 export type Translator = ReturnType<typeof makeT>;
 export const localized = (value: Localized | undefined, lang: Lang) => value?.[lang] || value?.ru || value?.en || '';
 export const locales: Record<Lang, string> = { ru: 'ru-RU', kk: 'kk-KZ', en: 'en-GB' };
+const monthsKk = ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'];
+const shortMonthsKk = ['қаң.', 'ақп.', 'нау.', 'сәу.', 'мам.', 'мау.', 'шіл.', 'там.', 'қыр.', 'қаз.', 'қар.', 'жел.'];
+const weekdaysKk: Record<string, string> = { Sunday: 'жексенбі', Monday: 'дүйсенбі', Tuesday: 'сейсенбі', Wednesday: 'сәрсенбі', Thursday: 'бейсенбі', Friday: 'жұма', Saturday: 'сенбі' };
+const partsKk = (date: Date) => Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Almaty', year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date).map(part => [part.type, part.value]));
+export function formatToday(lang: Lang, date = new Date()) {
+  if (lang === 'kk') {
+    const parts = partsKk(date);
+    return `${weekdaysKk[parts.weekday]}, ${Number(parts.day)} ${monthsKk[Number(parts.month) - 1]}`;
+  }
+  return new Intl.DateTimeFormat(locales[lang], { day: 'numeric', month: 'long', weekday: 'long', timeZone: 'Asia/Almaty' }).format(date);
+}
 export const formatDate = (date: string, lang: Lang, withTime = false) => {
   if (!date) return '—';
-  const parsed = new Date(date.length === 10 ? `${date}T12:00:00` : date);
+  const parsed = new Date(date.length === 10 ? `${date}T12:00:00Z` : date);
   if (Number.isNaN(parsed.getTime())) return '—';
-  return new Intl.DateTimeFormat(locales[lang], { day: 'numeric', month: 'short', year: 'numeric', ...(withTime ? { hour: '2-digit', minute: '2-digit' } : {}) }).format(parsed);
+  // Some embedded browsers lack Kazakh ICU data and render M10 / SUN.
+  // Calendar labels remain Kazakh while numeric date/time parts use KZ time.
+  if (lang === 'kk') {
+    const parts = partsKk(parsed);
+    return `${Number(parts.day)} ${shortMonthsKk[Number(parts.month) - 1]} ${parts.year} ж.${withTime ? `, ${parts.hour}:${parts.minute}` : ''}`;
+  }
+  return new Intl.DateTimeFormat(locales[lang], { timeZone: 'Asia/Almaty', day: 'numeric', month: 'short', year: 'numeric', ...(withTime ? { hour: '2-digit', minute: '2-digit' } : {}) }).format(parsed);
 };

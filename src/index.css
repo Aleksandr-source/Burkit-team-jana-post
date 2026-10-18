@@ -203,7 +203,6 @@
 [data-sonner-toast],
 .react-hot-toast,
 .toast,
-[role="status"],
 .fixed.bottom-4.right-4 > div {
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;

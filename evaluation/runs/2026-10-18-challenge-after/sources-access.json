@@ -1,0 +1,770 @@
+[
+  {
+    "role": "anonymous",
+    "id": "demo-leave-walkthrough",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "demo-leave-walkthrough",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "demo-scope",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "demo-scope",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-submit",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-submit",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-days",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-days",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-balance",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-balance",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-decisions",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "leave-decisions",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "academy-learning",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "academy-learning",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "onboarding",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "onboarding",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "privacy",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "privacy",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "manager-review",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "manager-review",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "hr-guide",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "hr-guide",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "assistant-limits",
+    "accept": "application/json",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "anonymous",
+    "id": "assistant-limits",
+    "accept": "text/html",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "demo-leave-walkthrough",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "demo-leave-walkthrough",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "demo-scope",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "demo-scope",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-submit",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-submit",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-days",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-days",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-balance",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-balance",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-decisions",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "leave-decisions",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "academy-learning",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "academy-learning",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "onboarding",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "onboarding",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "privacy",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "privacy",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "manager-review",
+    "accept": "application/json",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "manager-review",
+    "accept": "text/html",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "hr-guide",
+    "accept": "application/json",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "hr-guide",
+    "accept": "text/html",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "assistant-limits",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "employee",
+    "id": "assistant-limits",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "demo-leave-walkthrough",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "demo-leave-walkthrough",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "demo-scope",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "demo-scope",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-submit",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-submit",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-days",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-days",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-balance",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-balance",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-decisions",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "leave-decisions",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "academy-learning",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "academy-learning",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "onboarding",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "onboarding",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "privacy",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "privacy",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "manager-review",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "manager-review",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "hr-guide",
+    "accept": "application/json",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "hr-guide",
+    "accept": "text/html",
+    "status": 404,
+    "expected": 404,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "assistant-limits",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "manager",
+    "id": "assistant-limits",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "demo-leave-walkthrough",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "demo-leave-walkthrough",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "demo-scope",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "demo-scope",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-submit",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-submit",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-days",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-days",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-balance",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-balance",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-decisions",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "leave-decisions",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "academy-learning",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "academy-learning",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "onboarding",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "onboarding",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "privacy",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "privacy",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "manager-review",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "manager-review",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "hr-guide",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "hr-guide",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "assistant-limits",
+    "accept": "application/json",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "hr",
+    "id": "assistant-limits",
+    "accept": "text/html",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  }
+]

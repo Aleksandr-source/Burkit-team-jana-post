@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { iso, uid, notify, audit } from './store.mjs';
 import { fail } from './errors.mjs';
+import { companyKey } from './access.mjs';
 
 const localized = (ru, kk, en) => ({ ru, kk, en });
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -18,10 +19,7 @@ const text = (value, max, label) => {
 
 // The seed and the employee-creation form historically used these two labels.
 // Other companies retain distinct keys; departments do not grant HR access.
-export const inquiryCompanyKey = value => {
-  const key = String(value).normalize('NFKC').trim().replace(/\s+/g, ' ').toLowerCase();
-  return ['jana post · демо', 'jana post · demo'].includes(key) ? 'jana-post-demo' : key;
-};
+export const inquiryCompanyKey = companyKey;
 const select = `SELECT i.*,p.name AS authorName
   FROM hr_inquiries i JOIN people p ON p.id=i.authorId`;
 

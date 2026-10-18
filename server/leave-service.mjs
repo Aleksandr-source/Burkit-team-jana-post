@@ -3,6 +3,7 @@ import { iso, uid, personById, publicPerson, visibleEmployee, requestById, notif
 import { captureLeaveDocument } from './leave-document.mjs';
 import { fail } from './errors.mjs';
 import { required, dateValue, today } from './validation.mjs';
+import { sameCompany } from './access.mjs';
 const activeStatuses = ['pending_manager', 'pending_hr'];
 const localized = (ru, kk, en) => ({ ru, kk, en });
 // One service owns leave state, balance changes, history and notifications.
@@ -47,7 +48,7 @@ export function createLeaveService({ db, transaction }) {
         fail(400, 'past_date', 'Начало отпуска не может быть в прошлом.');
       const person = publicPerson(db, personById(db, user.id));
       const manager = person.managerId ? personById(db, person.managerId) : null;
-      if (!manager || !['manager', 'hr'].includes(manager.role) || manager.id === person.id)
+      if (!manager || !sameCompany(person, manager) || !['manager', 'hr'].includes(manager.role) || manager.id === person.id)
         fail(409, 'missing_manager', 'Для подачи заявки HR должен назначить руководителя.');
       if (days > person.leaveBalance - person.leaveReserved)
         fail(409, 'insufficient_balance', 'Недостаточно доступных дней отпуска.');
@@ -86,15 +87,15 @@ export function createLeaveService({ db, transaction }) {
         notify(db, employee.id, 'request_cancelled', localized('Заявка отменена', 'Өтінім жойылды', 'Request cancelled'), localized('Резерв дней освобождён.', 'Күндер резерві босатылды.', 'Reserved days have been released.'), 'requests', request.id);
         notify(db, employee.managerId, 'request_cancelled', localized('Сотрудник отменил заявку', 'Қызметкер өтінімді жойды', 'Employee cancelled a request'), localized(employee.name, employee.name, employee.name), 'requests', request.id);
         if (request.status === 'pending_hr')
-          for (const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())
-            if (h.id !== employee.id)
+          for (const h of db.prepare("SELECT id,company FROM people WHERE role='hr'").all())
+            if (h.id !== employee.id && sameCompany(h, employee))
               notify(db, h.id, 'request_cancelled', localized('Заявка отменена автором', 'Өтінімді автор жойды', 'Request cancelled by author'), localized(employee.name, employee.name, employee.name), 'requests', request.id);
       }
       else {
         if (user.id === employee.id)
           fail(403, 'self_approval', 'Нельзя согласовать собственную заявку.');
         const managerStage = request.status === 'pending_manager' && employee.managerId === user.id && ['manager', 'hr'].includes(user.role);
-        const hrStage = request.status === 'pending_hr' && user.role === 'hr';
+        const hrStage = request.status === 'pending_hr' && user.role === 'hr' && sameCompany(user, employee);
         if (!managerStage && !hrStage)
           fail(403, 'forbidden', 'Заявка ожидает решения другого согласующего.');
         if (action === 'reject') {
@@ -109,8 +110,8 @@ export function createLeaveService({ db, transaction }) {
           db.prepare("UPDATE requests SET status='pending_hr' WHERE id=?").run(request.id);
           appendHistory(request, user, 'manager_approved', typeof body.comment === 'string' ? body.comment.slice(0, 2000) : '');
           notify(db, employee.id, 'request_approved', localized('Руководитель согласовал отпуск', 'Басшы демалысты мақұлдады', 'Manager approved your leave'), localized('Осталось подтверждение HR.', 'HR растауы қалды.', 'HR confirmation is next.'), 'requests', request.id);
-          for (const h of db.prepare("SELECT id FROM people WHERE role='hr'").all())
-            if (h.id !== employee.id)
+          for (const h of db.prepare("SELECT id,company FROM people WHERE role='hr'").all())
+            if (h.id !== employee.id && sameCompany(h, employee))
               notify(db, h.id, 'request_pending_hr', localized('Отпуск ожидает HR', 'Демалыс HR растауын күтуде', 'Leave awaiting HR'), localized(employee.name, employee.name, employee.name), 'requests', request.id);
         }
         else {

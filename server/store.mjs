@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, chmodSync } from 'n
 import { join } from 'node:path';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { demoPeople, demoCourses, demoRequests, demoEnrollments } from './seed.mjs';
+export { visibleEmployee } from './access.mjs';
 export const iso = () => new Date().toISOString();
 export const uid = (prefix = 'id') => `${prefix}_${randomBytes(12).toString('hex')}`;
 const legacyEmails = Object.fromEntries(['employee', 'manager', 'hr', 'outsider', 'secondmanager'].map(name => [`${name}@asar.demo`, `${name}@janamen.demo`]));
@@ -94,7 +95,6 @@ export function publicPerson(db, person) {
   return safe;
 }
 export function personById(db, id) { return db.prepare('SELECT * FROM people WHERE id=?').get(id); }
-export function visibleEmployee(user, employee) { return user.role === 'hr' || user.id === employee.id || (user.role === 'manager' && employee.managerId === user.id); }
 export function requestById(db, id) {
   const row = db.prepare('SELECT r.*,p.name AS employeeName,p.department FROM requests r JOIN people p ON p.id=r.employeeId WHERE r.id=?').get(id);
   if (!row) return null;
@@ -103,7 +103,7 @@ export function requestById(db, id) {
 export function courseById(db,id) { const row=db.prepare('SELECT data FROM courses WHERE id=?').get(id); return row ? JSON.parse(row.data) : null; }
 export function publicCourse(course,user) { return user.role==='hr' ? course : {...course, quiz:course.quiz.map(({correctIndex:_correct,...question})=>question)}; }
 export function enrollmentData(row,db) { return {...row,passed:!!row.passed,completedLessonIds:JSON.parse(row.completedLessonIds),userName:personById(db,row.userId)?.name || ''}; }
-export function notify(db,userId,type,title,body,view,entityId) {
- const item={id:uid('n'),type,title,body,view,entityId,createdAt:iso(),readAt:null}; db.prepare('INSERT INTO notifications VALUES (?,?,?)').run(item.id,userId,JSON.stringify(item)); return item;
+export function notify(db,userId,type,title,body,view,entityId,documentProcessing) {
+ const item={id:uid('n'),type,title,body,view,entityId,createdAt:iso(),readAt:null,...(documentProcessing?{documentProcessing}:{})}; db.prepare('INSERT INTO notifications VALUES (?,?,?)').run(item.id,userId,JSON.stringify(item)); return item;
 }
 export function audit(db,actorId,action,entityId) { db.prepare('INSERT INTO audit VALUES (?,?,?,?,?)').run(uid('audit'),actorId,action,entityId,iso()); }

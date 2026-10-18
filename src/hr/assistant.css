@@ -1,0 +1,25 @@
+/* A single chat fills the available space; only its messages scroll. */
+.hr-main-layout.is-assistant { height: 100dvh; min-height: 0; display: flex; flex-direction: column; }
+.hr-main-layout.is-assistant > .hr-header { flex-shrink: 0; }
+.hr-main.is-assistant { flex: 1; min-height: 0; width: 100%; max-width: none; margin: 0; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.hr-main.is-assistant > [data-view=assistant]:not([hidden]) { display: flex; flex: 1; min-height: 0; }
+.hr-main.is-assistant > .hr-info-note { flex-shrink: 0; margin: 0; }
+.hr-chat-focused { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; margin: 0; }
+.hr-chat-focused > .hr-chat-top { flex-shrink: 0; gap: 12px; padding: 16px 20px; }
+.hr-chat-focused .hr-chat-top h1 { margin: 0 0 4px; color: var(--hr-text); font-size: 17px; font-weight: 650; line-height: 1.4; }
+.hr-chat-focused .hr-chat-top > .hr-button { margin-left: auto; white-space: nowrap; }
+.hr-chat-focused > .hr-chat-messages, .hr-chat-focused > .hr-chat-messages.is-empty { flex: 1; min-height: 0; height: auto; overscroll-behavior: contain; }
+.hr-chat-focused .hr-ai-welcome h2 { color: var(--hr-text); font-size: clamp(19px, 2vw, 27px); }
+.hr-quick-questions { display: grid; gap: 8px; max-width: 420px; margin: 22px auto 0; }
+.hr-quick-questions > button { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 12px 16px; border: 1px solid var(--hr-border); border-radius: 10px; background: var(--hr-surface); color: var(--hr-text-secondary); text-align: left; font-size: var(--hr-fs-label, 13px); line-height: 1.5; }
+.hr-quick-questions > button > svg { flex-shrink: 0; color: var(--hr-muted); }
+.hr-quick-questions > button:hover:not(:disabled) { background: var(--hr-surface-hover); border-color: var(--hr-accent-ink); color: var(--hr-text); }
+.hr-chat-focused > .hr-chat-bottom { flex-shrink: 0; padding: 12px 20px 18px; }
+@media (max-width: 760px) {
+  .hr-main.is-assistant { padding: 10px; }
+  .hr-chat-focused > .hr-chat-top { padding: 12px; gap: 8px; }
+  .hr-chat-focused .hr-chat-top h1 { font-size: 15px; }
+  .hr-chat-focused .hr-chat-top > .hr-button { font-size: 11px; padding: 9px; min-height: 40px; gap: 5px; }
+  .hr-chat-focused .hr-chat-top > .hr-jana-orb { display: none; }
+  .hr-chat-focused > .hr-chat-bottom { padding: 10px 12px 12px; }
+}

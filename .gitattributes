@@ -1,0 +1,2 @@
+# Evaluation manifests hash the original UTF-8 bytes, including line endings.
+evaluation/vendor/janamen-eval-v1.0/** text eol=lf
